@@ -363,18 +363,18 @@
                         <circle cx="100" cy="100" r="90" class="timer-progress" id="timerCircle" />
                     </svg>
                     <div class="timer-inner">
-                        <div class="timer-display" id="timerDisplay">25:00</div>
+                        <div class="timer-display" id="timerDisplay">50:00</div>
                         <div class="timer-mode" id="timerModeDisplay">FOCO</div>
                     </div>
                 </div>
                 <div class="timer-config">
                     <div class="config-group">
                         <label>Foco (min)</label>
-                        <input type="number" id="focusInput" value="25" min="5" max="90">
+                        <input type="number" id="focusInput" value="50" min="5" max="90">
                     </div>
                     <div class="config-group">
                         <label>Pausa (min)</label>
-                        <input type="number" id="breakInput" value="5" min="1" max="30">
+                        <input type="number" id="breakInput" value="10" min="1" max="30">
                     </div>
                 </div>
                 <div class="timer-controls">
@@ -382,7 +382,28 @@
                     <button class="timer-btn secondary" onclick="pauseTimer()">⏸ Pausar</button>
                     <button class="timer-btn secondary" onclick="resetTimer()">↻ Resetar</button>
                 </div>
+                <div class="timer-alarm-controls">
+                    <button class="timer-btn alarm-btn hidden" id="stopAlarmBtn" onclick="stopAlarm()">🔕 Silenciar
+                        Alarme</button>
+                    <button class="timer-btn snooze-btn hidden" id="snoozeBtn" onclick="snoozeTimer()">💤 Snooze +10
+                        min</button>
+                </div>
             </div>
+
+            <!-- Modal Aviso 90 Minutos -->
+            <div id="warning90Modal" class="modal-overlay hidden">
+                <div class="modal-warning">
+                    <div class="modal-warning-icon">🧠⚠️</div>
+                    <h2>90 Minutos de Foco!</h2>
+                    <p>Estudos de neurociência mostram que <strong>após 90 minutos contínuos de foco,
+                            não há novos ganhos de aprendizagem</strong> sem uma pausa mental.</p>
+                    <p class="modal-warning-sub">Seu hipocampo precisa processar o que foi aprendido.
+                        Faça uma pausa de 10-20 minutos agora para máxima retenção.</p>
+                    <p class="citation">Huberman Lab • Protocolo de Foco 90min • medRxiv, 2025</p>
+                    <button class="btn-action" onclick="close90Warning()">✓ Entendido — Iniciar Pausa</button>
+                </div>
+            </div>
+
             <div class="stats-row" style="margin-top:32px">
                 <div class="stat-card gradient-teal">
                     <div class="stat-value" id="todayMinutes">0</div>

@@ -133,6 +133,11 @@ body {
   pointer-events: none;
 }
 
+/* Utility — use JS to add/remove this class to show/hide elements */
+.hidden {
+  display: none !important;
+}
+
 .loading-brain {
   font-size: 56px;
   animation: synapsePulse 2s infinite;
@@ -992,6 +997,122 @@ body {
 .timer-btn.secondary:hover {
   border-color: var(--border-synapse-hover);
   color: var(--text-normal);
+}
+
+.timer-alarm-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.timer-btn.alarm-btn {
+  background: linear-gradient(135deg, rgba(255, 61, 90, 0.15), rgba(255, 61, 90, 0.05));
+  border: 1px solid rgba(255, 61, 90, 0.4);
+  color: var(--synapse-red);
+  animation: alarmPulse 1s ease-in-out infinite;
+}
+
+.timer-btn.alarm-btn:hover {
+  background: rgba(255, 61, 90, 0.2);
+  box-shadow: 0 0 20px rgba(255, 61, 90, 0.3);
+  transform: translateY(-2px);
+}
+
+.timer-btn.snooze-btn {
+  background: linear-gradient(135deg, rgba(255, 179, 0, 0.12), rgba(255, 179, 0, 0.04));
+  border: 1px solid rgba(255, 179, 0, 0.3);
+  color: var(--synapse-amber);
+}
+
+.timer-btn.snooze-btn:hover {
+  background: rgba(255, 179, 0, 0.2);
+  box-shadow: 0 0 20px rgba(255, 179, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+@keyframes alarmPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 61, 90, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 61, 90, 0.15);
+  }
+}
+
+/* ─── Modal Aviso 90 Minutos ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 16, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
+  animation: neuralFadeIn 0.3s ease;
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal-warning {
+  background: linear-gradient(160deg, rgba(20, 10, 40, 0.98), rgba(12, 14, 35, 0.98));
+  border: 1px solid rgba(255, 61, 90, 0.35);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  max-width: 480px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(255, 61, 90, 0.12), 0 0 120px rgba(224, 64, 251, 0.08);
+  position: relative;
+}
+
+.modal-warning::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--synapse-red), var(--synapse-magenta));
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.modal-warning-icon {
+  font-size: 52px;
+  margin-bottom: 16px;
+  animation: synapsePulse 2s infinite;
+}
+
+.modal-warning h2 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--synapse-red);
+  margin-bottom: 14px;
+  text-shadow: 0 0 30px rgba(255, 61, 90, 0.3);
+}
+
+.modal-warning p {
+  color: var(--text-normal);
+  line-height: 1.7;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.modal-warning strong {
+  color: var(--text-bright);
+}
+
+.modal-warning-sub {
+  color: var(--text-dim) !important;
+  font-size: 13px !important;
 }
 
 /* ═══ SPACED REPETITION ═══ */

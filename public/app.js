@@ -181,19 +181,81 @@ async function loadLastDiary() {
 }
 
 // ─── POMODORO TIMER ───
+const DEFAULT_FOCUS = 50;
+const DEFAULT_BREAK = 10;
+const MAX_FOCUS_MINUTES = 90; // Aviso científico: após 90min sem pausa, sem ganho de aprendizado
+
 let timerInterval = null;
-let focusMinutes = 25;
-let breakMinutes = 5;
-let timeLeft = 25 * 60;
+let alarmInterval = null;  // loop do alarme
+let focusMinutes = DEFAULT_FOCUS;
+let breakMinutes = DEFAULT_BREAK;
+let timeLeft = DEFAULT_FOCUS * 60;
 let isRunning = false;
 let isFocusMode = true;
+let focusAccumulator = 0;  // segundos de foco contínuo desde a última pausa
+let warned90min = false;   // evitar múltiplos avisos na mesma sessão
 
+// ─── ALARME ───
+function _playAlarmLoop() {
+    const alarm = document.getElementById('pomodoroAlarm');
+    if (!alarm) return;
+    // Toca em loop até stopAlarm() ser chamado
+    alarm.currentTime = 0;
+    alarm.play().catch(() => { });
+    alarmInterval = setInterval(() => {
+        alarm.currentTime = 0;
+        alarm.play().catch(() => { });
+    }, 4000); // repete a cada 4s
+    document.getElementById('stopAlarmBtn')?.classList.remove('hidden');
+    document.getElementById('snoozeBtn')?.classList.remove('hidden');
+}
+
+function stopAlarm() {
+    clearInterval(alarmInterval); alarmInterval = null;
+    const alarm = document.getElementById('pomodoroAlarm');
+    if (alarm) { alarm.pause(); alarm.currentTime = 0; }
+    document.getElementById('stopAlarmBtn')?.classList.add('hidden');
+    document.getElementById('snoozeBtn')?.classList.add('hidden');
+}
+
+// ─── SNOOZE: para o alarme e adiciona 10min ao timer atual ───
+function snoozeTimer() {
+    stopAlarm();
+    timeLeft += 10 * 60;
+    updateTimerDisplay();
+    // Reinicia o timer se não estiver rodando
+    if (!isRunning) startTimer();
+}
+
+// ─── AVISO 90 MINUTOS ───
+function _show90MinWarning() {
+    document.getElementById('warning90Modal')?.classList.remove('hidden');
+    _playAlarmLoop();
+    notify('⚠️ 90 minutos de foco!', 'Sem pausa não há ganho de aprendizado. Faça uma pausa mental agora.');
+    warned90min = true;
+}
+
+function close90Warning() {
+    document.getElementById('warning90Modal')?.classList.add('hidden');
+    stopAlarm();
+    // Força pausa: muda para modo de descanso
+    pauseTimer();
+    isFocusMode = false;
+    focusAccumulator = 0;
+    warned90min = false;
+    timeLeft = breakMinutes * 60;
+    document.getElementById('timerModeDisplay').textContent = 'PAUSA';
+    document.getElementById('startBtn').textContent = '▶ Iniciar';
+    updateTimerDisplay();
+}
+
+// ─── START / PAUSE / RESET ───
 function startTimer() {
     if (isRunning) return;
-    const newFocus = parseInt(document.getElementById('focusInput').value) || 25;
-    const newBreak = parseInt(document.getElementById('breakInput').value) || 5;
+    const newFocus = parseInt(document.getElementById('focusInput').value) || DEFAULT_FOCUS;
+    const newBreak = parseInt(document.getElementById('breakInput').value) || DEFAULT_BREAK;
 
-    // If the input changed while stopped and hasn't ticked down, update it
+    // Se ainda não iniciou, sincroniza com os inputs
     if (!timerInterval && timeLeft === focusMinutes * 60) {
         timeLeft = isFocusMode ? newFocus * 60 : newBreak * 60;
     }
@@ -203,23 +265,31 @@ function startTimer() {
 
     isRunning = true;
     document.getElementById('startBtn').textContent = '▶ Rodando...';
+
     timerInterval = setInterval(() => {
         timeLeft--;
+
+        // Acumula tempo de foco contínuo e verifica limite de 90min
+        if (isFocusMode) {
+            focusAccumulator++;
+            if (!warned90min && focusAccumulator >= MAX_FOCUS_MINUTES * 60) {
+                _show90MinWarning();
+            }
+        }
+
         updateTimerDisplay();
+
         if (timeLeft <= 0) {
             clearInterval(timerInterval); timerInterval = null; isRunning = false;
-
-            // Tocar som de alarme
-            try {
-                const alarm = document.getElementById('pomodoroAlarm');
-                if (alarm) alarm.play();
-            } catch (e) { console.error('Audio falhou:', e); }
+            _playAlarmLoop();
 
             if (isFocusMode) {
                 logPomodoroSession(focusMinutes);
-                notify('Sessão concluída!', '🎉 Hora do intervalo.');
+                notify('Sessão concluída! 🎉', 'Hora do intervalo. Clique Silenciar para parar o alarme.');
+                focusAccumulator = 0; // zera ao entrar em pausa
             } else {
-                notify('Pausa encerrada!', '🧠 Hora de focar.');
+                notify('Pausa encerrada! 🧠', 'Hora de focar. Clique Silenciar para parar o alarme.');
+                warned90min = false; // nova sessão de foco começa zerada
             }
             isFocusMode = !isFocusMode;
             timeLeft = isFocusMode ? focusMinutes * 60 : breakMinutes * 60;
@@ -235,14 +305,24 @@ function pauseTimer() {
     document.getElementById('startBtn').textContent = '▶ Continuar';
 }
 
+// Reset SEMPRE volta para os padrões (50/10), ignorando o que está nos inputs
 function resetTimer() {
     clearInterval(timerInterval); timerInterval = null; isRunning = false;
-    focusMinutes = parseInt(document.getElementById('focusInput').value) || 25;
-    breakMinutes = parseInt(document.getElementById('breakInput').value) || 5;
+    stopAlarm();
+    focusMinutes = DEFAULT_FOCUS;
+    breakMinutes = DEFAULT_BREAK;
     isFocusMode = true;
-    timeLeft = focusMinutes * 60;
+    timeLeft = DEFAULT_FOCUS * 60;
+    focusAccumulator = 0;
+    warned90min = false;
+    // Restaura os inputs também
+    const fi = document.getElementById('focusInput');
+    const bi = document.getElementById('breakInput');
+    if (fi) fi.value = DEFAULT_FOCUS;
+    if (bi) bi.value = DEFAULT_BREAK;
     document.getElementById('timerModeDisplay').textContent = 'FOCO';
     document.getElementById('startBtn').textContent = '▶ Iniciar';
+    document.getElementById('warning90Modal')?.classList.add('hidden');
     updateTimerDisplay();
 }
 
