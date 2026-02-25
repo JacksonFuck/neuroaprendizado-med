@@ -58,17 +58,26 @@ CREATE INDEX IF NOT EXISTS idx_spaced_user ON spaced_topics(user_id);
 CREATE INDEX IF NOT EXISTS idx_spaced_review ON spaced_topics(user_id, next_review);
 CREATE INDEX IF NOT EXISTS idx_pomodoro_user ON pomodoro_sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_content_tab ON content_sections(tab_key);
+
+-- Session store table required by connect-pg-simple
+CREATE TABLE IF NOT EXISTS "session" (
+  "sid" VARCHAR NOT NULL COLLATE "default",
+  "sess" JSON NOT NULL,
+  "expire" TIMESTAMP(6) NOT NULL,
+  CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE
+);
+CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");
 `;
 
 async function initDB() {
-    try {
-        await pool.query(schema);
-        console.log('✅ Database schema initialized');
-        process.exit(0);
-    } catch (err) {
-        console.error('❌ Failed to initialize database:', err.message);
-        process.exit(1);
-    }
+  try {
+    await pool.query(schema);
+    console.log('✅ Database schema initialized');
+    process.exit(0);
+  } catch (err) {
+    console.error('❌ Failed to initialize database:', err.message);
+    process.exit(1);
+  }
 }
 
 initDB();
