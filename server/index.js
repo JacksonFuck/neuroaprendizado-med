@@ -12,6 +12,9 @@ const pool = require('./config/db');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust nginx proxy for secure cookies
+app.set('trust proxy', 1);
+
 // Security & performance
 app.use(helmet({
     contentSecurityPolicy: {
