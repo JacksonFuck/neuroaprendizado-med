@@ -208,6 +208,13 @@ function startTimer() {
         updateTimerDisplay();
         if (timeLeft <= 0) {
             clearInterval(timerInterval); timerInterval = null; isRunning = false;
+
+            // Tocar som de alarme
+            try {
+                const alarm = document.getElementById('pomodoroAlarm');
+                if (alarm) alarm.play();
+            } catch (e) { console.error('Audio falhou:', e); }
+
             if (isFocusMode) {
                 logPomodoroSession(focusMinutes);
                 notify('Sessão concluída!', '🎉 Hora do intervalo.');
