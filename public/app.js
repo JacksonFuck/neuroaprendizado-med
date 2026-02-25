@@ -190,11 +190,17 @@ let isFocusMode = true;
 
 function startTimer() {
     if (isRunning) return;
-    focusMinutes = parseInt(document.getElementById('focusInput').value) || 25;
-    breakMinutes = parseInt(document.getElementById('breakInput').value) || 5;
+    const newFocus = parseInt(document.getElementById('focusInput').value) || 25;
+    const newBreak = parseInt(document.getElementById('breakInput').value) || 5;
+
+    // If the input changed while stopped and hasn't ticked down, update it
     if (!timerInterval && timeLeft === focusMinutes * 60) {
-        timeLeft = isFocusMode ? focusMinutes * 60 : breakMinutes * 60;
+        timeLeft = isFocusMode ? newFocus * 60 : newBreak * 60;
     }
+
+    focusMinutes = newFocus;
+    breakMinutes = newBreak;
+
     isRunning = true;
     document.getElementById('startBtn').textContent = '▶ Rodando...';
     timerInterval = setInterval(() => {
