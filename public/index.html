@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuroaprendizado Med</title>
+    <meta name="description"
+        content="Técnicas de estudo baseadas em neurociência e evidências recentes para estudantes de medicina">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+    <!-- Loading -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-brain">🧠</div>
+        <p>Carregando...</p>
+    </div>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🧠</div>
+            <span class="sidebar-title">NeuroApp</span>
+            <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+        </div>
+        <div class="sidebar-user" id="sidebarUser"></div>
+        <div class="sidebar-nav">
+            <button class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
+                <span class="nav-icon">📊</span><span class="nav-label">Dashboard</span>
+            </button>
+            <button class="nav-item" data-tab="tecnicas" onclick="switchTab('tecnicas')">
+                <span class="nav-icon">🎯</span><span class="nav-label">Técnicas</span>
+            </button>
+            <button class="nav-item" data-tab="protocolos" onclick="switchTab('protocolos')">
+                <span class="nav-icon">📋</span><span class="nav-label">Protocolos</span>
+            </button>
+            <button class="nav-item" data-tab="timer" onclick="switchTab('timer')">
+                <span class="nav-icon">⏱️</span><span class="nav-label">Pomodoro</span>
+            </button>
+            <button class="nav-item" data-tab="espacamento" onclick="switchTab('espacamento')">
+                <span class="nav-icon">📅</span><span class="nav-label">Espaçamento</span>
+            </button>
+            <button class="nav-item" data-tab="diario" onclick="switchTab('diario')">
+                <span class="nav-icon">📓</span><span class="nav-label">Diário</span>
+            </button>
+            <div class="nav-divider"></div>
+            <button class="nav-item" data-tab="habitos" onclick="switchTab('habitos')">
+                <span class="nav-icon">🌙</span><span class="nav-label">Hábitos de Vida</span>
+            </button>
+            <button class="nav-item" data-tab="suplementacao" onclick="switchTab('suplementacao')">
+                <span class="nav-icon">💊</span><span class="nav-label">Suplementação</span>
+            </button>
+            <button class="nav-item" data-tab="mitos" onclick="switchTab('mitos')">
+                <span class="nav-icon">❓</span><span class="nav-label">Fato vs Mito</span>
+            </button>
+            <button class="nav-item" data-tab="ciencia" onclick="switchTab('ciencia')">
+                <span class="nav-icon">🔬</span><span class="nav-label">Ciência</span>
+            </button>
+        </div>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">Sair</button>
+        </div>
+    </nav>
+
+    <!-- Hamburger -->
+    <button id="hamburger" class="hamburger" onclick="toggleSidebar()">☰</button>
+
+    <!-- Main Content -->
+    <main id="mainContent" class="main-content">
+
+        <!-- DASHBOARD -->
+        <section id="tab-dashboard" class="tab-panel active">
+            <div class="page-header">
+                <h1 id="greeting">Bom dia! 👋</h1>
+                <p class="page-subtitle">Seu progresso em neuroaprendizado</p>
+            </div>
+            <div class="stats-row">
+                <div class="stat-card gradient-teal">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-value" id="dashMinutes">0</div>
+                    <div class="stat-label">Minutos Focados</div>
+                </div>
+                <div class="stat-card gradient-blue">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-value" id="dashSessions">0</div>
+                    <div class="stat-label">Sessões</div>
+                </div>
+                <div class="stat-card gradient-amber">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-value" id="dashStreak">0</div>
+                    <div class="stat-label">Dias Seguidos</div>
+                </div>
+                <div class="stat-card gradient-emerald">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-value" id="dashReviews">0</div>
+                    <div class="stat-label">Revisões Hoje</div>
+                </div>
+            </div>
+            <div class="dashboard-grid">
+                <div class="glass-card">
+                    <h3>📅 Próximas Revisões</h3>
+                    <div id="dashUpcoming" class="upcoming-list">
+                        <p class="empty-state">Nenhuma revisão agendada</p>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <h3>📓 Última Entrada do Diário</h3>
+                    <div id="dashLastDiary" class="last-diary">
+                        <p class="empty-state">Nenhuma entrada ainda. Comece a registrar!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card neuro-tip">
+                <h3>💡 Dica Neurobiológica</h3>
+                <p><strong>Esforço alto + sucesso = Pico de dopamina maior.</strong> O sistema colinérgico modula a
+                    liberação de dopamina proporcionalmente ao esforço investido. Quando você resolve algo difícil, o
+                    prazer é amplificado — seu cérebro aprende a "querer" resolver problemas complexos.</p>
+                <span class="citation">Nature, 2026 • Westbrook et al., 2025</span>
+            </div>
+        </section>
+
+        <!-- TÉCNICAS -->
+        <section id="tab-tecnicas" class="tab-panel">
+            <div class="page-header">
+                <h1>🎯 Técnicas Fundamentais</h1>
+                <p class="page-subtitle">Baseadas em estudos neurobiológicos recentes que mostram alterações em
+                    hipocampo, dopamina e consolidação de memória</p>
+            </div>
+            <div class="technique-grid">
+                <div class="technique-card" onclick="toggleExpand(this)">
+                    <div class="tc-header">
+                        <div class="tc-number">01</div>
+                        <div>
+                            <h3>Active Recall</h3>
+                            <p class="tc-subtitle">Recuperação Ativa</p>
+                        </div>
+                        <span class="badge badge-high">Alta Evidência</span>
+                    </div>
+                    <p class="tc-description">Teste-se constantemente sem consultar o material. Engaja hipocampo
+                        anterior e posterior de forma mais intensa que a releitura, reorganizando redes
+                        hipocampo-corticais que predizem retenção futura.</p>
+                    <div class="tc-details">
+                        <h4>Como aplicar</h4>
+                        <ul>
+                            <li>Após ler um tema, feche o livro e tente explicar em voz alta</li>
+                            <li>Use perguntas abertas: "Como funciona X?" em vez de "O que é X?"</li>
+                            <li>Faça flashcards com perguntas desafiadoras, não definições</li>
+                            <li>Pratique 3-5 recuperações por tema, espaçadas ao longo de dias</li>
+                            <li>Resolva questões ANTES de estudar a teoria (desirable difficulty)</li>
+                        </ul>
+                        <h4>Base Neurobiológica</h4>
+                        <p>A atividade no hipocampo posterior aumenta linearmente com o número de recuperações
+                            bem-sucedidas. Retrieval practice engaja de forma mais intensa o hipocampo anterior
+                            (representações gerais) e posterior (detalhes episódicos) do que a releitura, acelerando a
+                            transição de dependência hipocampal para neocortical — um processo semelhante ao que ocorre
+                            durante o sono.</p>
+                        <p class="citation">Wiklund-Hörnqvist et al., 2021 • Antony et al., 2017 • Marek et al., 2023
+                        </p>
+                    </div>
+                </div>
+
+                <div class="technique-card" onclick="toggleExpand(this)">
+                    <div class="tc-header">
+                        <div class="tc-number">02</div>
+                        <div>
+                            <h3>Interleaving</h3>
+                            <p class="tc-subtitle">Intercalação de Assuntos</p>
+                        </div>
+                        <span class="badge badge-high">Alta Evidência</span>
+                    </div>
+                    <p class="tc-description">Misture temas diferentes em cada sessão. Aumenta diferenciação hipocampal
+                        (pattern separation) e conectividade entre córtex pré-motor, hipocampo, parietal e cerebelo.</p>
+                    <div class="tc-details">
+                        <h4>Como aplicar</h4>
+                        <ul>
+                            <li>Em vez de 2h de Cardiologia: 40min Cardio + 40min Pneumo + 40min Nefro</li>
+                            <li>Resolva 3 questões de cada especialidade, alternando entre elas</li>
+                            <li>Revise casos clínicos misturando diferentes diagnósticos</li>
+                            <li>A confusão inicial é esperada — é exatamente a dificuldade desejável</li>
+                        </ul>
+                        <h4>Base Neurobiológica</h4>
+                        <p>Em Física universitária, interleaving produziu melhorias de 50-125% em testes com problemas
+                            novos e difíceis. Interleaving está associado a maior conectividade funcional em repouso
+                            entre premotor–hipocampo–parietal–cerebelo. Força o cérebro a "escolher o modelo correto sob
+                            incerteza" — exatamente o que provas complexas exigem.</p>
+                        <p class="citation">Samani et al., 2021 • Kim et al., 2024 • Duan et al., 2025</p>
+                    </div>
+                </div>
+
+                <div class="technique-card" onclick="toggleExpand(this)">
+                    <div class="tc-header">
+                        <div class="tc-number">03</div>
+                        <div>
+                            <h3>Spacing Effect</h3>
+                            <p class="tc-subtitle">Espaçamento Temporal</p>
+                        </div>
+                        <span class="badge badge-high">Alta Evidência</span>
+                    </div>
+                    <p class="tc-description">Distribua o estudo ao longo do tempo em intervalos crescentes. Otimiza
+                        plasticidade sináptica, sobrevivência neuronal no giro denteado e vias ERK/CREB de consolidação.
+                    </p>
+                    <div class="tc-details">
+                        <h4>Intervalos ideais (baseados em evidências)</h4>
+                        <ul>
+                            <li><strong>1ª revisão:</strong> 1 dia depois — consolidação inicial</li>
+                            <li><strong>2ª revisão:</strong> 3 dias depois — reativação precoce</li>
+                            <li><strong>3ª revisão:</strong> 7 dias depois — consolidação intermediária</li>
+                            <li><strong>4ª revisão:</strong> 14 dias depois — memória de longo prazo</li>
+                            <li><strong>5ª revisão:</strong> 30 dias depois — consolidação final</li>
+                        </ul>
+                        <h4>Base Neurobiológica</h4>
+                        <p>Kukushkin et al. (2024) demonstraram o efeito spacing até em células não-neurais: 4 pulsos
+                            espaçados geram ativação ERK/CREB mais forte e sustentada que um pulso único massivo. É um
+                            princípio biológico fundamental da plasticidade. Spacing também aumenta sobrevivência de
+                            novos neurônios no giro denteado e otimiza crescimento de espinhas dendríticas durante LTP.
+                        </p>
+                        <p class="citation">Kukushkin et al., 2024 • San Martin et al., 2017 • Sisti et al., 2007</p>
+                    </div>
+                </div>
+
+                <div class="technique-card" onclick="toggleExpand(this)">
+                    <div class="tc-header">
+                        <div class="tc-number">04</div>
+                        <div>
+                            <h3>Desirable Difficulty</h3>
+                            <p class="tc-subtitle">Dificuldade Desejável</p>
+                        </div>
+                        <span class="badge badge-high">Alta Evidência</span>
+                    </div>
+                    <p class="tc-description">Aumente o esforço cognitivo intencionalmente. Amplifica sinal de dopamina
+                        e recompensa. O esforço elevado AMPLIFICA a liberação de dopamina para a mesma recompensa, via
+                        modulação colinérgica.</p>
+                    <div class="tc-details">
+                        <h4>Como aplicar</h4>
+                        <ul>
+                            <li>Resolva questões ANTES de estudar o tema (pre-testing)</li>
+                            <li>Tente elaborar sem consultar primeiro</li>
+                            <li>Use questões de concursos mais difíceis que seu nível atual</li>
+                            <li>Explique para alguém que não entende nada (técnica Feynman)</li>
+                            <li>Celebre erros corrigidos — cada erro é um RPE negativo que, quando corrigido, gera pico
+                                dopaminérgico</li>
+                        </ul>
+                        <h4>Base Neurobiológica</h4>
+                        <p>Tarefas cognitivamente mais difíceis produzem maiores respostas no estriado ventral,
+                            interpretadas como sinal de recompensa intrínseca. A mesma recompensa gera pico
+                            dopaminérgico muito maior quando foi precedida de alto esforço — o "bônus de esforço"
+                            depende de modulação colinérgica local dos axônios dopaminérgicos. O cérebro aprende a
+                            associar atrito cognitivo com recompensa neuroquímica subsequente.</p>
+                        <p class="citation">Dubinsky & Hamid, 2024 • Nature, 2026 • Westbrook et al., 2025</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROTOCOLOS -->
+        <section id="tab-protocolos" class="tab-panel">
+            <div class="page-header">
+                <h1>📋 Protocolo Semanal — Residência Médica</h1>
+                <p class="page-subtitle">Rotina baseada em retrieval + interleaving + spacing para provas de alta
+                    complexidade</p>
+            </div>
+            <div class="protocol-timeline">
+                <div class="protocol-day">
+                    <div class="day-badge">SEG</div>
+                    <div class="glass-card">
+                        <h3>Interleaving Pesado</h3>
+                        <div class="protocol-block"><strong>Manhã (3h)</strong>
+                            <p>50min Cardio (active recall) → 10min pausa → 50min Pneumo (questões intercaladas) → 10min
+                                pausa → 50min Nefro (flashcards + explicação em voz alta)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="protocol-day">
+                    <div class="day-badge">TER</div>
+                    <div class="glass-card">
+                        <h3>Revisão Espaçada</h3>
+                        <div class="protocol-block"><strong>Manhã (2h)</strong>
+                            <p>Revise temas de 3 dias atrás. Active recall puro, 40min por tema sem consultar. Anote
+                                lacunas, só depois consulte.</p>
+                        </div>
+                        <div class="protocol-block"><strong>Tarde (2h)</strong>
+                            <p>Novo conteúdo com desirable difficulty — tente questões ANTES de estudar a teoria.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="protocol-day">
+                    <div class="day-badge">QUA</div>
+                    <div class="glass-card">
+                        <h3>Simulado Intercalado</h3>
+                        <div class="protocol-block"><strong>Manhã (3h)</strong>
+                            <p>50 questões misturando TODAS as áreas. Não agrupe por tema. Corrija imediatamente
+                                (feedback rápido = dopamina).</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="protocol-day">
+                    <div class="day-badge">QUI</div>
+                    <div class="glass-card">
+                        <h3>Consolidação Ativa</h3>
+                        <div class="protocol-block"><strong>Manhã (2h)</strong>
+                            <p>Explique temas difíceis gravando. Desenhe mapas mentais SEM consultar. Conecte temas
+                                diferentes (ex: Cardio + Pneumo + Endócrino).</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="protocol-day">
+                    <div class="day-badge">SEX</div>
+                    <div class="glass-card">
+                        <h3>Revisão Espaçada Longa</h3>
+                        <div class="protocol-block"><strong>Manhã (3h)</strong>
+                            <p>Revise conteúdo de 1 e 2 semanas atrás. Active recall puro, depois feedforward com
+                                material.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="protocol-day">
+                    <div class="day-badge">SÁB</div>
+                    <div class="glass-card">
+                        <h3>Prática Deliberada em Pontos Fracos</h3>
+                        <div class="protocol-block"><strong>Manhã (3h)</strong>
+                            <p>Identifique 3 temas com pior desempenho. Estudo focado COM dificuldade desejável.
+                                Questões progressivamente mais difíceis.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="protocol-day">
+                    <div class="day-badge day-rest">DOM</div>
+                    <div class="glass-card card-rest">
+                        <h3>Descanso Ativo + Sono</h3>
+                        <div class="protocol-block"><strong>Sem estudo pesado</strong>
+                            <p>Revisão leve de flashcards (30min). Sono adequado 7-9h para consolidação offline.
+                                Exercício físico (aumenta BDNF e neurogênese hipocampal).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card" style="margin-top:24px">
+                <h3>⚡ Regras de Ouro</h3>
+                <ul class="golden-rules">
+                    <li><strong>Nunca</strong> estude o mesmo tema por mais de 60min seguidos</li>
+                    <li><strong>Sempre</strong> teste-se ANTES de revisar teoria</li>
+                    <li><strong>Intercale</strong> pelo menos 3 temas por sessão</li>
+                    <li><strong>Durma</strong> bem — consolidação offline é tão importante quanto estudo</li>
+                    <li><strong>Registre</strong> cada sessão para visualizar progresso (reforço dopaminérgico)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- TIMER POMODORO -->
+        <section id="tab-timer" class="tab-panel">
+            <div class="page-header">
+                <h1>⏱️ Timer Neuroadaptado</h1>
+                <p class="page-subtitle">Ciclos de esforço + recompensa para maximizar dopamina</p>
+            </div>
+            <div class="timer-container">
+                <div class="timer-ring">
+                    <svg viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="90" class="timer-bg" />
+                        <circle cx="100" cy="100" r="90" class="timer-progress" id="timerCircle" />
+                    </svg>
+                    <div class="timer-inner">
+                        <div class="timer-display" id="timerDisplay">25:00</div>
+                        <div class="timer-mode" id="timerModeDisplay">FOCO</div>
+                    </div>
+                </div>
+                <div class="timer-config">
+                    <div class="config-group">
+                        <label>Foco (min)</label>
+                        <input type="number" id="focusInput" value="25" min="5" max="90">
+                    </div>
+                    <div class="config-group">
+                        <label>Pausa (min)</label>
+                        <input type="number" id="breakInput" value="5" min="1" max="30">
+                    </div>
+                </div>
+                <div class="timer-controls">
+                    <button class="timer-btn primary" id="startBtn" onclick="startTimer()">▶ Iniciar</button>
+                    <button class="timer-btn secondary" onclick="pauseTimer()">⏸ Pausar</button>
+                    <button class="timer-btn secondary" onclick="resetTimer()">↻ Resetar</button>
+                </div>
+            </div>
+            <div class="stats-row" style="margin-top:32px">
+                <div class="stat-card gradient-teal">
+                    <div class="stat-value" id="todayMinutes">0</div>
+                    <div class="stat-label">Min Hoje</div>
+                </div>
+                <div class="stat-card gradient-blue">
+                    <div class="stat-value" id="todaySessions">0</div>
+                    <div class="stat-label">Sessões Hoje</div>
+                </div>
+                <div class="stat-card gradient-amber">
+                    <div class="stat-value" id="totalMinutesAll">0</div>
+                    <div class="stat-label">Min Total</div>
+                </div>
+            </div>
+            <div class="glass-card" style="margin-top:24px">
+                <h3>📊 Sessões Recentes</h3>
+                <div id="pomodoroLog"></div>
+            </div>
+        </section>
+
+        <!-- REPETIÇÃO ESPAÇADA -->
+        <section id="tab-espacamento" class="tab-panel">
+            <div class="page-header">
+                <h1>📅 Repetição Espaçada</h1>
+                <p class="page-subtitle">Intervalos baseados em evidências para consolidação sináptica</p>
+            </div>
+            <div class="glass-card">
+                <h3>➕ Adicionar Tópico</h3>
+                <div class="form-row">
+                    <input type="text" id="spacedName" placeholder="Tópico (ex: Insuficiência Cardíaca)" class="input">
+                    <input type="text" id="spacedCategory" placeholder="Categoria (ex: Cardiologia)" class="input">
+                    <button class="btn-action" onclick="addSpacedTopic()">Adicionar</button>
+                </div>
+            </div>
+            <div class="spaced-alerts" id="spacedAlerts"></div>
+            <div class="glass-card" style="margin-top:24px">
+                <h3>📚 Seus Tópicos</h3>
+                <div id="spacedList"></div>
+            </div>
+            <div class="glass-card" style="margin-top:24px">
+                <h3>🧠 Como Funciona</h3>
+                <div class="intervals-visual">
+                    <div class="interval-step">
+                        <div class="interval-dot" style="--c:#38bdf8"></div><strong>1ª revisão:</strong> 1 dia —
+                        consolidação inicial
+                    </div>
+                    <div class="interval-step">
+                        <div class="interval-dot" style="--c:#818cf8"></div><strong>2ª revisão:</strong> 3 dias —
+                        reativação precoce
+                    </div>
+                    <div class="interval-step">
+                        <div class="interval-dot" style="--c:#a78bfa"></div><strong>3ª revisão:</strong> 7 dias —
+                        consolidação intermediária
+                    </div>
+                    <div class="interval-step">
+                        <div class="interval-dot" style="--c:#f472b6"></div><strong>4ª revisão:</strong> 14 dias —
+                        memória de longo prazo
+                    </div>
+                    <div class="interval-step">
+                        <div class="interval-dot" style="--c:#fb923c"></div><strong>5ª revisão:</strong> 30 dias —
+                        consolidação final
+                    </div>
+                </div>
+                <p class="citation">Cada revisão reativa o traço de memória hipocampal e fortalece conexões corticais. —
+                    Kukushkin et al., 2024</p>
+            </div>
+        </section>
+
+        <!-- DIÁRIO DE ESTUDOS -->
+        <section id="tab-diario" class="tab-panel">
+            <div class="page-header">
+                <h1>📓 Diário de Estudos</h1>
+                <p class="page-subtitle">Registre seu progresso e reflexões — dados persistem entre sessões</p>
+            </div>
+            <div class="glass-card">
+                <h3>✍️ Nova Entrada</h3>
+                <div class="diary-form">
+                    <input type="date" id="diaryDate" class="input">
+                    <div class="mood-selector">
+                        <button class="mood-btn" data-mood="great" onclick="selectMood('great')">🤩</button>
+                        <button class="mood-btn" data-mood="good" onclick="selectMood('good')">😊</button>
+                        <button class="mood-btn active" data-mood="neutral" onclick="selectMood('neutral')">😐</button>
+                        <button class="mood-btn" data-mood="tired" onclick="selectMood('tired')">😴</button>
+                        <button class="mood-btn" data-mood="bad" onclick="selectMood('bad')">😫</button>
+                    </div>
+                    <div class="form-row">
+                        <input type="number" id="diaryHours" placeholder="Horas estudadas" step="0.5" min="0" max="24"
+                            class="input" style="max-width:200px">
+                        <input type="text" id="diaryTopics" placeholder="Temas estudados (separados por vírgula)"
+                            class="input">
+                    </div>
+                    <textarea id="diaryContent" rows="5"
+                        placeholder="O que você estudou hoje? Quais insights teve? Como se sentiu?"
+                        class="input textarea"></textarea>
+                    <button class="btn-action" onclick="saveDiaryEntry()">Salvar Entrada</button>
+                </div>
+            </div>
+            <div class="glass-card" style="margin-top:24px">
+                <h3>📖 Entradas Anteriores</h3>
+                <div id="diaryList"></div>
+            </div>
+        </section>
+
+        <!-- HÁBITOS DE VIDA -->
+        <section id="tab-habitos" class="tab-panel">
+            <div class="page-header">
+                <h1>🌙 Hábitos de Vida para Alta Performance</h1>
+                <p class="page-subtitle">A neuroplasticidade depende do ambiente biológico — nenhum nootrópico compensa
+                    hábitos ruins</p>
+            </div>
+            <div class="habit-grid">
+                <div class="glass-card habit-card" onclick="toggleExpand(this)">
+                    <div class="habit-icon">😴</div>
+                    <h3>Sono e Sistema Glinfático</h3>
+                    <p>O sono não é inatividade — é o período mais ativo de consolidação e limpeza cerebral.</p>
+                    <div class="tc-details">
+                        <h4>O Sistema Glinfático</h4>
+                        <p>Descoberto em 2012, o sistema glinfático é o mecanismo de limpeza de resíduos metabólicos do
+                            cérebro (beta-amiloide, proteína tau). Funciona majoritariamente durante o sono profundo,
+                            quando o espaço intersticial cerebral se expande em até 60%, permitindo que o líquido
+                            cefalorraquidiano (LCR) "lave" toxinas.</p>
+                        <h4>Recomendações</h4>
+                        <ul>
+                            <li><strong>7-9 horas</strong> de sono por noite — não negociável</li>
+                            <li><strong>Quarto escuro</strong> e temperatura entre 18-20°C</li>
+                            <li><strong>Sem telas</strong> 1h antes de dormir (luz azul suprime melatonina)</li>
+                            <li><strong>Horário consistente</strong> — mesma hora de dormir e acordar</li>
+                            <li><strong>Magnésio L-Treonato</strong> 1h antes (atravessa barreira hematoencefálica)</li>
+                        </ul>
+                        <h4>Acoplamento SO-Fuso</h4>
+                        <p>Durante o sono, as oscilações lentas (SOs) se acoplam com fusos de sono (sleep spindles) —
+                            este mecanismo transfere memórias do hipocampo para o neocórtex. A magnitude da resposta
+                            theta durante o estudo em vigília prediz a qualidade desse acoplamento horas depois.</p>
+                        <p class="citation">Cambridge 2025 — UK Biobank • Zhang et al., 2025</p>
+                    </div>
+                </div>
+                <div class="glass-card habit-card" onclick="toggleExpand(this)">
+                    <div class="habit-icon">🏃</div>
+                    <h3>Exercício Físico e BDNF</h3>
+                    <p>O exercício é o mais potente indutor natural de neurogênese e fator neurotrófico.</p>
+                    <div class="tc-details">
+                        <h4>BDNF: O Fertilizante Cerebral</h4>
+                        <p>O Fator Neurotrófico Derivado do Cérebro (BDNF) é essencial para sobrevivência neuronal,
+                            crescimento de dendritos e estabilização de espinhas dendríticas. Exercício aeróbico e de
+                            resistência aumentam expressão de BDNF via receptor TrkB e ativação da via mTOR.</p>
+                        <h4>Recomendações</h4>
+                        <ul>
+                            <li><strong>150 min/semana</strong> de exercício aeróbico moderado</li>
+                            <li><strong>2-3x/semana</strong> de treino de resistência</li>
+                            <li>Caminhada de 20-30min entre sessões de estudo (modo difuso)</li>
+                            <li><strong>Exposição ao frio</strong> (1-3 min): aumento de até 250% na dopamina e
+                                noradrenalina</li>
+                        </ul>
+                        <p class="citation">Harvard Health • Huberman Lab • Frontiers in Neuroscience, 2025</p>
+                    </div>
+                </div>
+                <div class="glass-card habit-card" onclick="toggleExpand(this)">
+                    <div class="habit-icon">🧘</div>
+                    <h3>NSDR — Non-Sleep Deep Rest</h3>
+                    <p>Relaxamento profundo com consciência intacta. Acelera consolidação e restaura acetilcolina e
+                        dopamina.</p>
+                    <div class="tc-details">
+                        <h4>O que é NSDR</h4>
+                        <p>NSDR (inclui Yoga Nidra) induz estado de relaxamento onde o tônus simpático é drasticamente
+                            reduzido. Ondas cerebrais transitam de Beta (vigília) para Alpha e Theta
+                            (relaxamento/criatividade). Este estado theta é crucial para replay sináptico e etiquetagem
+                            de memórias para consolidação noturna.</p>
+                        <h4>Recomendações</h4>
+                        <ul>
+                            <li><strong>10 minutos</strong> após cada sessão de 90min de estudo</li>
+                            <li>Deite-se em posição confortável, feche os olhos</li>
+                            <li>Use áudio guiado de Yoga Nidra (YouTube, apps)</li>
+                            <li>Não confundir com sesta — NSDR mantém consciência</li>
+                            <li>Retorno ao foco imediato, sem inércia do sono</li>
+                        </ul>
+                        <h4>Benefícios</h4>
+                        <ul>
+                            <li>Redução do cortisol (inibidor do hipocampo)</li>
+                            <li>Replay acelerado de sequências neurais do estudo</li>
+                            <li>Reforço de ritmos theta → pré-marcação para sono</li>
+                        </ul>
+                        <p class="citation">Huberman Lab • Positive Psychology, 2024 • medRxiv, 2025</p>
+                    </div>
+                </div>
+                <div class="glass-card habit-card" onclick="toggleExpand(this)">
+                    <div class="habit-icon">🌅</div>
+                    <h3>Luz Solar e Respiração</h3>
+                    <p>Priming neuroquímico matinal para elevar dopamina e noradrenalina basais.</p>
+                    <div class="tc-details">
+                        <h4>Exposição à luz matinal</h4>
+                        <p>10-30 minutos de luz solar direta de manhã ativa a via retino-hipotalâmica, suprime
+                            melatonina, eleva cortisol matinal (saudável) e prepara o Córtex Pré-Frontal para entrada de
+                            dados.</p>
+                        <h4>Box Breathing</h4>
+                        <ul>
+                            <li>Inspire por 4 segundos</li>
+                            <li>Segure por 4 segundos</li>
+                            <li>Expire por 4 segundos</li>
+                            <li>Segure por 4 segundos</li>
+                            <li>Repita por 5 minutos antes de estudar</li>
+                        </ul>
+                        <p>Ativa o sistema parassimpático, reduz ruído simpático e aumenta razão sinal-ruído no córtex.
+                        </p>
+                        <p class="citation">Huberman Lab — Protocolo de Foco 90min</p>
+                    </div>
+                </div>
+                <div class="glass-card habit-card" onclick="toggleExpand(this)">
+                    <div class="habit-icon">💧</div>
+                    <h3>Pressão Arterial e Fluxo Glinfático</h3>
+                    <p>O controle da PA é o motor físico que impulsiona o fluxo glinfático e protege a cognição.</p>
+                    <div class="tc-details">
+                        <h4>Estudo SPRINT MIND</h4>
+                        <p>O controle intensivo da pressão arterial (alvo sistólico <120 mmHg) reduz em 20% o risco de
+                                declínio cognitivo. A PA elevada compromete a circulação do LCR via perivascular,
+                                prejudicando a limpeza de resíduos metabólicos.</p>
+                                <h4>Recomendações</h4>
+                                <ul>
+                                    <li>Monitore a pressão arterial regularmente</li>
+                                    <li>Reduza sódio, aumente potássio</li>
+                                    <li>Exercício regular (efeito anti-hipertensivo)</li>
+                                    <li>Sono adequado (privação eleva PA)</li>
+                                </ul>
+                                <p class="citation">SPRINT MIND Trial • Cambridge, 2025</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SUPLEMENTAÇÃO -->
+        <section id="tab-suplementacao" class="tab-panel">
+            <div class="page-header">
+                <h1>💊 Suplementação Baseada em Evidências</h1>
+                <p class="page-subtitle">Sinergias nootrópicas com nível de evidência A — sempre consulte um médico
+                    antes de usar</p>
+            </div>
+            <div class="supplement-grid">
+                <div class="glass-card supp-card" onclick="toggleExpand(this)">
+                    <div class="supp-header">
+                        <h3>☕ L-Teanina + Cafeína</h3>
+                        <span class="badge badge-high">Evidência A</span>
+                    </div>
+                    <p>Padrão-ouro para alerta relaxado. L-teanina suaviza a curva da cafeína e promove ondas alfa.</p>
+                    <div class="tc-details">
+                        <h4>Dosagem</h4>
+                        <p><strong>L-Teanina:</strong> 200mg + <strong>Cafeína:</strong> 100mg (proporção 2:1)</p>
+                        <h4>Mecanismo</h4>
+                        <p>L-teanina atua como antagonista fraco de glutamato e aumenta GABA, prevenindo dispersão da
+                            atenção. Cafeína bloqueia adenosina, mantendo alerta. A combinação produz estado de "alerta
+                            calmo" associado a ondas alfa — ideal para estudo analítico.</p>
+                        <h4>Contraindicações</h4>
+                        <ul>
+                            <li>Evitar após 14h (interferência no sono)</li>
+                            <li>Gestantes: consultar médico</li>
+                        </ul>
+                        <p class="citation">Meta-análise: Consensus, 2025 • MDPI, 2025</p>
+                    </div>
+                </div>
+                <div class="glass-card supp-card" onclick="toggleExpand(this)">
+                    <div class="supp-header">
+                        <h3>🧪 Alpha-GPC</h3>
+                        <span class="badge badge-high">Evidência A</span>
+                    </div>
+                    <p>Precursor de acetilcolina que atravessa a barreira hematoencefálica. Suporta marcação sináptica.
+                    </p>
+                    <div class="tc-details">
+                        <h4>Dosagem</h4>
+                        <p><strong>150-300mg</strong> antes de sessões de estudo intenso</p>
+                        <h4>Mecanismo</h4>
+                        <p>Aumenta disponibilidade de acetilcolina para o processo de marcação sináptica (STC). A ACh
+                            ativa receptores M1, inibindo canais SK e facilitando influxo de Ca²⁺ via NMDA — a base
+                            molecular da formação da memória. Alpha-GPC também apoia liberação de dopamina no PFC.</p>
+                        <h4>Contraindicações</h4>
+                        <ul>
+                            <li>Pode causar cefaleia se em excesso</li>
+                            <li>Evitar em distúrbios colinérgicos</li>
+                        </ul>
+                        <p class="citation">Synaptic Tagging and Capture — PMC, 2024</p>
+                    </div>
+                </div>
+                <div class="glass-card supp-card" onclick="toggleExpand(this)">
+                    <div class="supp-header">
+                        <h3>🌿 Bacopa Monnieri</h3>
+                        <span class="badge badge-moderate">Evidência B+</span>
+                    </div>
+                    <p>Regeneração sináptica no hipocampo. Otimiza retenção de memória de longo prazo.</p>
+                    <div class="tc-details">
+                        <h4>Dosagem</h4>
+                        <p><strong>300mg/dia</strong> (padronizado para 50% bacosídeos) — efeito após 8-12 semanas</p>
+                        <h4>Mecanismo</h4>
+                        <p>Bacosídeos A e B aumentam atividade de proteínas quinases no hipocampo, regeneram sinapses e
+                            aumentam expressão de colina acetiltransferase. Neuroprotetor com efeito acumulativo.</p>
+                        <h4>Contraindicações</h4>
+                        <ul>
+                            <li>Pode causar desconforto gástrico (tomar com alimento)</li>
+                            <li>Efeito sedativo — preferir uso noturno</li>
+                        </ul>
+                        <p class="citation">Estudos de 2025 — Rhodiola + Bacopa stack</p>
+                    </div>
+                </div>
+                <div class="glass-card supp-card" onclick="toggleExpand(this)">
+                    <div class="supp-header">
+                        <h3>🟡 L-Tirosina</h3>
+                        <span class="badge badge-moderate">Evidência B+</span>
+                    </div>
+                    <p>Precursor de dopamina e noradrenalina. Reabastece catecolaminas durante estresse cognitivo.</p>
+                    <div class="tc-details">
+                        <h4>Dosagem</h4>
+                        <p><strong>500-1000mg</strong> em dias de estudo intenso (manhã, em jejum)</p>
+                        <h4>Mecanismo</h4>
+                        <p>L-Tirosina → L-DOPA → Dopamina → Noradrenalina. Essencial para reabastecer o "Reservatório de
+                            Dopamina" durante períodos prolongados de esforço cognitivo. Especialmente útil quando
+                            dormir pouco ou sob estresse.</p>
+                        <h4>Contraindicações</h4>
+                        <ul>
+                            <li>Não usar com IMAOs</li>
+                            <li>Hipertireoidismo: consultar médico</li>
+                        </ul>
+                        <p class="citation">Huberman Lab • Neurociência do Reservatório de Dopamina</p>
+                    </div>
+                </div>
+                <div class="glass-card supp-card" onclick="toggleExpand(this)">
+                    <div class="supp-header">
+                        <h3>🌿 Ashwagandha</h3>
+                        <span class="badge badge-moderate">Evidência B+</span>
+                    </div>
+                    <p>Adaptógeno que reduz cortisol, melhora sono e protege o hipocampo do estresse crônico.</p>
+                    <div class="tc-details">
+                        <h4>Dosagem</h4>
+                        <p><strong>300-600mg</strong> (KSM-66 ou Sensoril) — uso noturno preferencial</p>
+                        <h4>Mecanismo</h4>
+                        <p>Withanolides (Witaferina A) restauram glutationa e reduzem peroxidação lipídica cerebral.
+                            Redução de cortisol protege o hipocampo da atrofia induzida por estresse crônico. Melhora
+                            qualidade do sono.</p>
+                        <h4>Contraindicações</h4>
+                        <ul>
+                            <li>Evitar em hipertireoidismo</li>
+                            <li>Contraindicado na gravidez</li>
+                            <li>Efeito sedativo — não usar de manhã</li>
+                        </ul>
+                        <p class="citation">Compêndio de Nootrópicos, 2025</p>
+                    </div>
+                </div>
+                <div class="glass-card supp-card" onclick="toggleExpand(this)">
+                    <div class="supp-header">
+                        <h3>🧲 Magnésio L-Treonato</h3>
+                        <span class="badge badge-moderate">Evidência B+</span>
+                    </div>
+                    <p>Única forma de magnésio que atravessa eficientemente a barreira hematoencefálica.</p>
+                    <div class="tc-details">
+                        <h4>Dosagem</h4>
+                        <p><strong>2g</strong> (144mg Mg elementar) — 1 hora antes de dormir</p>
+                        <h4>Mecanismo</h4>
+                        <p>Aumenta concentração de Mg²⁺ no LCR, otimiza receptores NMDA (cofator essencial), melhora
+                            plasticidade sináptica e qualidade do sono. O sono de qualidade potencia o sistema
+                            glinfático.</p>
+                        <h4>Contraindicações</h4>
+                        <ul>
+                            <li>Insuficiência renal: consultar médico</li>
+                            <li>Pode causar sonolência</li>
+                        </ul>
+                        <p class="citation">Protocolo de Reset do Reservatório — Huberman</p>
+                    </div>
+                </div>
+                <div class="glass-card supp-card" onclick="toggleExpand(this)">
+                    <div class="supp-header">
+                        <h3>🐟 Ômega-3 (DHA)</h3>
+                        <span class="badge badge-high">Evidência A</span>
+                    </div>
+                    <p>Componente estrutural de membranas neuronais. Suporta BDNF e estabilização de espinhas
+                        dendríticas.</p>
+                    <div class="tc-details">
+                        <h4>Dosagem</h4>
+                        <p><strong>1-2g EPA+DHA/dia</strong> — com refeição gordurosa</p>
+                        <h4>Mecanismo</h4>
+                        <p>DHA é componente estrutural essencial das membranas sinápticas. Aumenta fluidez de membrana,
+                            facilita neurotransmissão e suporta expressão de BDNF via receptor TrkB e via mTOR.
+                            Essencial para spinogênese e estabilização de conexões novas.</p>
+                        <h4>Contraindicações</h4>
+                        <ul>
+                            <li>Anticoagulantes: consultar médico (risco hemorrágico leve)</li>
+                        </ul>
+                        <p class="citation">Mapa Neuroquímico — BDNF e receptor TrkB</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card warning-card" style="margin-top:24px">
+                <h3>⚠️ Alertas de Segurança</h3>
+                <ul>
+                    <li><strong>Ginseng:</strong> evitar em hipertensão e asma aguda</li>
+                    <li><strong>Ginkgo Biloba:</strong> contraindicado com anticoagulantes (risco de hemorragia)</li>
+                    <li><strong>"Dopamine Detox"</strong> é um mito — a dopamina é regulada por genes (DRD2) e enzimas.
+                        Não é possível "resetar" fisiologicamente seus receptores com isolamento de estímulos</li>
+                    <li><strong>Sempre</strong> consulte um médico antes de iniciar qualquer suplementação</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- FATO VS MITO -->
+        <section id="tab-mitos" class="tab-panel">
+            <div class="page-header">
+                <h1>❓ Fato vs. Mito</h1>
+                <p class="page-subtitle">Separando neurociência real de mitos populares</p>
+            </div>
+            <div class="myths-container">
+                <div class="myth-section">
+                    <h3>1. Active Recall e Hipocampo</h3>
+                    <div class="myth-grid">
+                        <div class="myth-card">
+                            <div class="myth-label">❌ MITO</div>
+                            <p><strong>"Está comprovado que active recall aumenta volume do hipocampo mais que
+                                    releitura."</strong></p>
+                            <p>Existem evidências indiretas convergentes, mas até 2026 não há estudo longitudinal
+                                estrutural comparando retrieval vs restudy isolando a estratégia e medindo alterações
+                                volumétricas hipocampais de forma randomizada.</p>
+                        </div>
+                        <div class="fact-card">
+                            <div class="fact-label">✅ FATO</div>
+                            <p><strong>Estudo intensivo prolongado altera fisicamente o hipocampo em adultos.</strong>
+                            </p>
+                            <p>Estudantes de Medicina apresentaram aumento de ~3% no volume do presubículo após
+                                preparação para exames. Retrieval practice engaja mais fortemente o hipocampo anterior e
+                                posterior, reorganizando redes que predizem retenção futura.</p>
+                            <p class="citation">Marek et al., 2023 • Wiklund-Hörnqvist et al., 2021</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="myth-section">
+                    <h3>2. Dificuldade e Aprendizado</h3>
+                    <div class="myth-grid">
+                        <div class="myth-card">
+                            <div class="myth-label">❌ MITO</div>
+                            <p><strong>"Quanto mais difícil e doloroso, melhor sempre."</strong></p>
+                            <p>Ignora que o cérebro funciona em janelas ótimas. Estresse extremo crônico, sono
+                                insuficiente e ausência de reforço positivo levam a piora de desempenho e até atrofia
+                                hipocampal.</p>
+                        </div>
+                        <div class="fact-card">
+                            <div class="fact-label">✅ FATO</div>
+                            <p><strong>Dificuldade é desejável apenas na "zona de desenvolvimento proximal".</strong>
+                            </p>
+                            <p>Dificuldades desejáveis (retrieval, spacing, interleaving) fortalecem retenção quando na
+                                faixa "difícil mas factível" E acompanhadas de feedback informativo.</p>
+                            <p class="citation">Allen, 2023 • Dubinsky & Hamid, 2024</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="myth-section">
+                    <h3>3. Dopamina = Prazer?</h3>
+                    <div class="myth-grid">
+                        <div class="myth-card">
+                            <div class="myth-label">❌ MITO</div>
+                            <p><strong>"Dopamina é o neurotransmissor do prazer."</strong></p>
+                            <p>Bloquear dopamina reduz motivação e vigor, mas não remove respostas hedônicas. DA está
+                                envolvida em "querer" (motivação, busca), não diretamente no prazer subjetivo
+                                consumatório.</p>
+                        </div>
+                        <div class="fact-card">
+                            <div class="fact-label">✅ FATO</div>
+                            <p><strong>Dopamina codifica motivação, erro de previsão e custo de esforço.</strong></p>
+                            <p>Alta DA estriatal reduz aversão ao esforço. Esforço elevado AMPLIFICA a liberação de DA
+                                para a mesma recompensa. O prazer hedônico envolve sistemas opioides e endocanabinoides.
+                            </p>
+                            <p class="citation">Berridge, 2024 • Westbrook et al., 2025</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="myth-section">
+                    <h3>4. Cramming vs Espaçamento</h3>
+                    <div class="myth-grid">
+                        <div class="myth-card">
+                            <div class="myth-label">❌ MITO</div>
+                            <p><strong>"10h em 1 dia = 2h por 5 dias."</strong></p>
+                            <p>Mecanismos moleculares de consolidação (ERK/CREB, síntese proteica) operam em janelas
+                                temporais específicas e são sensíveis ao padrão temporal, não ao total acumulado.</p>
+                        </div>
+                        <div class="fact-card">
+                            <div class="fact-label">✅ FATO</div>
+                            <p><strong>Sessões espaçadas exploram propriedades intrínsecas da plasticidade
+                                    sináptica.</strong></p>
+                            <p>Spacing gera respostas moleculares mais fortes mesmo em células não-neurais. Aumenta
+                                sobrevivência de novos neurônios no giro denteado e otimiza espinhas dendríticas.</p>
+                            <p class="citation">Kukushkin et al., 2024 • Sisti et al., 2007</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="myth-section">
+                    <h3>5. Interleaving Confunde?</h3>
+                    <div class="myth-grid">
+                        <div class="myth-card">
+                            <div class="myth-label">❌ MITO</div>
+                            <p><strong>"Intercalar assuntos só confunde."</strong></p>
+                            <p>A confusão inicial e menor fluência subjetiva levam muitos a evitar interleaving. Porém,
+                                são exatamente as características das dificuldades desejáveis.</p>
+                        </div>
+                        <div class="fact-card">
+                            <div class="fact-label">✅ FATO</div>
+                            <p><strong>Interleaving melhora retenção em 50-125% para problemas novos.</strong></p>
+                            <p>Maior diferenciação de padrões no hipocampo (pattern separation), consolidação
+                                M1-dependente e conectividade premotor–hipocampo–cerebelo. Essencial para provas com
+                                temas misturados.</p>
+                            <p class="citation">Samani et al., 2021 • Kim et al., 2024</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CIÊNCIA -->
+        <section id="tab-ciencia" class="tab-panel">
+            <div class="page-header">
+                <h1>🔬 Base Científica</h1>
+                <p class="page-subtitle">Todos os princípios são baseados em estudos publicados (2020-2026) em revistas
+                    de alto impacto</p>
+            </div>
+            <div class="glass-card">
+                <h3>📚 Referências Principais</h3>
+                <ul class="ref-list">
+                    <li><strong>Wiklund-Hörnqvist et al. (2021).</strong> Retrieval practice facilitates learning by
+                        strengthening processing in both the anterior and posterior hippocampus. <em>Brain and
+                            Behavior.</em></li>
+                    <li><strong>Marek et al. (2023).</strong> The impact of studying on the hippocampal volume in
+                        medical students. <em>Polish Journal of Radiology.</em></li>
+                    <li><strong>Dubinsky & Hamid (2024).</strong> The neuroscience of active learning and direct
+                        instruction. <em>Neuroscience & Biobehavioral Reviews.</em></li>
+                    <li><strong>Kukushkin et al. (2024).</strong> The massed-spaced learning effect in non-neural human
+                        cell lines. <em>Nature Communications.</em></li>
+                    <li><strong>Kim et al. (2024).</strong> M1 recruitment during interleaved practice is important for
+                        encoding and consolidation. <em>npj Science of Learning.</em></li>
+                    <li><strong>Westbrook et al. (2025).</strong> Striatal dopamine enhances working memory and
+                        reinforcement learning while reducing effort cost. <em>Nature Communications.</em></li>
+                    <li><strong>Zhang et al. (2025).</strong> Offline consolidation mechanisms of the retrieval practice
+                        effect. <em>npj Science of Learning.</em></li>
+                    <li><strong>Pitt et al. (2025).</strong> Retrieval Practice Improves Exam Performance as a Function
+                        of Question Type. <em>PubMed.</em></li>
+                    <li><strong>Nature (2026).</strong> Cholinergic modulation of dopamine release drives effortful
+                        behaviour.</li>
+                    <li><strong>Samani et al. (2021).</strong> Interleaved practice enhances memory and problem-solving
+                        in undergraduate physics. <em>npj Science of Learning.</em></li>
+                    <li><strong>Antony et al. (2017).</strong> Retrieval as a fast route to memory consolidation.
+                        <em>Trends in Cognitive Sciences.</em></li>
+                </ul>
+            </div>
+            <div class="glass-card" style="margin-top:24px">
+                <h3>🧬 Mecanismos Neurobiológicos</h3>
+                <div class="mech-grid">
+                    <div class="mech-card">
+                        <h4>Hipocampo</h4>
+                        <ul>
+                            <li><strong>Codificação:</strong> transforma experiência em traço de memória</li>
+                            <li><strong>Consolidação:</strong> estabiliza memória ao longo do tempo</li>
+                            <li><strong>Recuperação:</strong> reativa memória quando necessário</li>
+                            <li><strong>Pattern separation:</strong> diferencia memórias similares</li>
+                        </ul>
+                    </div>
+                    <div class="mech-card">
+                        <h4>Dopamina</h4>
+                        <ul>
+                            <li><strong>RPE:</strong> erro de previsão de recompensa</li>
+                            <li><strong>Esforço amplifica DA:</strong> mesma recompensa + alto esforço = maior pico</li>
+                            <li><strong>DA reduz custo:</strong> mais dopamina = menos aversão ao esforço</li>
+                            <li><strong>Treinar sistema:</strong> esforço + sucesso = associação positiva</li>
+                        </ul>
+                    </div>
+                    <div class="mech-card">
+                        <h4>Plasticidade Sináptica</h4>
+                        <ul>
+                            <li><strong>LTP:</strong> fortalecimento de sinapses</li>
+                            <li><strong>ERK/CREB:</strong> cascata molecular de consolidação</li>
+                            <li><strong>Neurogênese:</strong> novos neurônios no giro denteado</li>
+                            <li><strong>Spinogênese:</strong> crescimento de espinhas dendríticas</li>
+                        </ul>
+                    </div>
+                    <div class="mech-card">
+                        <h4>Marcação Sináptica (STC)</h4>
+                        <ul>
+                            <li><strong>Etiqueta:</strong> marca bioquímica efêmera (~2h)</li>
+                            <li><strong>PRPs:</strong> proteínas de plasticidade capturam a marca</li>
+                            <li><strong>ACh + M1:</strong> reduz barreira para LTP</li>
+                            <li><strong>Cross-tagging:</strong> memórias fracas se beneficiam de sessões fortes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card" style="margin-top:24px">
+                <h3>🔗 Links para Bases de Dados</h3>
+                <div class="links-grid">
+                    <a href="https://pmc.ncbi.nlm.nih.gov" target="_blank" class="link-card">PubMed Central</a>
+                    <a href="https://www.nature.com/ncomms" target="_blank" class="link-card">Nature Communications</a>
+                    <a href="https://www.nature.com/npjscilearn" target="_blank" class="link-card">npj Science of
+                        Learning</a>
+                    <a href="https://www.hubermanlab.com" target="_blank" class="link-card">Huberman Lab</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

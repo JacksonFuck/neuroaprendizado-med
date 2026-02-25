@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuroaprendizado Med — Login</title>
+    <meta name="description" content="Plataforma de estudo baseada em neurociência para estudantes de medicina">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'Quicksand';
+            src: url('fonts/quicksand/static/Quicksand-Light.ttf') format('truetype');
+            font-weight: 300;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Quicksand';
+            src: url('fonts/quicksand/static/Quicksand-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Quicksand';
+            src: url('fonts/quicksand/static/Quicksand-Medium.ttf') format('truetype');
+            font-weight: 500;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Quicksand';
+            src: url('fonts/quicksand/static/Quicksand-SemiBold.ttf') format('truetype');
+            font-weight: 600;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Quicksand';
+            src: url('fonts/quicksand/static/Quicksand-Bold.ttf') format('truetype');
+            font-weight: 700;
+            font-display: swap;
+        }
+    </style>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #050510;
+            color: #b0bcd8;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Neural network canvas */
+        canvas#neuralBg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 420px;
+            max-width: 92vw;
+            background: rgba(10, 11, 26, 0.88);
+            border: 1px solid rgba(0, 240, 255, 0.12);
+            border-radius: 20px;
+            padding: 44px 36px 36px;
+            backdrop-filter: blur(24px);
+            text-align: center;
+            box-shadow:
+                0 0 60px rgba(0, 240, 255, 0.06),
+                0 0 120px rgba(224, 64, 251, 0.04),
+                inset 0 1px 0 rgba(0, 240, 255, 0.1);
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.4), rgba(224, 64, 251, 0.3), transparent);
+            border-radius: 1px;
+        }
+
+        /* Brain icon */
+        .logo-wrap {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.12), rgba(224, 64, 251, 0.12));
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo-wrap::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), transparent, rgba(224, 64, 251, 0.1));
+            z-index: -1;
+            filter: blur(8px);
+        }
+
+        .logo-icon {
+            font-size: 40px;
+            filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.4))
+        }
+
+        h1 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #00f0ff, #e040fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #5e6a8a;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 32px
+        }
+
+        /* Google button */
+        .google-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 32px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a1a2e;
+            font-weight: 700;
+            font-size: 15px;
+            text-decoration: none;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .google-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(0, 240, 255, 0.15), 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .google-btn svg {
+            width: 20px;
+            height: 20px
+        }
+
+        /* Feature cards */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .feature {
+            padding: 16px 12px;
+            border-radius: 10px;
+            background: rgba(0, 240, 255, 0.03);
+            border: 1px solid rgba(0, 240, 255, 0.08);
+            transition: all 0.25s;
+        }
+
+        .feature:hover {
+            border-color: rgba(0, 240, 255, 0.2);
+            background: rgba(0, 240, 255, 0.06)
+        }
+
+        .feature-icon {
+            width: 36px;
+            height: 36px;
+            margin: 0 auto 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(224, 64, 251, 0.08));
+            border: 1px solid rgba(0, 240, 255, 0.15);
+        }
+
+        .feature h3 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            color: #eaf0ff;
+            margin-bottom: 4px
+        }
+
+        .feature p {
+            font-size: 11px;
+            color: #5e6a8a;
+            line-height: 1.3
+        }
+
+        .footer-note {
+            margin-top: 24px;
+            font-size: 11px;
+            color: #3a4060;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .author-card {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(0, 240, 255, 0.02);
+            border: 1px solid rgba(0, 240, 255, 0.08);
+            text-align: left;
+        }
+
+        .author-name {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            color: #eaf0ff;
+            margin-bottom: 6px;
+        }
+
+        .author-crm {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: rgba(0, 240, 255, 0.6);
+            margin-bottom: 8px;
+        }
+
+        .author-specs {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 8px 0;
+        }
+
+        .author-specs li {
+            font-size: 10px;
+            color: #5e6a8a;
+            line-height: 1.6;
+            padding-left: 14px;
+            position: relative;
+        }
+
+        .author-specs li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: rgba(0, 240, 255, 0.3);
+        }
+
+        .author-role {
+            font-size: 10px;
+            color: #5e6a8a;
+            line-height: 1.5;
+            border-top: 1px solid rgba(0, 240, 255, 0.06);
+            padding-top: 8px;
+        }
+
+        .author-role strong {
+            color: #b0bcd8;
+        }
+
+        /* Floating synapse particles */
+        .synapse-dot {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: rgba(0, 240, 255, 0.4);
+            z-index: 0;
+            animation: float linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0
+            }
+
+            10% {
+                opacity: 1
+            }
+
+            90% {
+                opacity: 1
+            }
+
+            100% {
+                transform: translateY(-10vh) scale(1);
+                opacity: 0
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="neuralBg"></canvas>
+
+    <div class="login-container">
+        <div class="logo-wrap">
+            <span class="logo-icon">🧠</span>
+        </div>
+        <h1>Neuroaprendizado Med</h1>
+        <p class="subtitle">Técnicas de estudo baseadas em neurociência<br>para estudantes de medicina</p>
+
+        <a href="/auth/google" class="google-btn">
+            <svg viewBox="0 0 48 48">
+                <path fill="#EA4335"
+                    d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                <path fill="#4285F4"
+                    d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                <path fill="#FBBC05"
+                    d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                <path fill="#34A853"
+                    d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+            </svg>
+            Entrar com Google
+        </a>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⏱</div>
+                <h3>Pomodoro</h3>
+                <p>Ciclos otimizados para dopamina</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <h3>Espaçamento</h3>
+                <p>Intervalos baseados em evidências</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📓</div>
+                <h3>Diário</h3>
+                <p>Registro com continuidade</p>
+            </div>
+        </div>
+
+        <p class="footer-note">50+ estudos (2024–2026) • Nature • npj Science of Learning</p>
+
+        <div class="author-card">
+            <div class="author-name">Dr. Jackson Erasmo Fuck</div>
+            <div class="author-crm">CRM/PR 21.518</div>
+            <ul class="author-specs">
+                <li>Cirurgia Torácica — RQE 13.349</li>
+                <li>Cirurgia Geral — RQE 13.363</li>
+                <li>Medicina Intensiva — RQE 18.011</li>
+            </ul>
+            <div class="author-role">
+                <strong>Coordenador</strong> da disciplina de Emergências Clínicas e Terapia Intensiva<br>
+                Curso de Medicina — UNIPAR
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Neural network background animation
+        const canvas = document.getElementById('neuralBg');
+        const ctx = canvas.getContext('2d');
+        let W, H, nodes = [], mouse = { x: -1000, y: -1000 };
+
+        function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+        resize();
+        window.addEventListener('resize', resize);
+        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+        class Neuron {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * W;
+                this.y = Math.random() * H;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.r = Math.random() * 2 + 1;
+                this.pulse = Math.random() * Math.PI * 2;
+                this.isCyan = Math.random() > 0.3;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.pulse += 0.02;
+                if (this.x < -50 || this.x > W + 50 || this.y < -50 || this.y > H + 50) this.reset();
+                // Slight attraction to mouse
+                const dx = mouse.x - this.x, dy = mouse.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 200 && dist > 0) {
+                    this.vx += dx / dist * 0.01;
+                    this.vy += dy / dist * 0.01;
+                }
+                // Damping
+                this.vx *= 0.999;
+                this.vy *= 0.999;
+            }
+            draw() {
+                const alpha = 0.3 + Math.sin(this.pulse) * 0.2;
+                const color = this.isCyan ? `rgba(0,240,255,${alpha})` : `rgba(224,64,251,${alpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+                // Glow
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r * 3, 0, Math.PI * 2);
+                ctx.fillStyle = this.isCyan ? `rgba(0,240,255,${alpha * 0.1})` : `rgba(224,64,251,${alpha * 0.1})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 80; i++) nodes.push(new Neuron());
+
+        function drawConnections() {
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 160) {
+                        const alpha = (1 - dist / 160) * 0.15;
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.strokeStyle = nodes[i].isCyan && nodes[j].isCyan
+                            ? `rgba(0,240,255,${alpha})`
+                            : `rgba(224,64,251,${alpha})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, W, H);
+            nodes.forEach(n => { n.update(); n.draw(); });
+            drawConnections();
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Floating synapse particles
+        for (let i = 0; i < 12; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'synapse-dot';
+            dot.style.left = Math.random() * 100 + '%';
+            dot.style.animationDuration = (8 + Math.random() * 12) + 's';
+            dot.style.animationDelay = Math.random() * 8 + 's';
+            dot.style.background = Math.random() > 0.5
+                ? `rgba(0,240,255,${0.2 + Math.random() * 0.3})`
+                : `rgba(224,64,251,${0.2 + Math.random() * 0.3})`;
+            dot.style.width = dot.style.height = (2 + Math.random() * 2) + 'px';
+            document.body.appendChild(dot);
+        }
+    </script>
+</body>
+
+</html>

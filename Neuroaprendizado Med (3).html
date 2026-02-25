@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuroaprendizado Med - Técnicas Baseadas em Evidências</title>
+    <style>
+        :root {
+            --color-primary: #2563eb;
+            --color-primary-dark: #1e40af;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-bg: #f8fafc;
+            --color-surface: #ffffff;
+            --color-text: #1e293b;
+            --color-text-secondary: #64748b;
+            --color-border: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-bg: #0f172a;
+                --color-surface: #1e293b;
+                --color-text: #f1f5f9;
+                --color-text-secondary: #94a3b8;
+                --color-border: #334155;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: var(--color-primary);
+            color: white;
+            padding: 24px 0;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 32px;
+        }
+
+        header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            background: var(--color-surface);
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: var(--color-bg);
+            color: var(--color-text);
+        }
+
+        .tab-btn.active {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--color-surface);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--color-border);
+        }
+
+        .card h2 {
+            color: var(--color-primary);
+            font-size: 22px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card h3 {
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            color: var(--color-text);
+        }
+
+        .icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+        }
+
+        .technique-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .technique-card {
+            background: var(--color-bg);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--color-primary);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .technique-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .technique-card h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: var(--color-primary);
+        }
+
+        .technique-card p {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .evidence-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-high {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-moderate {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .study-timer {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
+            padding: 32px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .timer-display {
+            font-size: 64px;
+            font-weight: 700;
+            margin: 20px 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--color-primary);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .protocol-step {
+            background: var(--color-bg);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--color-primary);
+        }
+
+        .protocol-step strong {
+            color: var(--color-primary);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .myth-fact {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .myth-fact {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .myth-card {
+            background: #fee;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-danger);
+            color: #1e293b;
+        }
+
+        .fact-card {
+            background: #efe;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-success);
+            color: #1e293b;
+        }
+
+        .citation {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            font-style: italic;
+            margin-top: 8px;
+        }
+
+        .study-log {
+            margin-top: 20px;
+        }
+
+        .log-entry {
+            background: var(--color-bg);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--color-border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--color-success);
+            transition: width 0.3s;
+        }
+
+        .quiz-container {
+            margin-top: 20px;
+        }
+
+        .quiz-question {
+            background: var(--color-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .quiz-option {
+            padding: 12px;
+            border: 2px solid var(--color-border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--color-primary);
+            background: var(--color-bg);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--color-success);
+            background: #dcfce7;
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--color-danger);
+            background: #fee;
+        }
+
+        .reference-list {
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .reference-list li {
+            margin-bottom: 12px;
+            padding-left: 8px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(254, 243, 199, 0.4) 0%, rgba(254, 243, 199, 0.4) 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 40%;
+            background-position: 0 85%;
+            padding: 0 4px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: var(--color-bg);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🧠 Neuroaprendizado Med</h1>
+            <p>Técnicas de estudo baseadas em neurociência e evidências recentes (2024-2026)</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('tecnicas')">🎯 Técnicas</button>
+            <button class="tab-btn" onclick="showTab('protocolos')">📋 Protocolos</button>
+            <button class="tab-btn" onclick="showTab('timer')">⏱️ Timer Pomodoro</button>
+            <button class="tab-btn" onclick="showTab('espacamento')">📅 Repetição Espaçada</button>
+            <button class="tab-btn" onclick="showTab('mitos')">❓ Fato vs. Mito</button>
+            <button class="tab-btn" onclick="showTab('ciencia')">🔬 Ciência</button>
+        </div>
+
+        <!-- TAB: TÉCNICAS -->
+        <div id="tecnicas" class="tab-content active">
+            <div class="card">
+                <h2>🎯 As 4 Técnicas Fundamentais</h2>
+                <p>Baseadas em estudos neurobiológicos recentes que mostram alterações em hipocampo, dopamina e consolidação de memória.</p>
+
+                <div class="technique-grid">
+                    <div class="technique-card" onclick="toggleDetail(this)">
+                        <h4>1. Active Recall (Recuperação Ativa)</h4>
+                        <p>Teste-se constantemente sem consultar material. Engaja hipocampo anterior e posterior.</p>
+                        <span class="evidence-badge badge-high">Evidência: Alta</span>
+                        <div class="detail" style="display:none; margin-top:12px; font-size:13px;">
+                            <strong>Como fazer:</strong>
+                            <ul style="margin-left:20px; margin-top:8px;">
+                                <li>Após ler um tema, feche o livro e tente explicar</li>
+                                <li>Use questões abertas ("Como funciona X?")</li>
+                                <li>Faça flashcards com perguntas desafiadoras</li>
+                                <li>Pratique 3-5 vezes por tema (espaçado)</li>
+                            </ul>
+                            <p class="citation">Wiklund-Hörnqvist et al., 2021 - Brain Behav</p>
+                        </div>
+                    </div>
+
+                    <div class="technique-card" onclick="toggleDetail(this)">
+                        <h4>2. Interleaving (Intercalação)</h4>
+                        <p>Misture temas diferentes em cada sessão. Aumenta diferenciação hipocampal e conectividade pré-frontal.</p>
+                        <span class="evidence-badge badge-high">Evidência: Alta</span>
+                        <div class="detail" style="display:none; margin-top:12px; font-size:13px;">
+                            <strong>Como fazer:</strong>
+                            <ul style="margin-left:20px; margin-top:8px;">
+                                <li>Em vez de 2h de Cardiologia, faça: 40min Cardio + 40min Pneumo + 40min Nefro</li>
+                                <li>Resolva 3 questões de cada especialidade alternadamente</li>
+                                <li>Revise casos clínicos misturando sintomas/diagnósticos</li>
+                                <li>Força o cérebro a "escolher o modelo certo"</li>
+                            </ul>
+                            <p class="citation">Samani et al., 2021 - npj Science of Learning</p>
+                        </div>
+                    </div>
+
+                    <div class="technique-card" onclick="toggleDetail(this)">
+                        <h4>3. Spacing Effect (Espaçamento)</h4>
+                        <p>Distribua o estudo ao longo do tempo. Otimiza plasticidade sináptica e sobrevivência neuronal.</p>
+                        <span class="evidence-badge badge-high">Evidência: Alta</span>
+                        <div class="detail" style="display:none; margin-top:12px; font-size:13px;">
+                            <strong>Intervalos ideais:</strong>
+                            <ul style="margin-left:20px; margin-top:8px;">
+                                <li>1ª revisão: 1 dia depois</li>
+                                <li>2ª revisão: 3 dias depois</li>
+                                <li>3ª revisão: 1 semana depois</li>
+                                <li>4ª revisão: 2 semanas depois</li>
+                                <li>5ª revisão: 1 mês depois</li>
+                            </ul>
+                            <p class="citation">Kukushkin et al., 2024 - Nature Communications</p>
+                        </div>
+                    </div>
+
+                    <div class="technique-card" onclick="toggleDetail(this)">
+                        <h4>4. Desirable Difficulty (Dificuldade Desejável)</h4>
+                        <p>Aumente o esforço cognitivo intencionalmente. Amplifica sinal de dopamina e recompensa.</p>
+                        <span class="evidence-badge badge-high">Evidência: Alta</span>
+                        <div class="detail" style="display:none; margin-top:12px; font-size:13px;">
+                            <strong>Estratégias práticas:</strong>
+                            <ul style="margin-left:20px; margin-top:8px;">
+                                <li>Resolva questões ANTES de estudar o tema</li>
+                                <li>Tente elaborar sem consultar primeiro</li>
+                                <li>Use questões de concursos mais difíceis</li>
+                                <li>Explique para alguém que não entende nada</li>
+                            </ul>
+                            <p class="citation">Dubinsky & Hamid, 2024 - Neurosci Biobehav Rev</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>💡 Dica Neurobiológica</h2>
+                <p><span class="highlight">Esforço alto + sucesso = Pico de dopamina maior</span>, criando associação positiva com estudo difícil. O cérebro aprende a "querer" resolver problemas complexos quando você consegue progresso visível.</p>
+                <p style="margin-top:12px; font-size:14px; color:var(--color-text-secondary);">Sistema colinérgico modula liberação de dopamina proporcionalmente ao esforço investido (Nature, 2026).</p>
+            </div>
+        </div>
+
+        <!-- TAB: PROTOCOLOS -->
+        <div id="protocolos" class="tab-content">
+            <div class="card">
+                <h2>📋 Protocolo Semanal - Residência Médica</h2>
+                <p>Rotina baseada em retrieval + interleaving + spacing para provas de alta complexidade.</p>
+
+                <h3>Segunda-feira: Dia de Interleaving Pesado</h3>
+                <div class="protocol-step">
+                    <strong>Manhã (3h)</strong>
+                    <p>• 50min: Cardio (active recall de casos clínicos)<br>
+                    • 10min: pausa<br>
+                    • 50min: Pneumo (questões intercaladas)<br>
+                    • 10min: pausa<br>
+                    • 50min: Nefro (flashcards + explicação em voz alta)</p>
+                </div>
+
+                <h3>Terça-feira: Revisão Espaçada</h3>
+                <div class="protocol-step">
+                    <strong>Manhã (2h)</strong>
+                    <p>• Revise temas de 3 dias atrás (active recall puro)<br>
+                    • 40min por tema, sem consultar material<br>
+                    • Anote lacunas, só depois consulte</p>
+                </div>
+                <div class="protocol-step">
+                    <strong>Tarde (2h)</strong>
+                    <p>• Novo conteúdo com desirable difficulty<br>
+                    • Tente questões ANTES de estudar teoria</p>
+                </div>
+
+                <h3>Quarta-feira: Simulado Intercalado</h3>
+                <div class="protocol-step">
+                    <strong>Manhã (3h)</strong>
+                    <p>• 50 questões misturando TODAS as áreas<br>
+                    • Não agrupe por tema (força interleaving)<br>
+                    • Corrija imediatamente (feedback rápido = dopamina)</p>
+                </div>
+
+                <h3>Quinta-feira: Consolidação Ativa</h3>
+                <div class="protocol-step">
+                    <strong>Manhã (2h)</strong>
+                    <p>• Explique temas difíceis em voz alta (gravando)<br>
+                    • Desenhe mapas mentais SEM consultar<br>
+                    • Conecte temas diferentes (ex: Cardio + Pneumo + Endócrino)</p>
+                </div>
+
+                <h3>Sexta-feira: Revisão Espaçada Longa</h3>
+                <div class="protocol-step">
+                    <strong>Manhã (3h)</strong>
+                    <p>• Revise conteúdo de 1 semana atrás<br>
+                    • Revise conteúdo de 2 semanas atrás<br>
+                    • Active recall puro, depois feedforward com material</p>
+                </div>
+
+                <h3>Sábado: Prática Deliberada em Pontos Fracos</h3>
+                <div class="protocol-step">
+                    <strong>Manhã (3h)</strong>
+                    <p>• Identifique os 3 temas com pior desempenho<br>
+                    • Estudo focado COM dificuldade desejável<br>
+                    • Questões progressivamente mais difíceis</p>
+                </div>
+
+                <h3>Domingo: Descanso Ativo + Sono</h3>
+                <div class="protocol-step">
+                    <strong>Sem estudo pesado</strong>
+                    <p>• Revisão leve de flashcards (30min)<br>
+                    • Sono adequado (7-9h) para consolidação offline<br>
+                    • Exercício físico (aumenta BDNF e neurogênese hipocampal)</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>⚡ Regras de Ouro</h2>
+                <ul style="margin-left:20px; line-height:2;">
+                    <li><strong>Nunca</strong> estude o mesmo tema por mais de 60min seguidos</li>
+                    <li><strong>Sempre</strong> teste-se ANTES de revisar teoria</li>
+                    <li><strong>Intercale</strong> pelo menos 3 temas por sessão</li>
+                    <li><strong>Durma</strong> bem - consolidação offline é tão importante quanto estudo</li>
+                    <li><strong>Registre</strong> cada sessão para visualizar progresso (reforço dopaminérgico)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- TAB: TIMER POMODORO -->
+        <div id="timer" class="tab-content">
+            <div class="card">
+                <div class="study-timer">
+                    <h2 style="color:white; margin-bottom:12px;">Timer de Estudo Neuroadaptado</h2>
+                    <p style="opacity:0.9; font-size:14px;">Baseado em ciclos de esforço + recompensa para maximizar dopamina</p>
+                    
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block; margin-bottom:8px; font-size:14px; opacity:0.9;">Tempo de Foco (minutos):</label>
+                        <input type="number" id="focusMinutes" value="25" min="5" max="90" 
+                               style="padding:8px 12px; border-radius:6px; border:none; width:120px; font-size:16px; text-align:center;" 
+                               onchange="updateFocusTime()">
+                        <label style="display:block; margin-top:12px; margin-bottom:8px; font-size:14px; opacity:0.9;">Tempo de Pausa (minutos):</label>
+                        <input type="number" id="breakMinutes" value="5" min="1" max="30" 
+                               style="padding:8px 12px; border-radius:6px; border:none; width:120px; font-size:16px; text-align:center;" 
+                               onchange="updateBreakTime()">
+                    </div>
+                    
+                    <div class="timer-display" id="timerDisplay">25:00</div>
+                    <div class="timer-controls">
+                        <button class="btn btn-primary" onclick="startTimer()">▶ Iniciar</button>
+                        <button class="btn btn-secondary" onclick="pauseTimer()">⏸ Pausar</button>
+                        <button class="btn btn-secondary" onclick="resetTimer()">↻ Resetar</button>
+                    </div>
+                    <p style="margin-top:16px; font-size:13px; opacity:0.9;">
+                        Modo: <strong id="timerMode">Foco</strong> | Sessões hoje: <strong id="sessionCount">0</strong>
+                    </p>
+                </div>
+
+                <div class="study-log">
+                    <h3>📊 Registro de Sessões</h3>
+                    <div id="logContainer"></div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalMinutes">0</div>
+                        <div class="stat-label">Minutos Focados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalSessions">0</div>
+                        <div class="stat-label">Sessões Completas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="streakDays">0</div>
+                        <div class="stat-label">Dias Consecutivos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: REPETIÇÃO ESPAÇADA -->
+        <div id="espacamento" class="tab-content">
+            <div class="card">
+                <h2>📅 Sistema de Repetição Espaçada</h2>
+                <p>Baseado no spacing effect - otimiza consolidação de memória através de revisões estrategicamente espaçadas no tempo.</p>
+
+                <div style="background:var(--color-bg); padding:20px; border-radius:10px; margin-top:20px;">
+                    <h3>➕ Adicionar Novo Tópico</h3>
+                    <input type="text" id="topicName" placeholder="Nome do tópico (ex: Insuficiência Cardíaca)" 
+                           style="width:100%; padding:12px; border-radius:6px; border:1px solid var(--color-border); margin-bottom:12px; background:var(--color-surface); color:var(--color-text);">
+                    <input type="text" id="topicCategory" placeholder="Categoria (ex: Cardiologia)" 
+                           style="width:100%; padding:12px; border-radius:6px; border:1px solid var(--color-border); margin-bottom:12px; background:var(--color-surface); color:var(--color-text);">
+                    <button class="btn btn-primary" onclick="addTopic()" style="background:var(--color-primary); color:white;">Adicionar Tópico</button>
+                </div>
+
+                <div style="margin-top:32px;">
+                    <h3>📚 Seus Tópicos em Revisão</h3>
+                    <div id="topicsList"></div>
+                </div>
+
+                <div style="margin-top:32px; background:var(--color-bg); padding:20px; border-radius:10px;">
+                    <h3>📊 Agenda de Revisões</h3>
+                    <div id="reviewSchedule"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🧠 Como Funciona o Espaçamento Ideal</h2>
+                <div style="background:var(--color-bg); padding:16px; border-radius:8px; margin-top:16px;">
+                    <p style="margin-bottom:12px;"><strong>Intervalos baseados em evidências (Kukushkin et al., 2024):</strong></p>
+                    <ul style="margin-left:20px; line-height:2;">
+                        <li><strong>1ª revisão:</strong> 1 dia após estudo inicial (consolidação inicial)</li>
+                        <li><strong>2ª revisão:</strong> 3 dias depois (reativação precoce)</li>
+                        <li><strong>3ª revisão:</strong> 7 dias depois (consolidação intermediária)</li>
+                        <li><strong>4ª revisão:</strong> 14 dias depois (memória de longo prazo)</li>
+                        <li><strong>5ª revisão:</strong> 30 dias depois (consolidação final)</li>
+                    </ul>
+                    <p style="margin-top:12px; font-size:13px; color:var(--color-text-secondary); font-style:italic;">Cada revisão reativa o traço de memória hipocampal e fortalece conexões corticais, aumentando progressivamente o intervalo de retenção.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: FATO VS MITO -->
+        <div id="mitos" class="tab-content">
+            <div class="card">
+                <h2>❓ Fato vs. Mito em Neurociência do Aprendizado</h2>
+
+                <h3>1. Active Recall e Hipocampo</h3>
+                <div class="myth-fact">
+                    <div class="myth-card">
+                        <strong style="color:var(--color-danger);">❌ MITO</strong>
+                        <p><strong>"Está 100% comprovado que active recall aumenta volume do hipocampo mais que releitura."</strong></p>
+                        <p style="margin-top:8px; font-size:13px;">Embora existam múltiplas evidências indiretas convergentes, ainda não há (até 2026) um estudo longitudinal estrutural que compare diretamente retrieval practice vs. restudy isolando a estratégia e medindo alterações de volume, espessura cortical ou mean diffusivity hipocampal entre os grupos de forma randomizada.</p>
+                    </div>
+                    <div class="fact-card">
+                        <strong style="color:var(--color-success);">✅ FATO</strong>
+                        <p><strong>Estudo intensivo prolongado altera fisicamente o hipocampo em adultos.</strong></p>
+                        <p style="margin-top:8px; font-size:13px;">Estudantes de Medicina preparando-se para exames finais apresentaram aumento de ~3% no volume do presubículo direito, correlacionado com tempo total de estudo e desempenho na prova. Retrieval practice engaja mais fortemente o hipocampo anterior e posterior do que releitura, reorganizando redes hipocampo-corticais de forma que prediz retenção futura.</p>
+                        <p class="citation">Marek et al., 2023; Wiklund-Hörnqvist et al., 2021</p>
+                    </div>
+                </div>
+
+                <h3>2. Dificuldade e Aprendizado</h3>
+                <div class="myth-fact">
+                    <div class="myth-card">
+                        <strong style="color:var(--color-danger);">❌ MITO</strong>
+                        <p><strong>"Quanto mais difícil e doloroso, melhor sempre."</strong></p>
+                        <p style="margin-top:8px; font-size:13px;">Esta visão extrema ignora que o cérebro funciona em janelas ótimas de ativação. Sob estresse extremo crônico (cortisol elevado continuamente), sono insuficiente e ausência de reforço positivo, o esforço pode levar a piora de desempenho, prejuízo à plasticidade sináptica e até atrofia hipocampal. A dificuldade sem suporte adequado gera apenas frustração e esgotamento.</p>
+                    </div>
+                    <div class="fact-card">
+                        <strong style="color:var(--color-success);">✅ FATO</strong>
+                        <p><strong>Dificuldade é desejável apenas na "zona de desenvolvimento proximal".</strong></p>
+                        <p style="margin-top:8px; font-size:13px;">Dificuldades desejáveis (retrieval, spacing, interleaving) fortalecem retenção quando estão na faixa "difícil mas factível" E vêm acompanhadas de feedback informativo. A relação esforço-aprendizagem é mediada por engajamento de redes de controle, hipocampo e circuito de reforço. Estresse crônico e privação de sono prejudicam especificamente o hipocampo e a consolidação de memória.</p>
+                        <p class="citation">Allen, 2023 - Clin Orthop Relat Res; Dubinsky & Hamid, 2024</p>
+                    </div>
+                </div>
+
+                <h3>3. Dopamina = Prazer?</h3>
+                <div class="myth-fact">
+                    <div class="myth-card">
+                        <strong style="color:var(--color-danger);">❌ MITO</strong>
+                        <p><strong>"Dopamina é o neurotransmissor do prazer. Mais DA = prazer ao estudar."</strong></p>
+                        <p style="margin-top:8px; font-size:13px;">Este é um dos mitos mais difundidos na cultura popular. Estudos de Kent Berridge e colegas mostram que bloquear dopamina reduz motivação e vigor, mas não necessariamente remove respostas hedônicas ("gostar") em modelos animais. Dopamina está envolvida em "querer" (motivação, busca, vigor), não diretamente no prazer subjetivo consumatório.</p>
+                    </div>
+                    <div class="fact-card">
+                        <strong style="color:var(--color-success);">✅ FATO</strong>
+                        <p><strong>Dopamina codifica motivação, erro de previsão de recompensa e custo de esforço.</strong></p>
+                        <p style="margin-top:8px; font-size:13px;">Na aprendizagem, dopamina sinaliza erro de previsão de recompensa (RPE), custo de esforço e valor esperado, guiando decisões de investir esforço. Alta dopamina estriatal reduz aversão ao esforço e aumenta vigor motor e cognitivo. Esforço elevado AMPLIFICA a liberação de dopamina para a mesma recompensa, via modulação colinérgica. O prazer hedônico subjetivo envolve principalmente sistemas opioides e endocanabinoides.</p>
+                        <p class="citation">Berridge, 2024; Westbrook et al., 2025; Nature, 2026</p>
+                    </div>
+                </div>
+
+                <h3>4. Cramming vs Espaçamento</h3>
+                <div class="myth-fact">
+                    <div class="myth-card">
+                        <strong style="color:var(--color-danger);">❌ MITO</strong>
+                        <p><strong>"10 horas em 1 dia = 2 horas por 5 dias, se o total de exposição é igual."</strong></p>
+                        <p style="margin-top:8px; font-size:13px;">Esta intuição linear ignora completamente a biologia não-linear da plasticidade sináptica. Os mecanismos moleculares de consolidação (vias ERK/CREB, síntese proteica, estabilização de espinhas dendríticas) operam em janelas temporais específicas e são sensíveis ao padrão temporal de estimulação, não apenas ao total acumulado.</p>
+                    </div>
+                    <div class="fact-card">
+                        <strong style="color:var(--color-success);">✅ FATO</strong>
+                        <p><strong>Sessões espaçadas exploram propriedades intrínsecas da plasticidade sináptica.</strong></p>
+                        <p style="margin-top:8px; font-size:13px;">Em nível sináptico e de vias de sinalização, sessões espaçadas geram respostas moleculares (ERK, CREB) mais fortes e estáveis do que o mesmo input total em bloco massivo. Spacing aumenta sobrevivência de novos neurônios no giro denteado hipocampal e otimiza crescimento/estabilização de espinhas dendríticas durante LTP. Kukushkin et al. (2024) demonstraram o efeito spacing até em células não-neurais, provando que é um princípio biológico fundamental.</p>
+                        <p class="citation">Kukushkin et al., 2024 - Nature Comm; San Martin et al., 2017; Sisti et al., 2007</p>
+                    </div>
+                </div>
+
+                <h3>5. Interleaving Confunde?</h3>
+                <div class="myth-fact">
+                    <div class="myth-card">
+                        <strong style="color:var(--color-danger);">❌ MITO</strong>
+                        <p><strong>"Intercalar assuntos só serve para confundir. Melhor estudar um tema em blocos até dominar completamente."</strong></p>
+                        <p style="margin-top:8px; font-size:13px;">A confusão inicial e a sensação subjetiva de dificuldade levam muitos estudantes a evitar interleaving. Durante a prática intercalada, a fluência imediata é menor e a percepção de aprendizado é pior. Porém, estas são exatamente as características das dificuldades desejáveis - o que parece "pior" no momento está construindo memórias mais robustas.</p>
+                    </div>
+                    <div class="fact-card">
+                        <strong style="color:var(--color-success);">✅ FATO</strong>
+                        <p><strong>Interleaving melhora dramaticamente retenção e transferência para problemas novos.</strong></p>
+                        <p style="margin-top:8px; font-size:13px;">Em Física universitária, interleaving produziu melhorias de 50-125% em testes com problemas novos e difíceis, comparado a prática em blocos. Neurobiologicamente, interleaving está associado a maior conectividade funcional em repouso entre córtex pré-motor, hipocampo, parietal e cerebelo, maior diferenciação de padrões no hipocampo (pattern separation), e consolidação dependente de M1. Essencial para provas complexas onde problemas de diferentes temas aparecem misturados.</p>
+                        <p class="citation">Samani et al., 2021; Kim et al., 2024; Duan et al., 2025</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: CIÊNCIA -->
+        <div id="ciencia" class="tab-content">
+            <div class="card">
+                <h2>🔬 Base Científica</h2>
+                <p>Todos os princípios desta aplicação são baseados em estudos publicados entre 2020-2026 em revistas de alto impacto.</p>
+
+                <h3>📚 Principais Referências</h3>
+                <ul class="reference-list">
+                    <li><strong>Wiklund-Hörnqvist et al. (2021).</strong> Retrieval practice facilitates learning by strengthening processing in both the anterior and posterior hippocampus. <em>Brain and Behavior</em>. Mostra ativação hipocampal crescente com recuperações sucessivas.</li>
+
+                    <li><strong>Marek et al. (2023).</strong> The impact of studying on the hippocampal volume in medical students. <em>Polish Journal of Radiology</em>. Estudantes de Medicina apresentaram aumento de ~3% no presubículo após preparação para exame final.</li>
+
+                    <li><strong>Dubinsky & Hamid (2024).</strong> The neuroscience of active learning and direct instruction. <em>Neuroscience & Biobehavioral Reviews</em>. Revisão sobre circuito de reforço, dopamina e aprendizagem ativa vs passiva.</li>
+
+                    <li><strong>Kukushkin et al. (2024).</strong> The massed-spaced learning effect in non-neural human cell lines. <em>Nature Communications</em>. Demonstra spacing effect em nível molecular (ERK/CREB) mesmo fora do cérebro.</li>
+
+                    <li><strong>Kim et al. (2024).</strong> M1 recruitment during interleaved practice is important for encoding and consolidation. <em>npj Science of Learning</em>. Mostra dependência de M1 para consolidação em interleaving.</li>
+
+                    <li><strong>Westbrook et al. (2025).</strong> Striatal dopamine can enhance both fast working memory and slow reinforcement learning, while reducing implicit effort cost sensitivity. <em>Nature Communications</em>. Dopamina reduz custo subjetivo do esforço.</li>
+
+                    <li><strong>Nature (2026).</strong> Cholinergic modulation of dopamine release drives effortful behaviour. Esforço amplifica liberação de dopamina via sistema colinérgico local.</li>
+
+                    <li><strong>Samani et al. (2021).</strong> Interleaved practice enhances memory and problem-solving in undergraduate physics. <em>npj Science of Learning</em>. Melhorias de 50-125% em problemas novos com interleaving.</li>
+
+                    <li><strong>Zhang et al. (2025).</strong> Offline consolidation mechanisms of the retrieval practice effect. <em>npj Science of Learning</em>. EEG mostra padrões específicos de consolidação durante sono após retrieval practice.</li>
+
+                    <li><strong>Antony et al. (2017).</strong> Retrieval as a fast route to memory consolidation. <em>Trends in Cognitive Sciences</em>. Modelo teórico: teste ativa consolidação similar ao sono.</li>
+                </ul>
+
+                <h3>🔗 Links para Estudos</h3>
+                <div style="font-size:13px; line-height:2; margin-top:16px;">
+                    <p>• PubMed Central: <a href="https://pmc.ncbi.nlm.nih.gov" target="_blank" style="color:var(--color-primary);">https://pmc.ncbi.nlm.nih.gov</a></p>
+                    <p>• Nature Communications: <a href="https://www.nature.com/ncomms" target="_blank" style="color:var(--color-primary);">https://www.nature.com/ncomms</a></p>
+                    <p>• npj Science of Learning: <a href="https://www.nature.com/npjscilearn" target="_blank" style="color:var(--color-primary);">https://www.nature.com/npjscilearn</a></p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🧬 Mecanismos Neurobiológicos</h2>
+
+                <h3>Hipocampo e Memória</h3>
+                <p>O hipocampo (especialmente CA3, CA1 e giro denteado) é fundamental para:</p>
+                <ul style="margin-left:20px; margin-top:8px;">
+                    <li><strong>Codificação:</strong> transformar experiência em traço de memória</li>
+                    <li><strong>Consolidação:</strong> estabilizar memória ao longo do tempo</li>
+                    <li><strong>Recuperação:</strong> reativar memória quando necessário</li>
+                    <li><strong>Pattern separation:</strong> diferenciar memórias similares</li>
+                </ul>
+                <p style="margin-top:12px;"><strong>Retrieval practice</strong> ativa tanto hipocampo anterior (representações gerais) quanto posterior (detalhes episódicos) de forma mais intensa que releitura.</p>
+
+                <h3>Dopamina e Motivação</h3>
+                <p>Sistema dopaminérgico (VTA → estriado → córtex):</p>
+                <ul style="margin-left:20px; margin-top:8px;">
+                    <li><strong>RPE (Reward Prediction Error):</strong> diferença entre recompensa esperada e obtida</li>
+                    <li><strong>Esforço amplifica DA:</strong> mesma recompensa após alto esforço = maior pico de dopamina</li>
+                    <li><strong>DA reduz custo subjetivo:</strong> mais dopamina = menos aversão ao esforço</li>
+                    <li><strong>Treinar o sistema:</strong> esforço + sucesso repetido = associação positiva</li>
+                </ul>
+
+                <h3>Plasticidade Sináptica</h3>
+                <p>Spacing e interleaving otimizam:</p>
+                <ul style="margin-left:20px; margin-top:8px;">
+                    <li><strong>LTP (Long-Term Potentiation):</strong> fortalecimento de sinapses</li>
+                    <li><strong>Via ERK/CREB:</strong> cascata molecular de consolidação</li>
+                    <li><strong>Neurogênese:</strong> nascimento de novos neurônios no giro denteado</li>
+                    <li><strong>Spinogenesis:</strong> crescimento de espinhas dendríticas</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Timer Pomodoro Configurável
+        let timerInterval;
+        let focusMinutes = 25;
+        let breakMinutes = 5;
+        let timeLeft = focusMinutes * 60;
+        let isRunning = false;
+        let isFocusMode = true;
+        let sessionsToday = 0;
+        let totalMinutesStudied = 0;
+        let totalSessionsCompleted = 0;
+
+        function updateFocusTime() {
+            focusMinutes = parseInt(document.getElementById('focusMinutes').value) || 25;
+            if (!isRunning && isFocusMode) {
+                timeLeft = focusMinutes * 60;
+                updateTimerDisplay();
+            }
+        }
+
+        function updateBreakTime() {
+            breakMinutes = parseInt(document.getElementById('breakMinutes').value) || 5;
+            if (!isRunning && !isFocusMode) {
+                timeLeft = breakMinutes * 60;
+                updateTimerDisplay();
+            }
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timerInterval = setInterval(() => {
+                    if (timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        completeSession();
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timeLeft = isFocusMode ? focusMinutes * 60 : breakMinutes * 60;
+            updateTimerDisplay();
+        }
+
+        function playAlarm() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+            
+            setTimeout(() => {
+                const osc2 = audioContext.createOscillator();
+                const gain2 = audioContext.createGain();
+                osc2.connect(gain2);
+                gain2.connect(audioContext.destination);
+                osc2.frequency.value = 1000;
+                osc2.type = 'sine';
+                gain2.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                osc2.start(audioContext.currentTime);
+                osc2.stop(audioContext.currentTime + 0.5);
+            }, 600);
+        }
+
+        function completeSession() {
+            pauseTimer();
+            playAlarm();
+            
+            if (isFocusMode) {
+                sessionsToday++;
+                totalSessionsCompleted++;
+                totalMinutesStudied += focusMinutes;
+                
+                const logContainer = document.getElementById('logContainer');
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                logEntry.innerHTML = `
+                    <span>✅ Sessão de foco concluída (${focusMinutes}min)</span>
+                    <span style="font-size:12px; color:var(--color-text-secondary);">${new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}</span>
+                `;
+                logContainer.insertBefore(logEntry, logContainer.firstChild);
+                
+                isFocusMode = false;
+                timeLeft = breakMinutes * 60;
+                document.getElementById('timerMode').textContent = 'Pausa';
+                alert(`🎉 Sessão completa! Faça uma pausa de ${breakMinutes} minutos. Pico de dopamina alcançado!`);
+            } else {
+                isFocusMode = true;
+                timeLeft = focusMinutes * 60;
+                document.getElementById('timerMode').textContent = 'Foco';
+                alert('⏰ Pausa completa! Pronto para nova sessão de foco.');
+            }
+            
+            document.getElementById('sessionCount').textContent = sessionsToday;
+            document.getElementById('totalMinutes').textContent = totalMinutesStudied;
+            document.getElementById('totalSessions').textContent = totalSessionsCompleted;
+            
+            updateTimerDisplay();
+        }
+
+        // Sistema de Repetição Espaçada
+        let topics = JSON.parse(localStorage.getItem('spacedTopics')) || [];
+
+        function addTopic() {
+            const name = document.getElementById('topicName').value.trim();
+            const category = document.getElementById('topicCategory').value.trim();
+            
+            if (!name) {
+                alert('Digite o nome do tópico!');
+                return;
+            }
+            
+            const topic = {
+                id: Date.now(),
+                name: name,
+                category: category || 'Geral',
+                studyDate: new Date().toISOString(),
+                reviews: [],
+                nextReview: calculateNextReview(0),
+                stage: 0
+            };
+            
+            topics.push(topic);
+            saveTopics();
+            renderTopics();
+            
+            document.getElementById('topicName').value = '';
+            document.getElementById('topicCategory').value = '';
+        }
+
+        function calculateNextReview(stage) {
+            const intervals = [1, 3, 7, 14, 30]; // dias
+            const days = intervals[stage] || 30;
+            const nextDate = new Date();
+            nextDate.setDate(nextDate.getDate() + days);
+            return nextDate.toISOString();
+        }
+
+        function markReviewed(topicId) {
+            const topic = topics.find(t => t.id === topicId);
+            if (topic) {
+                topic.reviews.push(new Date().toISOString());
+                topic.stage++;
+                topic.nextReview = calculateNextReview(topic.stage);
+                saveTopics();
+                renderTopics();
+            }
+        }
+
+        function deleteTopic(topicId) {
+            topics = topics.filter(t => t.id !== topicId);
+            saveTopics();
+            renderTopics();
+        }
+
+        function saveTopics() {
+            localStorage.setItem('spacedTopics', JSON.stringify(topics));
+        }
+
+        function renderTopics() {
+            const container = document.getElementById('topicsList');
+            const scheduleContainer = document.getElementById('reviewSchedule');
+            
+            if (topics.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:var(--color-text-secondary); padding:20px;">Nenhum tópico adicionado ainda. Comece adicionando seu primeiro tópico de estudo!</p>';
+                scheduleContainer.innerHTML = '<p style="text-align:center; color:var(--color-text-secondary); padding:20px;">Sem revisões agendadas.</p>';
+                return;
+            }
+            
+            const sortedTopics = [...topics].sort((a, b) => new Date(a.nextReview) - new Date(b.nextReview));
+            
+            container.innerHTML = sortedTopics.map(topic => {
+                const nextDate = new Date(topic.nextReview);
+                const daysUntil = Math.ceil((nextDate - new Date()) / (1000 * 60 * 60 * 24));
+                const isOverdue = daysUntil < 0;
+                const isToday = daysUntil === 0;
+                
+                let statusColor = 'var(--color-success)';
+                let statusText = `em ${daysUntil} dias`;
+                
+                if (isOverdue) {
+                    statusColor = 'var(--color-danger)';
+                    statusText = `ATRASADO (${Math.abs(daysUntil)} dias)`;
+                } else if (isToday) {
+                    statusColor = 'var(--color-warning)';
+                    statusText = 'HOJE';
+                }
+                
+                return `
+                    <div style="background:var(--color-bg); padding:16px; border-radius:8px; margin-bottom:12px; border-left:4px solid ${statusColor};">
+                        <div style="display:flex; justify-content:space-between; align-items:start; flex-wrap:wrap; gap:12px;">
+                            <div style="flex:1; min-width:200px;">
+                                <h4 style="margin-bottom:4px;">${topic.name}</h4>
+                                <p style="font-size:13px; color:var(--color-text-secondary); margin-bottom:8px;">${topic.category}</p>
+                                <p style="font-size:13px;"><strong>Próxima revisão:</strong> <span style="color:${statusColor}; font-weight:600;">${statusText}</span></p>
+                                <p style="font-size:12px; color:var(--color-text-secondary);">Estágio: ${topic.stage + 1}/5 | Revisões feitas: ${topic.reviews.length}</p>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <button onclick="markReviewed(${topic.id})" style="padding:8px 16px; border:none; background:var(--color-success); color:white; border-radius:6px; cursor:pointer; font-size:13px;">✓ Revisei</button>
+                                <button onclick="deleteTopic(${topic.id})" style="padding:8px 16px; border:none; background:var(--color-danger); color:white; border-radius:6px; cursor:pointer; font-size:13px;">🗑</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            const today = sortedTopics.filter(t => {
+                const days = Math.ceil((new Date(t.nextReview) - new Date()) / (1000 * 60 * 60 * 24));
+                return days === 0;
+            });
+            
+            const overdue = sortedTopics.filter(t => {
+                const days = Math.ceil((new Date(t.nextReview) - new Date()) / (1000 * 60 * 60 * 24));
+                return days < 0;
+            });
+            
+            const upcoming = sortedTopics.filter(t => {
+                const days = Math.ceil((new Date(t.nextReview) - new Date()) / (1000 * 60 * 60 * 24));
+                return days > 0 && days <= 7;
+            });
+            
+            let scheduleHTML = '';
+            
+            if (overdue.length > 0) {
+                scheduleHTML += `<div style="background:#fee; padding:12px; border-radius:6px; margin-bottom:12px;"><strong style="color:var(--color-danger);">🚨 ${overdue.length} tópico(s) atrasado(s)</strong></div>`;
+            }
+            
+            if (today.length > 0) {
+                scheduleHTML += `<div style="background:#fef3c7; padding:12px; border-radius:6px; margin-bottom:12px;"><strong style="color:var(--color-warning);">📅 ${today.length} revisão(ões) para HOJE</strong></div>`;
+            }
+            
+            if (upcoming.length > 0) {
+                scheduleHTML += `<div style="background:#dcfce7; padding:12px; border-radius:6px;"><strong style="color:var(--color-success);">📆 ${upcoming.length} revisão(ões) nos próximos 7 dias</strong></div>`;
+            }
+            
+            if (scheduleHTML === '') {
+                scheduleHTML = '<p style="text-align:center; color:var(--color-text-secondary);">✅ Nenhuma revisão urgente. Continue assim!</p>';
+            }
+            
+            scheduleContainer.innerHTML = scheduleHTML;
+        }
+
+        // Tabs
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Toggle detalhes das técnicas
+        function toggleDetail(card) {
+            const detail = card.querySelector('.detail');
+            if (detail) {
+                if (detail.style.display === 'none') {
+                    detail.style.display = 'block';
+                } else {
+                    detail.style.display = 'none';
+                }
+            }
+        }
+
+        // Inicializar
+        updateTimerDisplay();
+        renderTopics();
+    </script>
+</body>
+</html>

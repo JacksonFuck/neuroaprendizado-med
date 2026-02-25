@@ -1,0 +1,23 @@
+{
+    "name": "neuroaprendizado-med",
+    "version": "1.0.0",
+    "description": "Neuroaprendizado Med - Técnicas de estudo baseadas em neurociência",
+    "main": "server/index.js",
+    "scripts": {
+        "start": "node server/index.js",
+        "dev": "node --watch server/index.js",
+        "db:init": "node server/config/init-db.js"
+    },
+    "dependencies": {
+        "express": "^4.21.0",
+        "pg": "^8.13.0",
+        "express-session": "^1.18.0",
+        "passport": "^0.7.0",
+        "passport-google-oauth20": "^2.0.0",
+        "connect-pg-simple": "^9.0.0",
+        "dotenv": "^16.4.0",
+        "helmet": "^7.1.0",
+        "cors": "^2.8.5",
+        "compression": "^1.7.4"
+    }
+}
