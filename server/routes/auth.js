@@ -5,6 +5,10 @@ const crypto = require('crypto');
 const pool = require('../config/db');
 const router = express.Router();
 
+// In-memory store for password reset tokens (for simplicity; in production use DB table)
+const resetTokens = new Map();
+
+
 // Helper para enviar email de ativação (simulado no console)
 const sendActivationEmail = (email, activationToken) => {
     console.log(`\n\n[EMAIL MOCK] Para: ${email}`);
@@ -178,6 +182,84 @@ router.delete('/lgpd-delete', async (req, res) => {
         console.error('LGPD Delete Error:', err);
         res.status(500).json({ error: 'Erro ao excluir dados permanentemente.' });
     }
+});
+
+// ==========================================
+// Password Reset
+// ==========================================
+router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'E-mail é obrigatório.' });
+
+    try {
+        const { rows } = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+        // Always return success to avoid email enumeration
+        if (rows.length === 0) {
+            return res.json({ success: true, message: 'Se o e-mail estiver cadastrado, você receberá as instruções.' });
+        }
+        const token = crypto.randomBytes(32).toString('hex');
+        const expires = Date.now() + 1000 * 60 * 60; // 1 hour
+        resetTokens.set(token, { email, expires });
+
+        const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3005}`;
+        const resetLink = `${baseUrl}/reset-password.html?token=${token}`;
+
+        // Log the link so admin can share manually if SMTP not configured
+        console.log(`[RESET PASSWORD] Link para ${email}: ${resetLink}`);
+
+        // Return the link in the response for admin-assisted recovery
+        const isAdmin = req.isAuthenticated && req.isAuthenticated() && req.user && req.user.role === 'admin';
+        res.json({
+            success: true,
+            message: 'Link de redefinição gerado com sucesso.',
+            // Only expose link directly in non-production or if admin is making the request
+            ...(process.env.NODE_ENV !== 'production' || isAdmin ? { reset_link: resetLink } : {})
+        });
+    } catch (err) {
+        console.error('Forgot password error:', err);
+        res.status(500).json({ error: 'Erro interno.' });
+    }
+});
+
+router.post('/reset-password', async (req, res) => {
+    const { token, password } = req.body;
+    if (!token || !password) return res.status(400).json({ error: 'Token e nova senha são obrigatórios.' });
+    if (password.length < 6) return res.status(400).json({ error: 'A senha deve ter no mínimo 6 caracteres.' });
+
+    const record = resetTokens.get(token);
+    if (!record || Date.now() > record.expires) {
+        resetTokens.delete(token);
+        return res.status(400).json({ error: 'Link expirado ou inválido. Solicite um novo link.' });
+    }
+
+    try {
+        const password_hash = await bcrypt.hash(password, 10);
+        await pool.query('UPDATE users SET password_hash = $1, is_active = TRUE WHERE email = $2', [password_hash, record.email]);
+        resetTokens.delete(token);
+        res.json({ success: true, message: 'Senha redefinida com sucesso! Você já pode fazer login.' });
+    } catch (err) {
+        console.error('Reset password error:', err);
+        res.status(500).json({ error: 'Erro interno ao redefinir senha.' });
+    }
+});
+
+// Admin: generate reset link for any user
+router.post('/admin-reset-link', async (req, res) => {
+    if (!req.isAuthenticated || !req.isAuthenticated() || req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Acesso negado.' });
+    }
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'E-mail é obrigatório.' });
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires = Date.now() + 1000 * 60 * 60 * 24; // 24 hours for admin-generated links
+    resetTokens.set(token, { email, expires });
+
+    const baseUrl = process.env.BASE_URL || `https://neuroaprendizado.unipar.jacksonuti.cloud`;
+    const resetLink = `${baseUrl}/reset-password.html?token=${token}`;
+    console.log(`[ADMIN RESET] Link para ${email}: ${resetLink}`);
+
+    res.json({ success: true, reset_link: resetLink });
 });
 
 module.exports = router;

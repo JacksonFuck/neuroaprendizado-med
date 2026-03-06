@@ -476,6 +476,7 @@
         <div class="auth-tabs">
             <button class="auth-tab active" onclick="switchTab('login')" id="tab-login">Entrar</button>
             <button class="auth-tab" onclick="switchTab('register')" id="tab-register">Cadastro (Convite)</button>
+            <button class="auth-tab" onclick="switchTab('forgot')" id="tab-forgot">Esqueci a Senha</button>
         </div>
 
         <form id="loginForm" class="auth-form" onsubmit="login(event)">
@@ -509,6 +510,15 @@
             </label>
             <button type="submit" class="submit-btn" style="background: linear-gradient(90deg, #e040fb, #00f0ff);">Criar
                 Conta</button>
+        </form>
+
+        <form id="forgotForm" class="auth-form hidden" onsubmit="handleForgot(event)">
+            <p style="font-size:0.82rem;color:#6c7a9c;margin-bottom:12px;">Informe seu e-mail e receberá um link para
+                redefinir sua senha.</p>
+            <input type="email" id="forgotEmail" placeholder="Seu e-mail cadastrado" required />
+            <button type="submit" class="submit-btn"
+                style="background: linear-gradient(90deg, #00f0ff, #9b59f5);">Enviar Link de Redefinição</button>
+            <div id="forgotResult" style="margin-top:12px;font-size:0.82rem;display:none;"></div>
         </form>
 
         <div id="authMessage" class="auth-message"></div>
@@ -632,12 +642,17 @@
 
         // Auth Logic
         function switchTab(tab) {
-            document.getElementById('tab-login').classList.toggle('active', tab === 'login');
-            document.getElementById('tab-register').classList.toggle('active', tab === 'register');
-            document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
-            document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
-            document.getElementById('authMessage').className = 'auth-message'; // clear messages
-            document.getElementById('loginError').style.display = 'none'; // clear login error
+            ['login', 'register', 'forgot'].forEach(t => {
+                document.getElementById('tab-' + t) && document.getElementById('tab-' + t).classList.toggle('active', tab === t);
+            });
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const forgotForm = document.getElementById('forgotForm');
+            if (loginForm) loginForm.classList.toggle('hidden', tab !== 'login');
+            if (registerForm) registerForm.classList.toggle('hidden', tab !== 'register');
+            if (forgotForm) forgotForm.classList.toggle('hidden', tab !== 'forgot');
+            document.getElementById('authMessage').className = 'auth-message';
+            document.getElementById('loginError').style.display = 'none';
         }
 
         function showMessage(msg, type) {
@@ -716,6 +731,38 @@
             }
             btn.disabled = false;
             btn.textContent = 'Criar Conta';
+        }
+
+        async function handleForgot(e) {
+            e.preventDefault();
+            const email = document.getElementById('forgotEmail').value.trim();
+            const result = document.getElementById('forgotResult');
+            const btn = e.target.querySelector('.submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+            result.style.display = 'none';
+            try {
+                const res = await fetch('/api/auth/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                result.style.display = 'block';
+                if (data.reset_link) {
+                    result.style.color = '#4ade80';
+                    result.innerHTML = 'Link gerado! Clique para redefinir sua senha:<br><a href="' + data.reset_link + '" style="color:#00f0ff;word-break:break-all;">' + data.reset_link + '</a>';
+                } else {
+                    result.style.color = '#4ade80';
+                    result.textContent = data.message || 'Verifique seu e-mail.';
+                }
+            } catch {
+                result.style.color = '#f87171';
+                result.textContent = 'Erro de conexão. Tente novamente.';
+                result.style.display = 'block';
+            }
+            btn.disabled = false;
+            btn.textContent = 'Enviar Link de Redefinição';
         }
     </script>
     <script src="/cookie-consent.js"></script>
