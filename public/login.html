@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neuroaprendizado Med — Login</title>
+    <title>Acesso — Neuroaprendizado Med</title>
     <meta name="description" content="Plataforma de estudo baseada em neurociência para estudantes de medicina">
+    <link rel="manifest" href="/manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
@@ -225,6 +226,141 @@
             line-height: 1.3
         }
 
+        /* Forms logic added */
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            color: #b0bcd8;
+            border-radius: 8px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(224, 64, 251, 0.2));
+            color: #fff;
+            border-color: rgba(0, 240, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .auth-form.hidden {
+            display: none;
+        }
+
+        .auth-form input[type="text"],
+        .auth-form input[type="email"],
+        .auth-form input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            transition: border-color 0.3s;
+        }
+
+        .auth-form input:focus {
+            outline: none;
+            border-color: rgba(224, 64, 251, 0.6);
+            box-shadow: 0 0 10px rgba(224, 64, 251, 0.2);
+        }
+
+        .submit-btn {
+            padding: 14px;
+            background: linear-gradient(90deg, #00f0ff, #e040fb);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 5px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(224, 64, 251, 0.4);
+        }
+
+        .divider {
+            margin: 10px 0;
+            color: #5e6a8a;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 10px;
+        }
+
+        .lgpd-agree {
+            font-size: 11px;
+            color: #b0bcd8;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .lgpd-agree input {
+            margin-top: 2px;
+        }
+
+        .lgpd-agree a {
+            color: #00f0ff;
+            text-decoration: none;
+        }
+
+        .auth-message {
+            margin-top: 15px;
+            font-size: 13px;
+            padding: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .auth-message.error {
+            display: block;
+            background: rgba(255, 50, 50, 0.1);
+            border: 1px solid rgba(255, 50, 50, 0.3);
+            color: #ff8080;
+        }
+
+        .auth-message.success {
+            display: block;
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            color: #00f0ff;
+        }
+
         .footer-note {
             margin-top: 24px;
             font-size: 11px;
@@ -337,39 +473,49 @@
         <h1>Neuroaprendizado Med</h1>
         <p class="subtitle">Técnicas de estudo baseadas em neurociência<br>para estudantes de medicina</p>
 
-        <a href="/auth/google" class="google-btn">
-            <svg viewBox="0 0 48 48">
-                <path fill="#EA4335"
-                    d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-                <path fill="#4285F4"
-                    d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
-                <path fill="#FBBC05"
-                    d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
-                <path fill="#34A853"
-                    d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-            </svg>
-            Entrar com Google
-        </a>
-
-        <div class="features">
-            <div class="feature">
-                <div class="feature-icon">⏱</div>
-                <h3>Pomodoro</h3>
-                <p>Ciclos otimizados para dopamina</p>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">📊</div>
-                <h3>Espaçamento</h3>
-                <p>Intervalos baseados em evidências</p>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">📓</div>
-                <h3>Diário</h3>
-                <p>Registro com continuidade</p>
-            </div>
+        <div class="auth-tabs">
+            <button class="auth-tab active" onclick="switchTab('login')" id="tab-login">Entrar</button>
+            <button class="auth-tab" onclick="switchTab('register')" id="tab-register">Cadastro (Convite)</button>
         </div>
 
-        <p class="footer-note">50+ estudos (2024–2026) • Nature • npj Science of Learning</p>
+        <form id="loginForm" class="auth-form" onsubmit="login(event)">
+            <input type="email" id="log-email" placeholder="E-mail" required />
+            <input type="password" id="log-password" placeholder="Senha" required />
+            <button type="submit" class="submit-btn" id="loginBtn">Acessar Plataforma</button>
+            <div class="divider">ou acesse com</div>
+            <a href="/auth/google" class="google-btn">
+                <svg viewBox="0 0 48 48">
+                    <path fill="#EA4335"
+                        d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                    <path fill="#4285F4"
+                        d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                    <path fill="#FBBC05"
+                        d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                    <path fill="#34A853"
+                        d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                </svg>
+                Google Acadêmico
+            </a>
+        </form>
+
+        <form id="registerForm" class="auth-form hidden" onsubmit="handleRegister(event)">
+            <input type="text" id="regName" placeholder="Nome completo" required />
+            <input type="email" id="regEmail" placeholder="E-mail" required />
+            <input type="password" id="regPassword" placeholder="Criar senha segura" minlength="6" required />
+            <input type="text" id="regToken" placeholder="Token de Convite" required />
+            <label class="lgpd-agree">
+                <input type="checkbox" id="regLgpd" required />
+                <span>Concordo explicitamente com a Política de Privacidade e Aceite de Dados sensíveis (LGPD).</span>
+            </label>
+            <button type="submit" class="submit-btn" style="background: linear-gradient(90deg, #e040fb, #00f0ff);">Criar
+                Conta</button>
+        </form>
+
+        <div id="authMessage" class="auth-message"></div>
+        <div id="loginError" class="auth-message error"></div>
+
+
+        <p class="footer-note">Ambiente Seguro PWA • Criptografia End-to-End</p>
 
         <div class="author-card">
             <div class="author-name">Dr. Jackson Erasmo Fuck</div>
@@ -483,7 +629,96 @@
             dot.style.width = dot.style.height = (2 + Math.random() * 2) + 'px';
             document.body.appendChild(dot);
         }
+
+        // Auth Logic
+        function switchTab(tab) {
+            document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+            document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+            document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+            document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+            document.getElementById('authMessage').className = 'auth-message'; // clear messages
+            document.getElementById('loginError').style.display = 'none'; // clear login error
+        }
+
+        function showMessage(msg, type) {
+            const el = document.getElementById('authMessage');
+            el.textContent = msg;
+            el.className = 'auth-message ' + type;
+        }
+
+        // Login
+        async function login(e) {
+            e.preventDefault();
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('loginError');
+
+            const email = document.getElementById('log-email').value.trim();
+            const password = document.getElementById('log-password').value;
+
+            if (!email || !password) return;
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Autenticando...';
+            errorMsg.style.display = 'none';
+
+            try {
+                const res = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    window.location.href = '/index.html';
+                } else {
+                    errorMsg.textContent = data.error || 'Erro na autenticação';
+                    errorMsg.style.display = 'block';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Acessar Plataforma';
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Erro de conexão. Tente novamente.';
+                errorMsg.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Acessar Plataforma';
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('.submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Registrando sinapses...';
+
+            try {
+                const res = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById('regName').value,
+                        email: document.getElementById('regEmail').value,
+                        password: document.getElementById('regPassword').value,
+                        invitation_token: document.getElementById('regToken').value,
+                        accept_lgpd: document.getElementById('regLgpd').checked
+                    })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    showMessage(data.message, 'success');
+                    e.target.reset();
+                } else {
+                    showMessage(data.error || 'Erro no cadastro.', 'error');
+                }
+            } catch (err) {
+                showMessage('Erro de conexão.', 'error');
+            }
+            btn.disabled = false;
+            btn.textContent = 'Criar Conta';
+        }
     </script>
+    <script src="/cookie-consent.js"></script>
 </body>
 
 </html>

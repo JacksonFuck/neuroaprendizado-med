@@ -6,7 +6,7 @@ let currentUser = null;
 let currentMood = 'neutral';
 
 // ─── INIT ───
-const PREVIEW_MODE = !window.location.hostname || window.location.hostname === 'localhost' || window.location.protocol === 'file:';
+const PREVIEW_MODE = window.location.protocol === 'file:'; // Disabled for localhost since backend is ready
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (PREVIEW_MODE) {
@@ -90,6 +90,11 @@ function renderUserInfo() {
         <div class="user-email">${currentUser.email}</div>
       </div>
     </div>`;
+
+    if (currentUser.role === 'admin') {
+        const adminBtn = document.getElementById('navAdminBtn');
+        if (adminBtn) adminBtn.style.display = 'flex';
+    }
 }
 
 function setGreeting() {
@@ -522,6 +527,46 @@ function notify(title, body) {
     if ('Notification' in window && Notification.permission === 'granted') {
         new Notification(title, { body, icon: '🧠' });
     }
+}
+
+// ─── SUGESTÕES ───
+async function submitSuggestion(e) {
+    e.preventDefault();
+    const btn = document.getElementById('suggSubmitBtn');
+    const msgEl = document.getElementById('suggMessage');
+    const title = document.getElementById('suggTitle').value.trim();
+    const description = document.getElementById('suggDesc').value.trim();
+
+    if (!title || !description) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+    msgEl.textContent = '';
+    msgEl.className = '';
+
+    try {
+        const res = await fetch('/api/suggestions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, description })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            msgEl.textContent = 'Sugestão enviada com sucesso! Obrigado pela contribuição.';
+            msgEl.style.color = 'var(--synapse-green)';
+            document.getElementById('suggestionForm').reset();
+        } else {
+            msgEl.textContent = data.error || 'Erro ao enviar sugestão.';
+            msgEl.style.color = 'var(--synapse-red)';
+        }
+    } catch (err) {
+        msgEl.textContent = 'Erro de conexão. Tente novamente.';
+        msgEl.style.color = 'var(--synapse-red)';
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Enviar Sugestão';
 }
 
 // Request notification permission

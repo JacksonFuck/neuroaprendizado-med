@@ -3,13 +3,24 @@ const pool = require('./db');
 const schema = `
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
-  google_id VARCHAR(255) UNIQUE NOT NULL,
-  email VARCHAR(255) NOT NULL,
+  google_id VARCHAR(255) UNIQUE,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255),
   name VARCHAR(255),
   avatar_url TEXT,
+  role VARCHAR(50) DEFAULT 'user',
+  is_active BOOLEAN DEFAULT FALSE,
+  accepted_lgpd_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT NOW(),
   last_login TIMESTAMP DEFAULT NOW()
 );
+
+-- Migration for existing databases
+ALTER TABLE users ALTER COLUMN google_id DROP NOT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS role VARCHAR(50) DEFAULT 'user';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS accepted_lgpd_at TIMESTAMP;
 
 CREATE TABLE IF NOT EXISTS diary_entries (
   id SERIAL PRIMARY KEY,
@@ -67,6 +78,23 @@ CREATE TABLE IF NOT EXISTS "session" (
   CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE
 );
 CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");
+
+CREATE TABLE IF NOT EXISTS invitation_tokens (
+  id SERIAL PRIMARY KEY,
+  token VARCHAR(255) UNIQUE NOT NULL,
+  used BOOLEAN DEFAULT FALSE,
+  used_by_email VARCHAR(255),
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS suggestions (
+  id SERIAL PRIMARY KEY,
+  user_id INT REFERENCES users(id) ON DELETE SET NULL,
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  status VARCHAR(50) DEFAULT 'pending',
+  created_at TIMESTAMP DEFAULT NOW()
+);
 `;
 
 async function initDB() {

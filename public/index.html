@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neuroaprendizado Med</title>
+    <title>Dashboard — Neuroaprendizado</title>
+    <link rel="manifest" href="/manifest.json">
     <meta name="description"
         content="Técnicas de estudo baseadas em neurociência e evidências recentes para estudantes de medicina">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,6 +61,14 @@
             <button class="nav-item" data-tab="ciencia" onclick="switchTab('ciencia')">
                 <span class="nav-icon">🔬</span><span class="nav-label">Ciência</span>
             </button>
+            <div class="nav-divider"></div>
+            <div class="nav-item" data-tab="suggestions" onclick="switchTab('suggestions')">
+                <span class="nav-icon">💡</span> <span class="nav-label">Sugestões de Melhoria</span>
+            </div>
+            <div class="nav-divider"></div>
+            <div class="nav-item" id="navAdminBtn" style="display: none;" onclick="window.location.href='/admin.html'">
+                <span class="nav-icon">🛡️</span> <span class="nav-label">Painel Admin</span>
+            </div>
         </div>
         <div class="sidebar-footer">
             <button class="logout-btn" onclick="logout()">Sair</button>
@@ -1000,11 +1009,46 @@
             </div>
         </section>
 
+        <!-- SUGESTÕES -->
+        <section id="tab-sugestoes" class="tab-panel">
+            <div class="page-header">
+                <h1>💡 Sugestões de Melhoria</h1>
+                <p class="page-subtitle">Ajude-nos a evoluir a plataforma para o mais alto nível de performance.</p>
+            </div>
+            <div class="glass-card">
+                <h3>✍️ Enviar Nova Sugestão</h3>
+                <form id="suggestionForm" style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;"
+                    onsubmit="submitSuggestion(event)">
+                    <input type="text" id="suggTitle" class="input" placeholder="Título da sua ideia" required />
+                    <textarea id="suggDesc" class="input textarea" rows="4"
+                        placeholder="Descreva sua sugestão em detalhes..." required></textarea>
+                    <button type="submit" class="btn-action" id="suggSubmitBtn">Enviar Sugestão</button>
+                </form>
+                <div id="suggMessage" style="margin-top: 10px; font-size: 13px;"></div>
+            </div>
+            <div class="glass-card" style="margin-top:24px">
+                <h3>🗳️ Próximas Atualizações (Status)</h3>
+                <p>Nesta área, futura integração com o painel de administradores exibirá quais sugestões foram aprovadas
+                    para desenvolvimento.</p>
+            </div>
+        </section>
+
     </main>
 
     <audio id="pomodoroAlarm" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
         preload="auto"></audio>
     <script src="app.js"></script>
+    <script>
+        // Register PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(err => console.log('SW registration failed:', err));
+            });
+        }
+    </script>
+    <script src="/cookie-consent.js"></script>
 </body>
 
 </html>
