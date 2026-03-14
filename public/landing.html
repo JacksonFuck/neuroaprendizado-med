@@ -1189,7 +1189,7 @@
 <!-- Urgency Banner -->
 <div class="urgency-banner" id="urgencyBanner">
     <span>🧠 <strong>7 dias grátis</strong> para testar o NeuroForge Pro — Flashcards ilimitados, 9 ferramentas neurais, gráficos</span>
-    <a href="#comecar" class="urgency-cta" onclick="document.getElementById('landingSignup').scrollIntoView({behavior:'smooth'});return false;">Assine Agora →</a>
+    <a href="#comecar" class="urgency-cta" onclick="scrollToSignup(true);return false;">Assine Agora →</a>
 </div>
 
 <header class="site-header" style="top:36px" id="siteHeader">
@@ -1205,7 +1205,7 @@
         <a href="#ciencia">Ciência</a>
         <a href="#precos">Preços</a>
         <a href="/login.html" class="header-cta" style="margin-right:8px">Entrar</a>
-        <a href="#comecar" class="header-cta-pro" onclick="document.getElementById('landingSignup').scrollIntoView({behavior:'smooth'});return false;">Assine Pro ⚡</a>
+        <a href="#comecar" class="header-cta-pro" onclick="scrollToSignup(true);return false;">Assine Pro ⚡</a>
     </nav>
     <button class="mobile-menu-btn" onclick="document.getElementById('headerNav').classList.toggle('open')" aria-label="Menu">&#9776;</button>
 </header>
@@ -1616,7 +1616,7 @@
                     <li>3 flashcards por dia</li>
                     <li>Estatisticas basicas</li>
                 </ul>
-                <a href="#comecar" class="pricing-btn pricing-btn-free" onclick="document.getElementById('landingSignup').scrollIntoView({behavior:'smooth'});return false;">Comecar Gratis</a>
+                <a href="#comecar" class="pricing-btn pricing-btn-free" onclick="scrollToSignup(false);return false;">Começar Grátis</a>
             </div>
             <div class="pricing-card featured reveal reveal-delay-1">
                 <div class="pricing-tier">Pro</div>
@@ -1630,7 +1630,7 @@
                     <li>Prioridade em novas features</li>
                     <li>7 dias gratis para testar</li>
                 </ul>
-                <a href="#comecar" class="pricing-btn pricing-btn-pro" onclick="document.getElementById('landingSignup').scrollIntoView({behavior:'smooth'});return false;">Teste Gratis por 7 Dias</a>
+                <a href="#comecar" class="pricing-btn pricing-btn-pro" onclick="scrollToSignup(true);return false;">Assinar Pro — 7 Dias Grátis</a>
             </div>
         </div>
 
@@ -2036,12 +2036,22 @@ function answerStroopDemo(chosen, correct) {
 /* -----------------------------------------------
    LANDING SIGNUP HANDLER
    ----------------------------------------------- */
+var _wantsPro = false;
+
+function scrollToSignup(pro) {
+    _wantsPro = !!pro;
+    var form = document.getElementById('landingSignup');
+    var btn = document.getElementById('signupBtn');
+    if (form) form.scrollIntoView({ behavior: 'smooth' });
+    if (btn) btn.textContent = pro ? 'Criar Conta e Assinar Pro' : 'Criar Conta Grátis';
+}
+
 async function handleLandingSignup(e) {
     e.preventDefault();
     var btn = document.getElementById('signupBtn');
     var msg = document.getElementById('signupMessage');
     btn.disabled = true;
-    btn.textContent = 'Criando conta...';
+    btn.textContent = _wantsPro ? 'Criando conta e abrindo pagamento...' : 'Criando conta...';
     msg.textContent = '';
 
     try {
@@ -2058,18 +2068,34 @@ async function handleLandingSignup(e) {
         var data = await res.json();
 
         if (res.ok && data.success) {
+            if (_wantsPro) {
+                // Go directly to Stripe Checkout
+                msg.style.color = '#00f0ff';
+                msg.textContent = '✅ Conta criada! Abrindo pagamento Stripe...';
+                try {
+                    var stripeRes = await fetch('/api/stripe/checkout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    var stripeData = await stripeRes.json();
+                    if (stripeData.url) {
+                        window.location.href = stripeData.url;
+                        return;
+                    }
+                } catch (stripeErr) { /* fallback to dashboard */ }
+            }
             msg.style.color = '#00e676';
-            msg.textContent = '\u2705 Conta criada com sucesso! Redirecionando...';
+            msg.textContent = '✅ Conta criada com sucesso! Redirecionando...';
             setTimeout(function() { window.location.href = data.redirect || '/login.html'; }, 1500);
         } else {
             msg.style.color = '#ff3366';
             msg.textContent = data.error || 'Erro ao criar conta.';
             btn.disabled = false;
-            btn.textContent = 'Criar Conta Gratis';
+            btn.textContent = _wantsPro ? 'Criar Conta e Assinar Pro' : 'Criar Conta Grátis';
         }
     } catch (err) {
         msg.style.color = '#ff3366';
-        msg.textContent = 'Erro de conexao. Tente novamente.';
+        msg.textContent = 'Erro de conexão. Tente novamente.';
         btn.disabled = false;
         btn.textContent = 'Criar Conta Gratis';
     }
