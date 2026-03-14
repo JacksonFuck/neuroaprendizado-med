@@ -42,8 +42,20 @@ CREATE TABLE IF NOT EXISTS spaced_topics (
   study_date TIMESTAMP DEFAULT NOW(),
   next_review DATE NOT NULL,
   stage INT DEFAULT 0,
-  reviews JSONB DEFAULT '[]'
+  reviews JSONB DEFAULT '[]',
+  difficulty REAL DEFAULT 5.0,
+  stability REAL DEFAULT 1.0,
+  last_review DATE,
+  reps INT DEFAULT 0,
+  lapses INT DEFAULT 0
 );
+
+-- FSRS migration for existing databases
+ALTER TABLE spaced_topics ADD COLUMN IF NOT EXISTS difficulty REAL DEFAULT 5.0;
+ALTER TABLE spaced_topics ADD COLUMN IF NOT EXISTS stability REAL DEFAULT 1.0;
+ALTER TABLE spaced_topics ADD COLUMN IF NOT EXISTS last_review DATE;
+ALTER TABLE spaced_topics ADD COLUMN IF NOT EXISTS reps INT DEFAULT 0;
+ALTER TABLE spaced_topics ADD COLUMN IF NOT EXISTS lapses INT DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS pomodoro_sessions (
   id SERIAL PRIMARY KEY,

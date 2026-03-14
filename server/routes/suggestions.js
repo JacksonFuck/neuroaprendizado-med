@@ -1,13 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
+const { ensureAuth } = require('../middleware/auth');
 
-// Rota para o usuário enviar sugestões
-router.post('/', async (req, res) => {
-    if (!req.isAuthenticated || !req.isAuthenticated()) {
-        return res.status(401).json({ error: 'Não autenticado' });
+// Get user's own suggestions
+router.get('/', ensureAuth, async (req, res) => {
+    try {
+        const { rows } = await pool.query(
+            'SELECT id, title, description, status, created_at FROM suggestions WHERE user_id = $1 ORDER BY created_at DESC',
+            [req.user.id]
+        );
+        res.json(rows);
+    } catch (err) {
+        console.error('Error fetching suggestions:', err);
+        res.status(500).json({ error: 'Erro ao buscar sugestões.' });
     }
+});
 
+// Submit a new suggestion
+router.post('/', ensureAuth, async (req, res) => {
     const { title, description } = req.body;
 
     if (!title || !description) {

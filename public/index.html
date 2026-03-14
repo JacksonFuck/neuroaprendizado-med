@@ -21,6 +21,39 @@
         <p>Carregando...</p>
     </div>
 
+    <!-- Neuro-Architect Greeting Modal -->
+    <div id="neuroGreetingModal" class="modal-overlay hidden">
+        <div class="neuro-greeting">
+            <div class="greeting-brain-icon">🧠</div>
+            <h2 class="greeting-title">Neuro-Arquiteto ativo</h2>
+            <p class="greeting-subtitle">Sistema dopaminergico alinhado. Qual o objetivo de hoje?</p>
+            <div class="greeting-options">
+                <button class="greeting-option" onclick="selectGreetingOption('timer')">
+                    <span class="option-icon">⏱️</span>
+                    <div class="option-text">
+                        <span class="option-label">Sessao de Foco</span>
+                        <span class="option-desc">Ativar protocolo ultradiano (90min)</span>
+                    </div>
+                </button>
+                <button class="greeting-option" onclick="selectGreetingOption('espacamento')">
+                    <span class="option-icon">📅</span>
+                    <div class="option-text">
+                        <span class="option-label">Revisar Conteudo</span>
+                        <span class="option-desc" id="greetingReviewCount">Verificando revisoes pendentes...</span>
+                    </div>
+                </button>
+                <button class="greeting-option" onclick="selectGreetingOption('neurotools')">
+                    <span class="option-icon">🧪</span>
+                    <div class="option-text">
+                        <span class="option-label">Pre-ativacao Neural</span>
+                        <span class="option-desc">Ancoragem visual, ruido, NSDR</span>
+                    </div>
+                </button>
+            </div>
+            <button class="greeting-skip" onclick="closeGreeting()">Ir para o Dashboard →</button>
+        </div>
+    </div>
+
     <!-- Sidebar -->
     <nav id="sidebar" class="sidebar">
         <div class="sidebar-header">
@@ -47,6 +80,9 @@
             </button>
             <button class="nav-item" data-tab="diario" onclick="switchTab('diario')">
                 <span class="nav-icon">📓</span><span class="nav-label">Diário</span>
+            </button>
+            <button class="nav-item" data-tab="neurotools" onclick="switchTab('neurotools')">
+                <span class="nav-icon">🧪</span><span class="nav-label">Ferramentas de Foco</span>
             </button>
             <div class="nav-divider"></div>
             <button class="nav-item" data-tab="habitos" onclick="switchTab('habitos')">
@@ -513,6 +549,164 @@
             <div class="glass-card" style="margin-top:24px">
                 <h3>📖 Entradas Anteriores</h3>
                 <div id="diaryList"></div>
+            </div>
+        </section>
+
+        <!-- FERRAMENTAS DE FOCO NEURAL -->
+        <section id="tab-neurotools" class="tab-panel">
+            <div class="page-header">
+                <h1>🧪 Ferramentas de Foco Neural</h1>
+                <p class="page-subtitle">Protocolos internos baseados em neurociencia aplicada — sem apps externos</p>
+            </div>
+
+            <!-- Visual Anchoring -->
+            <div class="glass-card neuro-tool-card">
+                <h3 class="tool-toggle" onclick="toggleExpand(this.parentElement)">
+                    <span>👁️ Ancoragem Visual (60s)</span>
+                    <span class="toggle-arrow">▸</span>
+                </h3>
+                <div class="tool-body">
+                    <p class="tool-science">Fixar o olhar ativa o <strong>Locus Coeruleus</strong>, liberando
+                        <strong>noradrenalina</strong> que fecha as comportas da atenção periférica. Faça antes de cada
+                        sessão de estudo.</p>
+                    <div class="anchor-container">
+                        <div class="anchor-target" id="anchorTarget"></div>
+                    </div>
+                    <div id="anchorTimer" class="tool-timer"></div>
+                    <button class="btn-action" id="anchorBtn" onclick="startAnchorExercise()">Iniciar Ancoragem</button>
+                </div>
+            </div>
+
+            <!-- Brown Noise Generator -->
+            <div class="glass-card neuro-tool-card">
+                <h3 class="tool-toggle" onclick="toggleExpand(this.parentElement)">
+                    <span>🔊 Gerador de Ruido (Brown / White / Pink)</span>
+                    <span class="toggle-arrow">▸</span>
+                </h3>
+                <div class="tool-body">
+                    <p class="tool-science">Ruido constante gera <strong>aclimatacao sensorial no talamo</strong>,
+                        blindando o cortex auditivo de distracoes externas e reduzindo o custo de alternancia atencional.</p>
+                    <div class="noise-controls">
+                        <select id="noiseType" class="input" style="max-width:180px">
+                            <option value="brown">Brown Noise</option>
+                            <option value="white">White Noise</option>
+                            <option value="pink">Pink Noise</option>
+                        </select>
+                        <div class="volume-control">
+                            <span class="volume-label">🔈</span>
+                            <input type="range" id="noiseVolume" min="0" max="1" step="0.05" value="0.3">
+                            <span class="volume-label">🔊</span>
+                        </div>
+                        <button class="btn-action" id="noiseBtn" onclick="toggleNoise()">▶ Play</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controlled Hyperventilation -->
+            <div class="glass-card neuro-tool-card">
+                <h3 class="tool-toggle" onclick="toggleExpand(this.parentElement)">
+                    <span>💨 Hiperventilacao Controlada (20 respiracoes)</span>
+                    <span class="toggle-arrow">▸</span>
+                </h3>
+                <div class="tool-body">
+                    <p class="tool-science">20 respiracoes rapidas ativam o <strong>Sistema Ativador Reticular</strong>,
+                        induzindo liberacao de adrenalina para limpar a nevoa mental antes de estudar.</p>
+                    <div class="breathing-container">
+                        <div class="breathing-visual" id="breathingCircle"></div>
+                        <div id="breathLabel" class="breath-label"></div>
+                    </div>
+                    <div id="breathCount" class="tool-timer"></div>
+                    <button class="btn-action" id="breathBtn" onclick="startBreathingExercise()">Iniciar Protocolo</button>
+                </div>
+            </div>
+
+            <!-- NSDR Timer -->
+            <div class="glass-card neuro-tool-card">
+                <h3 class="tool-toggle" onclick="toggleExpand(this.parentElement)">
+                    <span>😌 NSDR — Descanso Profundo Sem Sono</span>
+                    <span class="toggle-arrow">▸</span>
+                </h3>
+                <div class="tool-body">
+                    <p class="tool-science"><strong>Non-Sleep Deep Rest</strong>: ondas Alpha→Theta ativam o sistema
+                        glinfatico, limpando adenosina e restaurando 65% da dopamina estriatal.
+                        Obrigatorio apos blocos de 90min.</p>
+                    <div class="nsdr-controls">
+                        <select id="nsdrDuration" class="input" style="max-width:180px">
+                            <option value="10">10 minutos</option>
+                            <option value="15" selected>15 minutos</option>
+                            <option value="20">20 minutos</option>
+                        </select>
+                        <button class="btn-action" id="nsdrBtn" onclick="startNSDR()">Iniciar NSDR</button>
+                    </div>
+                    <div id="nsdrProgress" class="tool-timer"></div>
+                    <div id="nsdrGuide" class="nsdr-guide"></div>
+                </div>
+            </div>
+
+            <!-- Stroop Task -->
+            <div class="glass-card neuro-tool-card">
+                <h3 class="tool-toggle" onclick="toggleExpand(this.parentElement)">
+                    <span>🧩 Stroop Task — Brain Endurance Training</span>
+                    <span class="toggle-arrow">▸</span>
+                </h3>
+                <div class="tool-body">
+                    <p class="tool-science">Responda a <strong>COR da fonte</strong>, nao a palavra.
+                        Treina o <strong>ACC (Cortex Cingulado Anterior)</strong> a resolver conflito cognitivo,
+                        aumentando resistencia a fadiga mental.</p>
+                    <div id="stroopArea" class="stroop-game">
+                        <p class="empty-state">Clique em Iniciar para comecar</p>
+                    </div>
+                    <div id="stroopScore" class="tool-timer"></div>
+                    <button class="btn-action" id="stroopBtn" onclick="startStroop()">Iniciar (30s)</button>
+                </div>
+            </div>
+
+            <!-- Dual N-Back -->
+            <div class="glass-card neuro-tool-card">
+                <h3 class="tool-toggle" onclick="toggleExpand(this.parentElement)">
+                    <span>🔢 Dual N-Back — Memoria de Trabalho</span>
+                    <span class="toggle-arrow">▸</span>
+                </h3>
+                <div class="tool-body">
+                    <p class="tool-science">Padrao-ouro cientifico para expandir a <strong>memoria de trabalho</strong>.
+                        Identifique quando a posicao OU a letra se repete N rodadas atras.
+                        Fortalece <strong>dlPFC</strong> e anti-correlacao FPN-DMN.</p>
+                    <div class="nback-container">
+                        <div id="nbackGrid" class="nback-game">
+                            <div class="nback-cell" data-pos="0"></div>
+                            <div class="nback-cell" data-pos="1"></div>
+                            <div class="nback-cell" data-pos="2"></div>
+                            <div class="nback-cell" data-pos="3"></div>
+                            <div class="nback-cell" data-pos="4"></div>
+                            <div class="nback-cell" data-pos="5"></div>
+                            <div class="nback-cell" data-pos="6"></div>
+                            <div class="nback-cell" data-pos="7"></div>
+                            <div class="nback-cell" data-pos="8"></div>
+                        </div>
+                        <div id="nbackLetter" class="nback-letter"></div>
+                    </div>
+                    <div class="nback-buttons">
+                        <button class="btn-action btn-nback" id="nbackPosBtn" onclick="nbackMatch('position')" disabled>Posicao Igual</button>
+                        <button class="btn-action btn-nback" id="nbackLetBtn" onclick="nbackMatch('letter')" disabled>Letra Igual</button>
+                    </div>
+                    <div id="nbackScore" class="tool-timer"></div>
+                    <button class="btn-action" id="nbackStartBtn" onclick="startNBack()">Iniciar 2-Back</button>
+                </div>
+            </div>
+
+            <!-- Cognitive Fatigue Monitor -->
+            <div class="glass-card neuro-tool-card">
+                <h3>🔋 Monitor de Fadiga Cognitiva</h3>
+                <div class="tool-body" style="display:block">
+                    <p class="tool-science">Proxy de acumulo de <strong>adenosina</strong> baseado no tempo total de
+                        sessoes de foco hoje. Acima de 90min sem pausa, a fadiga mental reduz a eficiencia
+                        em ate 40%.</p>
+                    <div id="fatigueMonitor" class="fatigue-display">
+                        <div class="fatigue-bar"><div class="fatigue-fill" id="fatigueFill"></div></div>
+                        <div class="fatigue-status" id="fatigueStatus">Carregando...</div>
+                        <div class="fatigue-recommendation" id="fatigueRec"></div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -1010,7 +1204,7 @@
         </section>
 
         <!-- SUGESTÕES -->
-        <section id="tab-sugestoes" class="tab-panel">
+        <section id="tab-suggestions" class="tab-panel">
             <div class="page-header">
                 <h1>💡 Sugestões de Melhoria</h1>
                 <p class="page-subtitle">Ajude-nos a evoluir a plataforma para o mais alto nível de performance.</p>
@@ -1027,9 +1221,10 @@
                 <div id="suggMessage" style="margin-top: 10px; font-size: 13px;"></div>
             </div>
             <div class="glass-card" style="margin-top:24px">
-                <h3>🗳️ Próximas Atualizações (Status)</h3>
-                <p>Nesta área, futura integração com o painel de administradores exibirá quais sugestões foram aprovadas
-                    para desenvolvimento.</p>
+                <h3>📋 Suas Sugestões</h3>
+                <div id="userSuggestionsList">
+                    <p class="empty-state">Carregando...</p>
+                </div>
             </div>
         </section>
 
@@ -1038,6 +1233,7 @@
     <audio id="pomodoroAlarm" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
         preload="auto"></audio>
     <script src="app.js"></script>
+    <script src="neuro-tools.js"></script>
     <script>
         // Register PWA Service Worker
         if ('serviceWorker' in navigator) {

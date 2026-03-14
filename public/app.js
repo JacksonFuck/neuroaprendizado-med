@@ -62,6 +62,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('loadingScreen').classList.add('hidden');
     document.getElementById('diaryDate').valueAsDate = new Date();
 
+    // Neuro-Architect Greeting (once per day)
+    showNeuroGreeting();
+
     // Add SVG gradient for timer
     const svg = document.querySelector('.timer-ring svg');
     if (svg) {
@@ -115,6 +118,8 @@ function switchTab(tabName) {
     if (window.innerWidth <= 768) {
         document.getElementById('sidebar').classList.remove('open');
     }
+    // Lazy load suggestions
+    if (tabName === 'suggestions') loadUserSuggestions();
 }
 
 function toggleSidebar() {
@@ -159,11 +164,15 @@ async function loadUpcoming() {
             el.innerHTML = '<p class="empty-state">Nenhuma revisão agendada</p>';
             return;
         }
-        el.innerHTML = [...due, ...upcoming].slice(0, 6).map(t => `
+        el.innerHTML = [...due, ...upcoming].slice(0, 6).map(t => {
+            const dateStr = String(t.next_review).includes('T') ? t.next_review.split('T')[0] : t.next_review;
+            const isDue = dateStr <= today;
+            return `
       <div class="upcoming-item">
         <span class="upcoming-name">${t.name}</span>
-        <span class="upcoming-date ${t.next_review <= today ? 'style="color:#ef4444"' : ''}">${t.next_review <= today ? '⚠️ Hoje' : formatDate(t.next_review)}</span>
-      </div>`).join('');
+        <span class="upcoming-date" ${isDue ? 'style="color:#ef4444"' : ''}>${isDue ? '⚠️ Hoje' : formatDate(t.next_review)}</span>
+      </div>`;
+        }).join('');
     } catch (e) { console.error('Upcoming error:', e); }
 }
 
@@ -394,16 +403,25 @@ async function loadSpacedTopics() {
         if (!topics.length) { listEl.innerHTML = '<p class="empty-state">Nenhum tópico adicionado</p>'; return; }
         listEl.innerHTML = topics.map(t => {
             const dots = Array(5).fill(0).map((_, i) => `<div class="stage-dot ${i < t.stage ? 'filled' : ''}"></div>`).join('');
+            const R = t.retrievability ?? 100;
+            const rClass = R > 90 ? 'r-high' : R > 70 ? 'r-mid' : 'r-low';
             return `
       <div class="spaced-topic-item">
         <div class="topic-info">
           <h4>${t.name}</h4>
-          <p class="topic-meta">${t.category} • Próxima: ${formatDate(t.next_review)}</p>
+          <p class="topic-meta">${t.category} • Proxima: ${formatDate(t.next_review)}</p>
+          <div class="retrievability-bar">
+            <div class="r-fill ${rClass}" style="width:${R}%"></div>
+            <span class="r-label">${R}% recall</span>
+          </div>
         </div>
-        <div style="display:flex;align-items:center;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
           <div class="topic-stage">${dots}</div>
-          <div class="topic-actions">
-            <button class="btn-review" onclick="reviewTopic(${t.id})">Revisar ✓</button>
+          <div class="topic-actions rating-actions">
+            <button class="btn-rating btn-again" onclick="reviewTopic(${t.id}, 1)" title="Nao lembrei">❌</button>
+            <button class="btn-rating btn-hard" onclick="reviewTopic(${t.id}, 2)" title="Dificil">😓</button>
+            <button class="btn-rating btn-good" onclick="reviewTopic(${t.id}, 3)" title="Lembrei">✅</button>
+            <button class="btn-rating btn-easy" onclick="reviewTopic(${t.id}, 4)" title="Facil">🚀</button>
             <button class="btn-delete" onclick="deleteSpacedTopic(${t.id})">✕</button>
           </div>
         </div>
@@ -428,9 +446,13 @@ async function addSpacedTopic() {
     } catch (e) { console.error(e); }
 }
 
-async function reviewTopic(id) {
+async function reviewTopic(id, rating = 3) {
     try {
-        await fetch(`/api/spaced/${id}/review`, { method: 'PUT' });
+        await fetch(`/api/spaced/${id}/review`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rating })
+        });
         loadSpacedTopics();
         loadUpcoming();
         loadStats();
@@ -504,13 +526,16 @@ async function deleteDiaryEntry(id) {
 // ─── HELPERS ───
 function formatDate(d) {
     if (!d) return '';
-    const date = new Date(d + 'T00:00:00');
+    const raw = String(d);
+    const date = raw.includes('T') ? new Date(raw) : new Date(raw + 'T00:00:00');
+    if (isNaN(date.getTime())) return '';
     return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
 }
 
 function formatDateTime(d) {
     if (!d) return '';
     const date = new Date(d);
+    if (isNaN(date.getTime())) return '';
     return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) + ' ' +
         date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 }
@@ -530,6 +555,30 @@ function notify(title, body) {
 }
 
 // ─── SUGESTÕES ───
+async function loadUserSuggestions() {
+    try {
+        const res = await fetch('/api/suggestions');
+        if (!res.ok) return;
+        const suggestions = await res.json();
+        const el = document.getElementById('userSuggestionsList');
+        if (!el) return;
+        if (!suggestions.length) {
+            el.innerHTML = '<p class="empty-state">Nenhuma sugestão enviada ainda. Use o formulário acima!</p>';
+            return;
+        }
+        const statusMap = { pending: '🕐 Pendente', approved: '✅ Aprovada', rejected: '❌ Rejeitada', implemented: '🚀 Implementada' };
+        el.innerHTML = suggestions.map(s => `
+          <div class="suggestion-item">
+            <div class="suggestion-header">
+              <strong>${s.title}</strong>
+              <span class="suggestion-status">${statusMap[s.status] || s.status}</span>
+            </div>
+            <p class="suggestion-desc">${s.description}</p>
+            <span class="suggestion-date">${formatDate(s.created_at)}</span>
+          </div>`).join('');
+    } catch (e) { console.error('Suggestions error:', e); }
+}
+
 async function submitSuggestion(e) {
     e.preventDefault();
     const btn = document.getElementById('suggSubmitBtn');
@@ -556,6 +605,7 @@ async function submitSuggestion(e) {
             msgEl.textContent = 'Sugestão enviada com sucesso! Obrigado pela contribuição.';
             msgEl.style.color = 'var(--synapse-green)';
             document.getElementById('suggestionForm').reset();
+            loadUserSuggestions();
         } else {
             msgEl.textContent = data.error || 'Erro ao enviar sugestão.';
             msgEl.style.color = 'var(--synapse-red)';
@@ -567,6 +617,45 @@ async function submitSuggestion(e) {
 
     btn.disabled = false;
     btn.textContent = 'Enviar Sugestão';
+}
+
+// ─── NEURO-ARCHITECT GREETING ───
+function showNeuroGreeting() {
+    const lastGreeting = localStorage.getItem('neuro_greeting_date');
+    const today = new Date().toISOString().split('T')[0];
+    if (lastGreeting === today) return;
+
+    const modal = document.getElementById('neuroGreetingModal');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+
+    // Update greeting title based on time of day
+    const h = new Date().getHours();
+    const name = currentUser?.name?.split(' ')[0] || 'estudante';
+    const titleEl = modal.querySelector('.greeting-title');
+    if (titleEl) {
+        const period = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+        titleEl.textContent = `${period}, ${name}. Neuro-Arquiteto ativo.`;
+    }
+
+    // Update review count
+    const reviewCount = document.getElementById('dashReviews')?.textContent || '0';
+    const countEl = document.getElementById('greetingReviewCount');
+    if (countEl) {
+        const n = parseInt(reviewCount) || 0;
+        countEl.textContent = n > 0 ? `${n} revisao${n > 1 ? 'es' : ''} pendente${n > 1 ? 's' : ''}` : 'Nenhuma revisao pendente';
+    }
+}
+
+function selectGreetingOption(tab) {
+    closeGreeting();
+    switchTab(tab);
+}
+
+function closeGreeting() {
+    const modal = document.getElementById('neuroGreetingModal');
+    if (modal) modal.classList.add('hidden');
+    localStorage.setItem('neuro_greeting_date', new Date().toISOString().split('T')[0]);
 }
 
 // Request notification permission

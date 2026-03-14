@@ -41,9 +41,14 @@ router.get('/stats', ensureAuth, async (req, res) => {
        ),
        numbered AS (
          SELECT d, d - (ROW_NUMBER() OVER (ORDER BY d))::int AS grp FROM dates
+       ),
+       today_grp AS (
+         SELECT grp FROM numbered WHERE d = CURRENT_DATE LIMIT 1
        )
-       SELECT COUNT(*) as streak FROM numbered
-       WHERE grp = (SELECT grp FROM numbered WHERE d = CURRENT_DATE LIMIT 1)`,
+       SELECT COALESCE(
+         (SELECT COUNT(*) FROM numbered WHERE grp = (SELECT grp FROM today_grp)),
+         0
+       ) as streak`,
             [req.user.id]
         );
 
