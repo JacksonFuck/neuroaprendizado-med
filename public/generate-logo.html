@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head><title>NeuroForge Logo Generator</title></head>
+<body style="background:#030308;display:flex;flex-direction:column;align-items:center;padding:40px;gap:20px;color:#fff;font-family:sans-serif">
+<h2>NeuroForge Logo Generator — Clique nos botões para baixar</h2>
+
+<canvas id="c512" width="512" height="512"></canvas>
+<button onclick="download('c512','neuroforge-logo-512.png')" style="padding:12px 24px;background:#00f0ff;color:#000;border:none;border-radius:8px;font-size:16px;cursor:pointer">Baixar 512x512 PNG</button>
+
+<canvas id="c256" width="256" height="256"></canvas>
+<button onclick="download('c256','neuroforge-logo-256.png')" style="padding:12px 24px;background:#00f0ff;color:#000;border:none;border-radius:8px;font-size:16px;cursor:pointer">Baixar 256x256 PNG</button>
+
+<canvas id="c128" width="128" height="128"></canvas>
+<button onclick="download('c128','neuroforge-logo-128.png')" style="padding:12px 24px;background:#00f0ff;color:#000;border:none;border-radius:8px;font-size:16px;cursor:pointer">Baixar 128x128 PNG</button>
+
+<script>
+function drawLogo(canvas) {
+    const ctx = canvas.getContext('2d');
+    const s = canvas.width;
+    const scale = s / 512;
+
+    // Background circle
+    ctx.fillStyle = '#0a0b18';
+    ctx.beginPath();
+    ctx.arc(s/2, s/2, s/2 - 4*scale, 0, Math.PI*2);
+    ctx.fill();
+
+    // Border
+    const borderGrad = ctx.createLinearGradient(0, 0, s, s);
+    borderGrad.addColorStop(0, 'rgba(0,240,255,0.6)');
+    borderGrad.addColorStop(1, 'rgba(224,64,251,0.6)');
+    ctx.strokeStyle = borderGrad;
+    ctx.lineWidth = 4 * scale;
+    ctx.beginPath();
+    ctx.arc(s/2, s/2, s/2 - 4*scale, 0, Math.PI*2);
+    ctx.stroke();
+
+    // Brain drawing
+    ctx.save();
+    ctx.translate(s/2, s*0.46);
+    const bs = scale;
+
+    const grad = ctx.createLinearGradient(-120*bs, -100*bs, 120*bs, 100*bs);
+    grad.addColorStop(0, '#00f0ff');
+    grad.addColorStop(1, '#e040fb');
+
+    // Glow
+    ctx.shadowColor = '#00f0ff';
+    ctx.shadowBlur = 20 * scale;
+
+    // Left hemisphere
+    ctx.beginPath();
+    ctx.moveTo(-8*bs, -100*bs);
+    ctx.bezierCurveTo(-70*bs,-100*bs, -120*bs,-65*bs, -120*bs,-10*bs);
+    ctx.bezierCurveTo(-120*bs,20*bs, -105*bs,48*bs, -80*bs,65*bs);
+    ctx.bezierCurveTo(-65*bs,75*bs, -50*bs,95*bs, -45*bs,110*bs);
+    ctx.bezierCurveTo(-40*bs,120*bs, -20*bs,125*bs, -8*bs,120*bs);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 6 * bs;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // Right hemisphere
+    ctx.beginPath();
+    ctx.moveTo(8*bs, -100*bs);
+    ctx.bezierCurveTo(70*bs,-100*bs, 120*bs,-65*bs, 120*bs,-10*bs);
+    ctx.bezierCurveTo(120*bs,20*bs, 105*bs,48*bs, 80*bs,65*bs);
+    ctx.bezierCurveTo(65*bs,75*bs, 50*bs,95*bs, 45*bs,110*bs);
+    ctx.bezierCurveTo(40*bs,120*bs, 20*bs,125*bs, 8*bs,120*bs);
+    ctx.stroke();
+
+    // Brain folds left
+    ctx.lineWidth = 3.5 * bs;
+    ctx.globalAlpha = 0.7;
+    [[-90,-50,-60,-55,-35,-20,-10,-25], [-100,-5,-70,5,-40,-15,-10,0], [-95,35,-65,25,-35,50,-15,40]].forEach(pts => {
+        ctx.beginPath();
+        ctx.moveTo(pts[0]*bs, pts[1]*bs);
+        ctx.bezierCurveTo(pts[2]*bs,pts[3]*bs, pts[4]*bs,pts[5]*bs, pts[6]*bs,pts[7]*bs);
+        ctx.stroke();
+    });
+    // Brain folds right
+    [[90,-50,60,-55,35,-20,10,-25], [100,-5,70,5,40,-15,10,0], [95,35,65,25,35,50,15,40]].forEach(pts => {
+        ctx.beginPath();
+        ctx.moveTo(pts[0]*bs, pts[1]*bs);
+        ctx.bezierCurveTo(pts[2]*bs,pts[3]*bs, pts[4]*bs,pts[5]*bs, pts[6]*bs,pts[7]*bs);
+        ctx.stroke();
+    });
+
+    ctx.globalAlpha = 1;
+
+    // Central synapse
+    ctx.shadowColor = '#00f0ff';
+    ctx.shadowBlur = 30 * scale;
+    ctx.beginPath();
+    ctx.arc(0, -10*bs, 8*bs, 0, Math.PI*2);
+    ctx.fillStyle = '#00f0ff';
+    ctx.fill();
+
+    // Synapse lines
+    ctx.shadowBlur = 0;
+    ctx.lineWidth = 2 * bs;
+    ctx.globalAlpha = 0.4;
+    [[-40,-60], [40,-60], [-50,30], [50,30]].forEach((p, i) => {
+        ctx.beginPath();
+        ctx.moveTo(0, -10*bs);
+        ctx.lineTo(p[0]*bs, p[1]*bs);
+        ctx.strokeStyle = i % 2 === 0 ? '#00f0ff' : '#e040fb';
+        ctx.stroke();
+        // Node
+        ctx.beginPath();
+        ctx.arc(p[0]*bs, p[1]*bs, (i < 2 ? 4 : 3)*bs, 0, Math.PI*2);
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(0,240,255,0.6)' : 'rgba(224,64,251,0.6)';
+        ctx.fill();
+    });
+
+    ctx.globalAlpha = 1;
+    ctx.restore();
+
+    // "NF" text
+    ctx.shadowColor = '#00f0ff';
+    ctx.shadowBlur = 10 * scale;
+    const textGrad = ctx.createLinearGradient(s*0.3, s*0.8, s*0.7, s*0.85);
+    textGrad.addColorStop(0, '#00f0ff');
+    textGrad.addColorStop(1, '#e040fb');
+    ctx.fillStyle = textGrad;
+    ctx.font = `800 ${48*scale}px system-ui, -apple-system, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.letterSpacing = `${8*scale}px`;
+    ctx.fillText('NF', s/2, s*0.84);
+}
+
+['c512','c256','c128'].forEach(id => drawLogo(document.getElementById(id)));
+
+function download(canvasId, filename) {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = document.getElementById(canvasId).toDataURL('image/png');
+    link.click();
+}
+</script>
+</body>
+</html>
