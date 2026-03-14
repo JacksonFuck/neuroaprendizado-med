@@ -1295,6 +1295,24 @@
                     <p class="tool-science">Padrão-ouro científico para expandir a <strong>memória de trabalho</strong>.
                         Identifique quando a posição OU a letra se repete N rodadas atrás.
                         Fortalece <strong>dlPFC</strong> e anti-correlação FPN-DMN.</p>
+                    <div class="nback-instructions">
+                        <h4>Como Jogar</h4>
+                        <div class="nback-instruction-grid">
+                            <div class="nback-instr-item">
+                                <span class="nback-instr-key">A</span> ou <span class="nback-instr-key">&larr;</span>
+                                <span>Posicao igual a N rodadas atras</span>
+                            </div>
+                            <div class="nback-instr-item">
+                                <span class="nback-instr-key">L</span> ou <span class="nback-instr-key">&rarr;</span>
+                                <span>Letra igual a N rodadas atras</span>
+                            </div>
+                        </div>
+                        <p class="nback-instr-tip">No modo 2-Back: compare com o que apareceu <strong>2 rodadas antes</strong>. Se a posicao OU a letra for igual, pressione a tecla correspondente. Acerte &gt;80% em 3 sessoes para subir de nivel!</p>
+                    </div>
+                    <div class="nback-current-level" id="nbackCurrentLevel">
+                        <span class="nback-level-number">2</span>
+                        <span class="nback-level-label">-Back</span>
+                    </div>
                     <div class="nback-container">
                         <div id="nbackGrid" class="nback-game">
                             <div class="nback-cell" data-pos="0"></div>
@@ -1926,32 +1944,33 @@
                     de alto impacto</p>
             </div>
             <div class="glass-card">
-                <h3>📚 Referências Principais</h3>
+                <h3>Referencias Principais</h3>
                 <ul class="ref-list">
-                    <li><strong>Wiklund-Hörnqvist et al. (2021).</strong> Retrieval practice facilitates learning by
+                    <li><strong>Wiklund-Hornqvist et al. (2021).</strong> Retrieval practice facilitates learning by
                         strengthening processing in both the anterior and posterior hippocampus. <em>Brain and
-                            Behavior.</em></li>
+                            Behavior.</em> <a class="ref-link" href="https://doi.org/10.1002/brb3.1909" target="_blank" rel="noopener">DOI: 10.1002/brb3.1909</a></li>
                     <li><strong>Marek et al. (2023).</strong> The impact of studying on the hippocampal volume in
-                        medical students. <em>Polish Journal of Radiology.</em></li>
-                    <li><strong>Dubinsky & Hamid (2024).</strong> The neuroscience of active learning and direct
-                        instruction. <em>Neuroscience & Biobehavioral Reviews.</em></li>
-                    <li><strong>Kukushkin et al. (2024).</strong> The massed-spaced learning effect in non-neural human
-                        cell lines. <em>Nature Communications.</em></li>
+                        medical students. <em>Polish Journal of Radiology.</em> <a class="ref-link" href="https://doi.org/10.5114/pjr.2023.124433" target="_blank" rel="noopener">DOI: 10.5114/pjr.2023.124433</a></li>
+                    <li><strong>Dubinsky &amp; Hamid (2024).</strong> The neuroscience of active learning and direct
+                        instruction. <em>Neuroscience &amp; Biobehavioral Reviews.</em> <a class="ref-link" href="https://doi.org/10.1016/j.neubiorev.2024.105737" target="_blank" rel="noopener">DOI: 10.1016/j.neubiorev.2024.105737</a></li>
+                    <li><strong>Kukushkin &amp; Carew (2024).</strong> The massed-spaced learning effect in non-neural human
+                        cell lines. <em>Nature Communications.</em> <a class="ref-link" href="https://doi.org/10.1038/s41467-024-53922-x" target="_blank" rel="noopener">DOI: 10.1038/s41467-024-53922-x</a></li>
                     <li><strong>Kim et al. (2024).</strong> M1 recruitment during interleaved practice is important for
-                        encoding and consolidation. <em>npj Science of Learning.</em></li>
+                        encoding and consolidation. <em>npj Science of Learning.</em> <a class="ref-link" href="https://doi.org/10.1038/s41539-024-00277-4" target="_blank" rel="noopener">DOI: 10.1038/s41539-024-00277-4</a></li>
                     <li><strong>Westbrook et al. (2025).</strong> Striatal dopamine enhances working memory and
-                        reinforcement learning while reducing effort cost. <em>Nature Communications.</em></li>
+                        reinforcement learning while reducing effort cost. <em>Nature Communications.</em> <a class="ref-link" href="https://doi.org/10.1038/s41467-025-61099-0" target="_blank" rel="noopener">DOI: 10.1038/s41467-025-61099-0</a></li>
                     <li><strong>Zhang et al. (2025).</strong> Offline consolidation mechanisms of the retrieval practice
-                        effect. <em>npj Science of Learning.</em></li>
-                    <li><strong>Pitt et al. (2025).</strong> Retrieval Practice Improves Exam Performance as a Function
-                        of Question Type. <em>PubMed.</em></li>
-                    <li><strong>Nature (2026).</strong> Cholinergic modulation of dopamine release drives effortful
-                        behaviour.</li>
-                    <li><strong>Samani et al. (2021).</strong> Interleaved practice enhances memory and problem-solving
-                        in undergraduate physics. <em>npj Science of Learning.</em></li>
+                        effect. <em>npj Science of Learning.</em> <a class="ref-link" href="https://doi.org/10.1038/s41539-025-00349-8" target="_blank" rel="noopener">DOI: 10.1038/s41539-025-00349-8</a></li>
+                    <li><strong>Samani &amp; Levesque (2021).</strong> Interleaved practice enhances memory and problem-solving
+                        in undergraduate physics. <em>npj Science of Learning.</em> <a class="ref-link" href="https://doi.org/10.1038/s41539-021-00110-x" target="_blank" rel="noopener">DOI: 10.1038/s41539-021-00110-x</a></li>
                     <li><strong>Antony et al. (2017).</strong> Retrieval as a fast route to memory consolidation.
-                        <em>Trends in Cognitive Sciences.</em>
-                    </li>
+                        <em>Trends in Cognitive Sciences.</em> <a class="ref-link" href="https://doi.org/10.1016/j.tics.2017.07.008" target="_blank" rel="noopener">DOI: 10.1016/j.tics.2017.07.008</a></li>
+                    <li><strong>Blain et al. (2026).</strong> Cholinergic modulation of dopamine release drives effortful
+                        behaviour. <em>Nature.</em> <a class="ref-link" href="https://www.nature.com/articles/s41586-025-10046-6" target="_blank" rel="noopener">Nature: s41586-025-10046-6</a></li>
+                    <li><strong>Berke (2024).</strong> Dopaminergic mechanism for reward maximization and effort cost.
+                        <em>Nature Neuroscience.</em> <a class="ref-link" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11098095/" target="_blank" rel="noopener">PMC11098095</a></li>
+                    <li><strong>Skvortsova et al. (2020).</strong> Dopamine and effort-reward integration.
+                        <em>Neuropsychopharmacology.</em> <a class="ref-link" href="https://www.nature.com/articles/s41386-020-0669-0" target="_blank" rel="noopener">Nature: s41386-020-0669-0</a></li>
                 </ul>
             </div>
             <div class="glass-card" style="margin-top:24px">

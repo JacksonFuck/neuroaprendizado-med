@@ -386,6 +386,10 @@ async function loadNBackProgress() {
         nbackN = prog.current_level || 2;
         renderNBackLevelSelector(prog.max_unlocked_level || 2);
         document.getElementById('nbackStartBtn').textContent = `Iniciar ${nbackN}-Back`;
+        const levelDisplay = document.getElementById('nbackCurrentLevel');
+        if (levelDisplay) {
+            levelDisplay.querySelector('.nback-level-number').textContent = nbackN;
+        }
     } catch (e) { console.error('NBack progress error:', e); }
 }
 
@@ -438,6 +442,10 @@ function renderNBackLevelSelector(maxLevel) {
     sel.onchange = (e) => {
         nbackN = parseInt(e.target.value);
         document.getElementById('nbackStartBtn').textContent = `Iniciar ${nbackN}-Back`;
+        const levelDisplay = document.getElementById('nbackCurrentLevel');
+        if (levelDisplay) {
+            levelDisplay.querySelector('.nback-level-number').textContent = nbackN;
+        }
     };
 }
 
@@ -646,7 +654,6 @@ function startGoNoGo() {
 
     const circle = document.getElementById('gonogoCircle');
     circle.className = 'gonogo-circle';
-    circle.style.opacity = '0';
 
     setTimeout(() => showGoNoGoTrial(), 1500);
 }
@@ -662,7 +669,6 @@ function showGoNoGoTrial() {
     const circle = document.getElementById('gonogoCircle');
 
     circle.className = 'gonogo-circle';
-    circle.style.opacity = '0';
 
     document.getElementById('gonogoScore').textContent =
         `Estímulo ${gonogoIndex + 1}/${gonogoTrials.length} | Acertos: ${gonogoScore.hits} | Alarmes falsos: ${gonogoScore.falseAlarms}`;
@@ -687,7 +693,6 @@ function showGoNoGoTrial() {
             }
 
             circle.className = 'gonogo-circle';
-            circle.style.opacity = '0';
             gonogoIndex++;
             showGoNoGoTrial();
         }, 1200);
@@ -717,7 +722,6 @@ function gonogoResponse() {
     setTimeout(() => {
         if (!gonogoActive) return;
         circle.className = 'gonogo-circle';
-        circle.style.opacity = '0';
         gonogoIndex++;
         showGoNoGoTrial();
     }, 400);
@@ -742,7 +746,6 @@ function finishGoNoGo() {
 
     const circle = document.getElementById('gonogoCircle');
     circle.className = 'gonogo-circle';
-    circle.style.opacity = '0';
 
     document.getElementById('gonogoBtn').textContent = 'Iniciar (30 estímulos)';
     document.getElementById('gonogoScore').innerHTML =
@@ -759,7 +762,6 @@ function stopGoNoGo() {
     document.getElementById('gonogoBtn').textContent = 'Iniciar (30 estímulos)';
     const circle = document.getElementById('gonogoCircle');
     circle.className = 'gonogo-circle';
-    circle.style.opacity = '0';
     document.getElementById('gonogoScore').textContent = '';
 }
 
