@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroForge — Forje sinapses. Domine o conhecimento.</title>
+    <meta name="description" content="A primeira plataforma de estudos construída sobre engenharia de dopamina, repetição espaçada FSRS e protocolos neurocientíficos reais. 92% de retenção comprovada.">
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+    <meta name="theme-color" content="#00f0ff">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           RESET & BASE
+           ============================================ */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            background: #030308;
+            color: #b0bcd8;
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        img { max-width: 100%; display: block; }
+        a { color: inherit; text-decoration: none; }
+        button { cursor: pointer; border: none; font-family: inherit; }
+
+        /* ============================================
+           CSS VARIABLES
+           ============================================ */
+        :root {
+            --bg: #030308;
+            --cyan: #00f0ff;
+            --magenta: #e040fb;
+            --gold: #ffbe0b;
+            --green: #00e676;
+            --text: #b0bcd8;
+            --text-dim: #5e6a8a;
+            --text-bright: #eaf0ff;
+            --surface: rgba(10, 11, 30, 0.7);
+            --border: rgba(0, 240, 255, 0.1);
+            --font-display: 'Quicksand', sans-serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ============================================
+           STICKY HEADER
+           ============================================ */
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(3, 3, 8, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            transition: background 0.3s;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-logo img { width: 32px; height: 32px; }
+        .header-logo span {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 18px;
+            background: linear-gradient(90deg, var(--cyan), var(--magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+        .header-nav a {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-dim);
+            transition: color 0.2s;
+            letter-spacing: 0.3px;
+        }
+        .header-nav a:hover { color: var(--cyan); }
+        .header-cta {
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #000;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            border-radius: 6px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .header-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
+        }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            color: var(--text);
+            font-size: 24px;
+            padding: 4px;
+        }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 24px 60px;
+            overflow: hidden;
+        }
+        #neuralBg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+        .hero-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.12), rgba(224, 64, 251, 0.12));
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: logoPulse 4s ease-in-out infinite;
+        }
+        @keyframes logoPulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(0, 240, 255, 0.1); }
+            50% { box-shadow: 0 0 60px rgba(0, 240, 255, 0.25), 0 0 100px rgba(224, 64, 251, 0.1); }
+        }
+        .hero-logo img {
+            width: 48px;
+            height: 48px;
+            filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.4));
+        }
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(48px, 8vw, 96px);
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--magenta) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
+        }
+        .hero-slogan {
+            font-family: var(--font-display);
+            font-size: clamp(18px, 3vw, 28px);
+            font-weight: 600;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid var(--cyan);
+            width: 0;
+            animation: typewriter 2.5s steps(35) 0.8s forwards, blink 0.7s step-end infinite;
+        }
+        @keyframes typewriter {
+            to { width: 100%; }
+        }
+        @keyframes blink {
+            50% { border-color: transparent; }
+        }
+        .hero-subtitle {
+            font-size: clamp(14px, 2vw, 17px);
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 16px auto 32px;
+            line-height: 1.7;
+        }
+        .hero-ctas {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #000;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            border-radius: 8px;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 32px rgba(0, 240, 255, 0.3), 0 0 60px rgba(224, 64, 251, 0.15);
+        }
+        .btn-primary:hover::before { opacity: 1; }
+        .btn-ghost {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--cyan);
+            background: transparent;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 8px;
+            transition: all 0.25s;
+        }
+        .btn-ghost:hover {
+            background: rgba(0, 240, 255, 0.08);
+            border-color: var(--cyan);
+            transform: translateY(-2px);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 60px;
+            padding: 20px 32px;
+            background: rgba(10, 11, 30, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            backdrop-filter: blur(16px);
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--cyan);
+        }
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        /* ============================================
+           SECTION SHARED STYLES
+           ============================================ */
+        section {
+            padding: 100px 24px;
+            position: relative;
+        }
+        .section-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .section-tag {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--magenta);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(28px, 4vw, 44px);
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+        .section-desc {
+            font-size: 16px;
+            color: var(--text-dim);
+            max-width: 600px;
+            line-height: 1.7;
+            margin-bottom: 48px;
+        }
+        .section-divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--magenta));
+            margin: 20px 0;
+            border-radius: 2px;
+        }
+
+        /* ============================================
+           REVEAL ANIMATION
+           ============================================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* ============================================
+           PROBLEM SECTION
+           ============================================ */
+        .problem-section {
+            background: linear-gradient(180deg, var(--bg) 0%, rgba(15, 5, 20, 1) 50%, var(--bg) 100%);
+        }
+        .problem-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+        .problem-visual {
+            position: relative;
+            padding: 32px;
+            background: var(--surface);
+            border: 1px solid rgba(255, 50, 80, 0.15);
+            border-radius: 12px;
+        }
+        .problem-counter {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+        .problem-counter .highlight-red {
+            color: #ff3366;
+            font-weight: 700;
+            font-size: 20px;
+        }
+        .forgetting-curve {
+            width: 100%;
+            height: 200px;
+        }
+        .forgetting-curve svg {
+            width: 100%;
+            height: 100%;
+        }
+        .curve-path {
+            stroke-dasharray: 500;
+            stroke-dashoffset: 500;
+            transition: stroke-dashoffset 2s ease-out;
+        }
+        .curve-path.animate {
+            stroke-dashoffset: 0;
+        }
+        .problem-text h3 {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 16px;
+        }
+        .problem-text p {
+            font-size: 15px;
+            color: var(--text);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+        .problem-text .citation {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-dim);
+            padding: 8px 12px;
+            background: rgba(0, 240, 255, 0.03);
+            border-left: 2px solid var(--cyan);
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* ============================================
+           SOLUTION SECTION (Neurotransmitter Pathways)
+           ============================================ */
+        .pathway-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+        .pathway-card {
+            padding: 28px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .pathway-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--cyan), var(--magenta));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .pathway-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 240, 255, 0.25);
+            box-shadow: 0 8px 32px rgba(0, 240, 255, 0.08);
+        }
+        .pathway-card:hover::before { opacity: 1; }
+        .pathway-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .pathway-name {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+        }
+        .pathway-desc {
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .pathway-stat {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-top: 12px;
+        }
+        .stat-cyan { background: rgba(0, 240, 255, 0.1); color: var(--cyan); }
+        .stat-magenta { background: rgba(224, 64, 251, 0.1); color: var(--magenta); }
+        .stat-green { background: rgba(0, 230, 118, 0.1); color: var(--green); }
+        .stat-gold { background: rgba(255, 190, 11, 0.1); color: var(--gold); }
+
+        /* ============================================
+           FEATURES SECTION
+           ============================================ */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .feature-card {
+            padding: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 240, 255, 0.2);
+            box-shadow: 0 8px 24px rgba(0, 240, 255, 0.06);
+        }
+        .feature-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+        .feature-name {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 6px;
+        }
+        .feature-desc {
+            font-size: 13px;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* ============================================
+           DEMO SECTION
+           ============================================ */
+        .demo-section {
+            background: linear-gradient(180deg, var(--bg) 0%, rgba(0, 10, 20, 1) 50%, var(--bg) 100%);
+        }
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+        .demo-card {
+            padding: 32px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+            min-height: 340px;
+            display: flex;
+            flex-direction: column;
+        }
+        .demo-card h3 {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+        }
+        .demo-card .demo-subtitle {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+        }
+        .demo-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Stroop Demo */
+        .stroop-word {
+            font-family: var(--font-display);
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: stroopIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes stroopIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .stroop-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .stroop-option {
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #000;
+            border-radius: 6px;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .stroop-option:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+        }
+        .stroop-start-btn {
+            padding: 12px 28px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #000;
+            background: var(--gold);
+            border-radius: 6px;
+            transition: transform 0.2s;
+        }
+        .stroop-start-btn:hover { transform: scale(1.05); }
+        .stroop-result {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            margin-top: 16px;
+        }
+        .stroop-result.correct { color: var(--green); }
+        .stroop-result.wrong { color: #ff3366; }
+
+        /* Flashcard Demo */
+        .flashcard-container {
+            perspective: 800px;
+            width: 280px;
+            height: 180px;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-style: preserve-3d;
+        }
+        .flashcard-inner.flipped {
+            transform: rotateY(180deg);
+        }
+        .flashcard-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .flashcard-front {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(224, 64, 251, 0.08));
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            color: var(--text-bright);
+        }
+        .flashcard-front .fc-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--cyan);
+            margin-bottom: 8px;
+        }
+        .flashcard-back {
+            background: linear-gradient(135deg, rgba(224, 64, 251, 0.1), rgba(0, 240, 255, 0.05));
+            border: 1px solid rgba(224, 64, 251, 0.2);
+            color: var(--text-bright);
+            transform: rotateY(180deg);
+        }
+        .flashcard-back .fc-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--magenta);
+            margin-bottom: 8px;
+        }
+        .fc-hint {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 8px;
+        }
+        .fc-bottom-text {
+            font-size: 12px;
+            color: var(--text-dim);
+            max-width: 260px;
+            line-height: 1.5;
+        }
+
+        /* ============================================
+           COMPARISON TABLE
+           ============================================ */
+        .comparison-table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 640px;
+        }
+        .comparison-table th,
+        .comparison-table td {
+            padding: 14px 16px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .comparison-table th {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-dim);
+            padding-bottom: 20px;
+        }
+        .comparison-table th:first-child {
+            text-align: left;
+            color: var(--text);
+        }
+        .comparison-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .col-highlight {
+            background: rgba(0, 240, 255, 0.04);
+            position: relative;
+        }
+        .col-highlight-head {
+            color: var(--cyan) !important;
+            font-size: 15px !important;
+            position: relative;
+        }
+        .col-highlight-head::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: var(--cyan);
+            border-radius: 2px;
+        }
+        .check { color: var(--green); font-size: 18px; }
+        .cross { color: #ff3366; font-size: 18px; }
+        .partial { color: var(--gold); font-size: 14px; }
+
+        /* ============================================
+           SCIENCE SECTION
+           ============================================ */
+        .science-section {
+            background: linear-gradient(180deg, var(--bg) 0%, rgba(5, 5, 15, 1) 50%, var(--bg) 100%);
+        }
+        .journal-grid {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 48px;
+        }
+        .journal-badge {
+            padding: 10px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+        .journal-badge:hover { border-color: rgba(0, 240, 255, 0.3); }
+        .science-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .science-stat {
+            text-align: center;
+            padding: 32px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .science-stat .big-number {
+            font-family: var(--font-display);
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .science-stat:nth-child(1) .big-number { color: var(--cyan); }
+        .science-stat:nth-child(2) .big-number { color: var(--gold); }
+        .science-stat:nth-child(3) .big-number { color: var(--green); }
+        .science-stat .stat-text {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        /* ============================================
+           USE CASES / TESTIMONIALS
+           ============================================ */
+        .usecase-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .usecase-card {
+            padding: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .usecase-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 240, 255, 0.2);
+        }
+        .usecase-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        .usecase-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+        }
+        .usecase-text {
+            font-size: 13px;
+            color: var(--text-dim);
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        /* ============================================
+           PRICING SECTION
+           ============================================ */
+        .pricing-section {
+            background: linear-gradient(180deg, var(--bg) 0%, rgba(10, 5, 18, 1) 50%, var(--bg) 100%);
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            max-width: 800px;
+            margin: 0 auto 32px;
+        }
+        .pricing-card {
+            padding: 32px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .pricing-card.featured {
+            border-color: rgba(0, 240, 255, 0.3);
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.06);
+            position: relative;
+        }
+        .pricing-card.featured::before {
+            content: 'MAIS POPULAR';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 16px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            color: #000;
+            background: var(--cyan);
+            border-radius: 4px;
+            letter-spacing: 1px;
+        }
+        .pricing-card:hover {
+            transform: translateY(-4px);
+        }
+        .pricing-tier {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+        }
+        .pricing-price {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .pricing-card:first-child .pricing-price { color: var(--text); }
+        .pricing-card.featured .pricing-price { color: var(--cyan); }
+        .pricing-period {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+        }
+        .pricing-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 24px;
+        }
+        .pricing-features li {
+            font-size: 13px;
+            color: var(--text);
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .pricing-features li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 12px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .pricing-card:first-child .pricing-features li::before {
+            background: rgba(0, 240, 255, 0.3);
+        }
+        .pricing-card.featured .pricing-features li::before {
+            background: var(--cyan);
+        }
+        .pricing-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .pricing-btn-free {
+            color: var(--cyan);
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+        }
+        .pricing-btn-free:hover {
+            background: rgba(0, 240, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        .pricing-btn-pro {
+            color: #000;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+        }
+        .pricing-btn-pro:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 240, 255, 0.25);
+        }
+        .pricing-compare {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-dim);
+            padding: 16px 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .pricing-compare strong { color: var(--gold); }
+
+        /* ============================================
+           FINAL CTA
+           ============================================ */
+        .final-cta-section {
+            text-align: center;
+            padding: 80px 24px 100px;
+        }
+        .final-cta-title {
+            font-family: var(--font-display);
+            font-size: clamp(28px, 4vw, 40px);
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 12px;
+        }
+        .final-cta-sub {
+            font-size: 16px;
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+        .final-cta-form {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .final-cta-form input[type="email"] {
+            flex: 1;
+            min-width: 240px;
+            padding: 14px 18px;
+            font-size: 14px;
+            font-family: var(--font-mono);
+            color: #fff;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .final-cta-form input[type="email"]:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
+        }
+        .final-cta-form input[type="email"]::placeholder {
+            color: var(--text-dim);
+        }
+        .final-cta-form button {
+            padding: 14px 28px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #000;
+            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .final-cta-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 240, 255, 0.3);
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .site-footer {
+            padding: 48px 24px 32px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+        .footer-inner {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .footer-logo img { width: 24px; height: 24px; }
+        .footer-logo span {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 16px;
+            background: linear-gradient(90deg, var(--cyan), var(--magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .footer-slogan {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
+        .footer-author {
+            font-size: 12px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .footer-author-role {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            font-size: 12px;
+            color: var(--text-dim);
+            transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--cyan); }
+        .footer-copy {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .usecase-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .header-nav { display: none; }
+            .header-nav.open {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 64px;
+                left: 0;
+                right: 0;
+                background: rgba(3, 3, 8, 0.95);
+                backdrop-filter: blur(20px);
+                padding: 20px 24px;
+                border-bottom: 1px solid var(--border);
+                gap: 16px;
+            }
+            .mobile-menu-btn { display: block; }
+            .problem-grid { grid-template-columns: 1fr; }
+            .pathway-grid { grid-template-columns: 1fr; }
+            .features-grid { grid-template-columns: 1fr; }
+            .demo-grid { grid-template-columns: 1fr; }
+            .science-stats { grid-template-columns: 1fr; }
+            .usecase-grid { grid-template-columns: 1fr; }
+            .pricing-grid { grid-template-columns: 1fr; }
+            .hero-slogan {
+                white-space: normal;
+                width: auto;
+                border-right: none;
+                animation: none;
+                opacity: 1;
+            }
+            .stats-bar { gap: 16px; padding: 16px; }
+            .stat-value { font-size: 16px; }
+        }
+        @media (max-width: 480px) {
+            section { padding: 60px 16px; }
+            .hero { padding: 80px 16px 40px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================
+     HEADER
+     ============================================ -->
+<header class="site-header">
+    <a href="#" class="header-logo">
+        <img src="/icons/favicon.svg" alt="NeuroForge">
+        <span>NeuroForge</span>
+    </a>
+    <nav class="header-nav" id="headerNav">
+        <a href="#problema">Problema</a>
+        <a href="#como-funciona">Como Funciona</a>
+        <a href="#ferramentas">Ferramentas</a>
+        <a href="#demo">Demo</a>
+        <a href="#ciencia">Ciencia</a>
+        <a href="#precos">Precos</a>
+        <a href="/login.html" class="header-cta">Comecar</a>
+    </nav>
+    <button class="mobile-menu-btn" onclick="document.getElementById('headerNav').classList.toggle('open')" aria-label="Menu">&#9776;</button>
+</header>
+
+<!-- ============================================
+     HERO
+     ============================================ -->
+<section class="hero" id="hero">
+    <canvas id="neuralBg"></canvas>
+    <div class="hero-content">
+        <div class="hero-logo">
+            <img src="/icons/favicon.svg" alt="NeuroForge">
+        </div>
+        <h1 class="hero-title">NeuroForge</h1>
+        <p class="hero-slogan">Forje sinapses. Domine o conhecimento.</p>
+        <p class="hero-subtitle">A primeira plataforma de estudos construida sobre engenharia de dopamina, nao gamificacao barata.</p>
+        <div class="hero-ctas">
+            <a href="/login.html" class="btn-primary">Comecar Agora &mdash; Gratis</a>
+            <a href="#demo" class="btn-ghost">Ver Demonstracao &darr;</a>
+        </div>
+    </div>
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-value" data-count="92">0%</div>
+            <div class="stat-label">Retencao</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" data-count="25" data-prefix="-">0%</div>
+            <div class="stat-label">Tempo de Estudo</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" data-count="9">0</div>
+            <div class="stat-label">Ferramentas Neurais</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" data-count="23" data-suffix="+">0</div>
+            <div class="stat-label">Estudos Cientificos</div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     PROBLEM SECTION
+     ============================================ -->
+<section class="problem-section" id="problema">
+    <div class="section-inner">
+        <div class="section-tag reveal">O PROBLEMA</div>
+        <h2 class="section-title reveal">O problema que ninguem fala</h2>
+        <div class="section-divider reveal"></div>
+        <div class="problem-grid">
+            <div class="problem-visual reveal">
+                <div class="problem-counter">
+                    Voce estudou <span class="highlight-red" id="studyHours">0</span> horas.<br>
+                    Esqueceu <span class="highlight-red" id="forgotPercent">0</span>% em 2 semanas.
+                </div>
+                <div class="forgetting-curve">
+                    <svg viewBox="0 0 400 180" preserveAspectRatio="xMidYMid meet">
+                        <defs>
+                            <linearGradient id="redGrad" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="#ff3366"/>
+                                <stop offset="100%" stop-color="#ff6699"/>
+                            </linearGradient>
+                            <linearGradient id="cyanGrad" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="#00f0ff"/>
+                                <stop offset="100%" stop-color="#00e676"/>
+                            </linearGradient>
+                        </defs>
+                        <!-- Axes -->
+                        <line x1="40" y1="10" x2="40" y2="160" stroke="#2a2a40" stroke-width="1"/>
+                        <line x1="40" y1="160" x2="390" y2="160" stroke="#2a2a40" stroke-width="1"/>
+                        <text x="15" y="20" fill="#5e6a8a" font-size="10" font-family="Space Mono">100%</text>
+                        <text x="25" y="90" fill="#5e6a8a" font-size="10" font-family="Space Mono">50%</text>
+                        <text x="25" y="160" fill="#5e6a8a" font-size="10" font-family="Space Mono">0%</text>
+                        <text x="200" y="178" fill="#5e6a8a" font-size="10" font-family="Space Mono" text-anchor="middle">Tempo (dias)</text>
+                        <!-- Ebbinghaus curve (forgetting) -->
+                        <path class="curve-path" id="forgettingCurve"
+                              d="M 40 20 C 80 20, 100 60, 140 90 S 220 130, 300 140 S 370 148, 390 150"
+                              fill="none" stroke="url(#redGrad)" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- NeuroForge curve (retention) -->
+                        <path class="curve-path" id="retentionCurve"
+                              d="M 40 20 C 80 25, 120 35, 160 40 S 240 50, 300 55 S 370 58, 390 60"
+                              fill="none" stroke="url(#cyanGrad)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6 4"/>
+                        <!-- Labels -->
+                        <text x="350" y="144" fill="#ff3366" font-size="10" font-family="Space Mono">Sem NeuroForge</text>
+                        <text x="340" y="54" fill="#00f0ff" font-size="10" font-family="Space Mono">Com NeuroForge</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="problem-text reveal reveal-delay-1">
+                <h3>Seu cerebro para de aprender quando a recompensa e esperada.</h3>
+                <p>Apps comuns dao pontos previsiveis. Quando voce sabe exatamente quando vai ganhar um badge, seu <strong style="color:var(--cyan)">Reward Prediction Error (RPE)</strong> cai para zero. Dopamina zero. Motivacao zero.</p>
+                <p>A curva de Ebbinghaus mostra: sem intervencao cientifica, voce perde ate 60% do conteudo em 48 horas. O NeuroForge usa FSRS para agendar revisoes no momento exato em que a sinapse quase se perde.</p>
+                <div class="citation">Gershman et al., 2024 &mdash; Nature Neuroscience<br>Schultz, 1997 &mdash; Science (dopamine prediction error)</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     SOLUTION SECTION
+     ============================================ -->
+<section id="como-funciona">
+    <div class="section-inner">
+        <div class="section-tag reveal">A SOLUCAO</div>
+        <h2 class="section-title reveal">Como o NeuroForge funciona</h2>
+        <p class="section-desc reveal">Quatro vias neurotransmissoras. Quatro engenharias diferentes. Todas trabalhando juntas para otimizar cada sessao de estudo.</p>
+        <div class="section-divider reveal"></div>
+        <div class="pathway-grid">
+            <div class="pathway-card reveal">
+                <span class="pathway-icon">&#9889;</span>
+                <div class="pathway-name">Dopamina</div>
+                <p class="pathway-desc">FSRS calcula quando sua sinapse quase perde a etiqueta. O acerto no momento critico gera RPE maximo &mdash; a recompensa e inesperada, e seu cerebro libera dopamina real.</p>
+                <span class="pathway-stat stat-cyan">+65% retencao</span>
+            </div>
+            <div class="pathway-card reveal reveal-delay-1">
+                <span class="pathway-icon">&#128308;</span>
+                <div class="pathway-name">Noradrenalina</div>
+                <p class="pathway-desc">Ancoragem visual de 60 segundos + ruido marrom ativam o Locus Coeruleus. Seu sistema atencional entra em modo tonico &mdash; concentracao sustentada sem cafe.</p>
+                <span class="pathway-stat stat-magenta">+15-25% concentracao</span>
+            </div>
+            <div class="pathway-card reveal reveal-delay-2">
+                <span class="pathway-icon">&#128994;</span>
+                <div class="pathway-name">Acetilcolina</div>
+                <p class="pathway-desc">UI minimalista com no maximo 3 elementos visiveis por vez. Reduz ruido visual e acelera a entrada em deep focus &mdash; menos distracao, mais aprendizado.</p>
+                <span class="pathway-stat stat-green">-40% tempo ate deep focus</span>
+            </div>
+            <div class="pathway-card reveal reveal-delay-3">
+                <span class="pathway-icon">&#128564;</span>
+                <div class="pathway-name">Adenosina</div>
+                <p class="pathway-desc">Bloco de 90 minutos alinhado ao ciclo ultradiano + NSDR obrigatorio. O sistema glinfatico limpa residuos metabolicos e restaura dopamina.</p>
+                <span class="pathway-stat stat-gold">65% dopamina restaurada</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     FEATURES SECTION
+     ============================================ -->
+<section id="ferramentas">
+    <div class="section-inner">
+        <div class="section-tag reveal">ARSENAL</div>
+        <h2 class="section-title reveal">Ferramentas de elite</h2>
+        <p class="section-desc reveal">9 ferramentas baseadas em protocolos neurocientificos publicados. Nenhuma gamificacao barata. Nenhum badge vazio.</p>
+        <div class="section-divider reveal"></div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon">&#127183;</div>
+                <div class="feature-name">Flashcards FSRS</div>
+                <p class="feature-desc">Cada card tem seu proprio algoritmo de memoria. O intervalo se adapta a voce, nao a uma media estatistica.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-1">
+                <div class="feature-icon">&#9201;</div>
+                <div class="feature-name">Pomodoro Neural</div>
+                <p class="feature-desc">Bloco ultradiano de 90 minutos com hard block. Respeita a biologia do foco, nao o relogio.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-2">
+                <div class="feature-icon">&#128266;</div>
+                <div class="feature-name">Brown Noise</div>
+                <p class="feature-desc">Gerador Web Audio para blindagem sensorial. Estabiliza o Locus Coeruleus em modo tonico.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-1">
+                <div class="feature-icon">&#128065;</div>
+                <div class="feature-name">Ancoragem Visual</div>
+                <p class="feature-desc">60 segundos de ativacao do Locus Coeruleus. Dispara noradrenalina antes de cada sessao.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-2">
+                <div class="feature-icon">&#128290;</div>
+                <div class="feature-name">Dual N-Back</div>
+                <p class="feature-desc">Padrao-ouro para expandir memoria de trabalho. Resultado mensuravel em 4 semanas.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-3">
+                <div class="feature-icon">&#129513;</div>
+                <div class="feature-name">Stroop + Go/No-Go</div>
+                <p class="feature-desc">Brain Endurance Training para o cortex cingulado anterior. Resistencia a fadiga cognitiva.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-2">
+                <div class="feature-icon">&#9889;</div>
+                <div class="feature-name">PVT</div>
+                <p class="feature-desc">Teste de vigilancia padrao NASA. Mede sua reatividade psicomotora em milissegundos.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-3">
+                <div class="feature-icon">&#128524;</div>
+                <div class="feature-name">NSDR</div>
+                <p class="feature-desc">Descanso profundo com guia respiratorio 4-7-8. Restaura dopamina sem precisar dormir.</p>
+            </div>
+            <div class="feature-card reveal reveal-delay-4">
+                <div class="feature-icon">&#128202;</div>
+                <div class="feature-name">Dashboard Analytics</div>
+                <p class="feature-desc">5 graficos + heatmap de estudo + exportacao CSV. Dados reais sobre seu cerebro, nao likes.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     DEMO SECTION
+     ============================================ -->
+<section class="demo-section" id="demo">
+    <div class="section-inner">
+        <div class="section-tag reveal">EXPERIMENTE</div>
+        <h2 class="section-title reveal">Experimente agora</h2>
+        <p class="section-desc reveal">Duas demonstracoes interativas. Sem cadastro. Sem truque. Apenas neurociencia.</p>
+        <div class="section-divider reveal"></div>
+        <div class="demo-grid">
+            <!-- Stroop Demo -->
+            <div class="demo-card reveal">
+                <h3>Mini Teste Stroop</h3>
+                <p class="demo-subtitle">Clique na COR em que a palavra esta escrita, nao na palavra em si.</p>
+                <div class="demo-area" id="stroopArea">
+                    <button class="stroop-start-btn" onclick="startStroopDemo()">Iniciar Teste (5 segundos)</button>
+                </div>
+            </div>
+            <!-- Flashcard Demo -->
+            <div class="demo-card reveal reveal-delay-1">
+                <h3>Flashcard FSRS</h3>
+                <p class="demo-subtitle">Clique no card para virar. No NeuroForge, cada card tem seu proprio algoritmo.</p>
+                <div class="demo-area">
+                    <div class="flashcard-container" onclick="this.querySelector('.flashcard-inner').classList.toggle('flipped')">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-face flashcard-front">
+                                <div class="fc-label">PERGUNTA</div>
+                                <div>Qual estrutura cerebral e principal responsavel pela consolidacao da memoria declarativa?</div>
+                            </div>
+                            <div class="flashcard-face flashcard-back">
+                                <div class="fc-label">RESPOSTA</div>
+                                <div><strong style="color:var(--cyan)">Hipocampo</strong> &mdash; responsavel pela consolidacao de memorias declarativas (explicitas) do curto para o longo prazo.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="fc-bottom-text">No NeuroForge, cada card tem seu proprio algoritmo FSRS. A revisao e agendada no momento exato em que a sinapse quase se perde.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     COMPARISON TABLE
+     ============================================ -->
+<section id="comparacao">
+    <div class="section-inner">
+        <div class="section-tag reveal">COMPARACAO</div>
+        <h2 class="section-title reveal">NeuroForge vs. o resto</h2>
+        <div class="section-divider reveal"></div>
+        <div class="comparison-table-wrapper reveal">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Funcionalidade</th>
+                        <th class="col-highlight col-highlight-head">NeuroForge</th>
+                        <th>Anki</th>
+                        <th>SOMA-NPT</th>
+                        <th>Headspace</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Repeticao Espacada (FSRS)</td>
+                        <td class="col-highlight"><span class="check">&#10003;</span></td>
+                        <td><span class="partial">SM-2</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                    </tr>
+                    <tr>
+                        <td>Brain Endurance Training</td>
+                        <td class="col-highlight"><span class="check">&#10003;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                        <td><span class="check">&#10003;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                    </tr>
+                    <tr>
+                        <td>NSDR / Yoga Nidra</td>
+                        <td class="col-highlight"><span class="check">&#10003;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                        <td><span class="check">&#10003;</span></td>
+                    </tr>
+                    <tr>
+                        <td>Reward Prediction Error</td>
+                        <td class="col-highlight"><span class="check">&#10003;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                    </tr>
+                    <tr>
+                        <td>Ancoragem Visual (LC)</td>
+                        <td class="col-highlight"><span class="check">&#10003;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                    </tr>
+                    <tr>
+                        <td>Blocos Ultradianos</td>
+                        <td class="col-highlight"><span class="check">&#10003;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                        <td><span class="check">&#10003;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                    </tr>
+                    <tr>
+                        <td>Gamificacao Neural (nao pontos)</td>
+                        <td class="col-highlight"><span class="check">&#10003;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                        <td><span class="cross">&#10007;</span></td>
+                        <td><span class="partial">parcial</span></td>
+                    </tr>
+                    <tr>
+                        <td>Preco</td>
+                        <td class="col-highlight" style="color:var(--green);font-weight:700">R$ 29,90/mes</td>
+                        <td style="color:var(--green)">Gratis</td>
+                        <td style="color:#ff3366">&#8364; 600/mes</td>
+                        <td style="color:var(--gold)">R$ 69,90/mes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     SCIENCE SECTION
+     ============================================ -->
+<section class="science-section" id="ciencia">
+    <div class="section-inner" style="text-align:center">
+        <div class="section-tag reveal">EVIDENCIA</div>
+        <h2 class="section-title reveal">Baseado em ciencia, nao achismo</h2>
+        <p class="section-desc reveal" style="margin-left:auto;margin-right:auto">23+ estudos cientificos publicados em Nature, PNAS, npj Science of Learning. Todas as referencias com DOI verificavel.</p>
+        <div class="section-divider reveal" style="margin-left:auto;margin-right:auto"></div>
+
+        <div class="journal-grid reveal">
+            <div class="journal-badge">Nature</div>
+            <div class="journal-badge">Nature Communications</div>
+            <div class="journal-badge">PNAS</div>
+            <div class="journal-badge">npj Science of Learning</div>
+            <div class="journal-badge">Frontiers in Neuroscience</div>
+            <div class="journal-badge">Trends in Cognitive Sciences</div>
+        </div>
+
+        <div class="science-stats">
+            <div class="science-stat reveal">
+                <div class="big-number" data-count="92">0%</div>
+                <div class="stat-text">Retencao a longo prazo</div>
+            </div>
+            <div class="science-stat reveal reveal-delay-1">
+                <div class="big-number" data-count="24">+0%</div>
+                <div class="stat-text">Resistencia a fadiga</div>
+            </div>
+            <div class="science-stat reveal reveal-delay-2">
+                <div class="big-number" data-count="25">-0%</div>
+                <div class="stat-text">Revisoes necessarias</div>
+            </div>
+        </div>
+        <p class="reveal" style="font-size:12px;color:var(--text-dim)">Todas as referencias com DOI verificavel. Consulte a documentacao completa na plataforma.</p>
+    </div>
+</section>
+
+<!-- ============================================
+     USE CASES
+     ============================================ -->
+<section id="para-quem">
+    <div class="section-inner">
+        <div class="section-tag reveal">PARA QUEM</div>
+        <h2 class="section-title reveal">Para quem e o NeuroForge</h2>
+        <div class="section-divider reveal"></div>
+        <div class="usecase-grid">
+            <div class="usecase-card reveal">
+                <div class="usecase-icon">&#129658;</div>
+                <div class="usecase-title">Estudante de Medicina</div>
+                <p class="usecase-text">"Preciso reter conteudo denso para provas de residencia. Nao posso me dar ao luxo de esquecer."</p>
+            </div>
+            <div class="usecase-card reveal reveal-delay-1">
+                <div class="usecase-icon">&#9878;</div>
+                <div class="usecase-title">Concurseiro</div>
+                <p class="usecase-text">"Estudo 8 horas por dia mas esqueco metade. Preciso eficiencia, nao mais horas."</p>
+            </div>
+            <div class="usecase-card reveal reveal-delay-2">
+                <div class="usecase-icon">&#127891;</div>
+                <div class="usecase-title">Vestibulando</div>
+                <p class="usecase-text">"Quero maximizar os ultimos 6 meses antes do ENEM. Cada hora de estudo precisa contar."</p>
+            </div>
+            <div class="usecase-card reveal reveal-delay-3">
+                <div class="usecase-icon">&#128188;</div>
+                <div class="usecase-title">Profissional</div>
+                <p class="usecase-text">"Preciso aprender novas habilidades sem perder produtividade no trabalho."</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     PRICING SECTION
+     ============================================ -->
+<section class="pricing-section" id="precos">
+    <div class="section-inner" style="text-align:center">
+        <div class="section-tag reveal">INVESTIMENTO</div>
+        <h2 class="section-title reveal">Invista no seu cerebro</h2>
+        <div class="section-divider reveal" style="margin-left:auto;margin-right:auto"></div>
+
+        <div class="pricing-grid">
+            <div class="pricing-card reveal">
+                <div class="pricing-tier">Gratis</div>
+                <div class="pricing-price">R$ 0</div>
+                <div class="pricing-period">para sempre</div>
+                <ul class="pricing-features">
+                    <li>Pomodoro Neural (90 min)</li>
+                    <li>1 ferramenta de foco</li>
+                    <li>3 flashcards por dia</li>
+                    <li>Estatisticas basicas</li>
+                </ul>
+                <a href="/login.html" class="pricing-btn pricing-btn-free">Comecar Gratis</a>
+            </div>
+            <div class="pricing-card featured reveal reveal-delay-1">
+                <div class="pricing-tier">Pro</div>
+                <div class="pricing-price">R$ 29,90</div>
+                <div class="pricing-period">por mes</div>
+                <ul class="pricing-features">
+                    <li>Tudo ilimitado</li>
+                    <li>9 ferramentas neurais</li>
+                    <li>Dashboard completo + heatmap</li>
+                    <li>Rankings + exportacao CSV</li>
+                    <li>Prioridade em novas features</li>
+                    <li>7 dias gratis para testar</li>
+                </ul>
+                <a href="/login.html" class="pricing-btn pricing-btn-pro">Teste Gratis por 7 Dias</a>
+            </div>
+        </div>
+
+        <div class="pricing-compare reveal">
+            SOMA-NPT cobra <strong>&euro;600/mes</strong>. NeuroForge entrega a mesma ciencia por <strong>R$ 29,90</strong>.
+        </div>
+    </div>
+</section>
+
+<!-- ============================================
+     FINAL CTA
+     ============================================ -->
+<section class="final-cta-section" id="comecar">
+    <div class="section-inner">
+        <h2 class="final-cta-title reveal">Pronto para forjar suas sinapses?</h2>
+        <p class="final-cta-sub reveal">Comece agora &mdash; seus neuronios vao agradecer.</p>
+        <form class="final-cta-form reveal" onsubmit="event.preventDefault(); window.location.href='/login.html'">
+            <input type="email" placeholder="seu@email.com" required>
+            <button type="submit">Criar Conta Gratis</button>
+        </form>
+    </div>
+</section>
+
+<!-- ============================================
+     FOOTER
+     ============================================ -->
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-logo">
+            <img src="/icons/favicon.svg" alt="NeuroForge">
+            <span>NeuroForge</span>
+        </div>
+        <p class="footer-slogan">Forje sinapses. Domine o conhecimento.</p>
+        <p class="footer-author">Desenvolvido por Dr. Jackson Erasmo Fuck &mdash; CRM/PR 21.518</p>
+        <p class="footer-author-role">Coordenador da disciplina de Emergencias Clinicas e Terapia Intensiva &mdash; UNIPAR</p>
+        <div class="footer-links">
+            <a href="#">Politica de Privacidade</a>
+            <a href="#">LGPD</a>
+            <a href="#">Contato</a>
+        </div>
+        <p class="footer-copy">&copy; 2026 NeuroForge. Todos os direitos reservados.</p>
+    </div>
+</footer>
+
+<!-- ============================================
+     JAVASCRIPT
+     ============================================ -->
+<script>
+/* -----------------------------------------------
+   NEURAL NETWORK CANVAS (Hero Only)
+   ----------------------------------------------- */
+(function() {
+    const canvas = document.getElementById('neuralBg');
+    const ctx = canvas.getContext('2d');
+    let W, H, nodes = [], pulses = [], mouse = { x: -9999, y: -9999 };
+    let frame = 0;
+    let running = true;
+
+    function resize() {
+        const hero = document.querySelector('.hero');
+        W = canvas.width = hero.offsetWidth;
+        H = canvas.height = hero.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', function(e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+    function Neuron() {
+        this.reset();
+        this.born = frame;
+        this.maturity = 0;
+    }
+    Neuron.prototype.reset = function() {
+        this.x = Math.random() * W;
+        this.y = Math.random() * H;
+        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = (Math.random() - 0.5) * 0.3;
+        this.r = Math.random() * 2 + 1;
+        this.pulse = Math.random() * Math.PI * 2;
+        this.isCyan = Math.random() > 0.3;
+    };
+    Neuron.prototype.update = function() {
+        this.maturity = Math.min(1, (frame - this.born) / 300);
+        this.x += this.vx;
+        this.y += this.vy;
+        this.pulse += 0.02;
+        if (this.x < -50 || this.x > W + 50 || this.y < -50 || this.y > H + 50) {
+            this.reset();
+            this.born = frame;
+        }
+        var dx = mouse.x - this.x, dy = mouse.y - this.y;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 250 && dist > 0) {
+            this.vx += dx / dist * 0.015;
+            this.vy += dy / dist * 0.015;
+        }
+        this.vx *= 0.998;
+        this.vy *= 0.998;
+    };
+    Neuron.prototype.draw = function() {
+        var alpha = (0.3 + Math.sin(this.pulse) * 0.2) * this.maturity;
+        var size = this.r * (0.5 + this.maturity * 0.5);
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, size, 0, Math.PI * 2);
+        ctx.fillStyle = this.isCyan ? 'rgba(0,240,255,' + alpha + ')' : 'rgba(224,64,251,' + alpha + ')';
+        ctx.fill();
+        var glowSize = size * (2 + this.maturity * 2);
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, glowSize, 0, Math.PI * 2);
+        var grad = ctx.createRadialGradient(this.x, this.y, size, this.x, this.y, glowSize);
+        grad.addColorStop(0, this.isCyan ? 'rgba(0,240,255,' + (alpha * 0.3) + ')' : 'rgba(224,64,251,' + (alpha * 0.3) + ')');
+        grad.addColorStop(1, 'transparent');
+        ctx.fillStyle = grad;
+        ctx.fill();
+    };
+
+    function SynapsePulse(from, to) {
+        this.from = from;
+        this.to = to;
+        this.t = 0;
+        this.speed = 0.02 + Math.random() * 0.03;
+        this.isCyan = Math.random() > 0.4;
+    }
+    SynapsePulse.prototype.update = function() {
+        this.t += this.speed;
+        return this.t < 1;
+    };
+    SynapsePulse.prototype.draw = function() {
+        var x = this.from.x + (this.to.x - this.from.x) * this.t;
+        var y = this.from.y + (this.to.y - this.from.y) * this.t;
+        var alpha = Math.sin(this.t * Math.PI) * 0.8;
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = this.isCyan ? 'rgba(0,240,255,' + alpha + ')' : 'rgba(224,64,251,' + alpha + ')';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, Math.PI * 2);
+        ctx.fillStyle = this.isCyan ? 'rgba(0,240,255,' + (alpha * 0.2) + ')' : 'rgba(224,64,251,' + (alpha * 0.2) + ')';
+        ctx.fill();
+    };
+
+    for (var i = 0; i < 70; i++) nodes.push(new Neuron());
+
+    var growInterval = setInterval(function() {
+        if (nodes.length < 130) {
+            var n = new Neuron();
+            n.born = frame;
+            nodes.push(n);
+        }
+    }, 2500);
+
+    function drawConnections() {
+        var maxDist = 170;
+        for (var i = 0; i < nodes.length; i++) {
+            for (var j = i + 1; j < nodes.length; j++) {
+                var dx = nodes[i].x - nodes[j].x;
+                var dy = nodes[i].y - nodes[j].y;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < maxDist) {
+                    var minMat = Math.min(nodes[i].maturity, nodes[j].maturity);
+                    var alpha = (1 - dist / maxDist) * 0.18 * minMat;
+                    var lw = 0.3 + minMat * 0.7;
+                    ctx.beginPath();
+                    ctx.moveTo(nodes[i].x, nodes[i].y);
+                    ctx.lineTo(nodes[j].x, nodes[j].y);
+                    ctx.strokeStyle = (nodes[i].isCyan && nodes[j].isCyan)
+                        ? 'rgba(0,240,255,' + alpha + ')'
+                        : 'rgba(224,64,251,' + alpha + ')';
+                    ctx.lineWidth = lw;
+                    ctx.stroke();
+                    if (Math.random() < 0.0008 * minMat) {
+                        pulses.push(new SynapsePulse(nodes[i], nodes[j]));
+                    }
+                }
+            }
+        }
+    }
+
+    function animate() {
+        if (!running) return;
+        frame++;
+        ctx.clearRect(0, 0, W, H);
+        var bgGrad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.7);
+        bgGrad.addColorStop(0, 'rgba(0,240,255,0.02)');
+        bgGrad.addColorStop(0.5, 'rgba(224,64,251,0.01)');
+        bgGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
+        for (var i = 0; i < nodes.length; i++) { nodes[i].update(); nodes[i].draw(); }
+        drawConnections();
+        var newPulses = [];
+        for (var p = 0; p < pulses.length; p++) {
+            if (pulses[p].update()) {
+                pulses[p].draw();
+                newPulses.push(pulses[p]);
+            }
+        }
+        pulses = newPulses;
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    /* Pause canvas when hero not visible */
+    var heroObs = new IntersectionObserver(function(entries) {
+        running = entries[0].isIntersecting;
+        if (running) animate();
+    }, { threshold: 0.1 });
+    heroObs.observe(document.querySelector('.hero'));
+})();
+
+/* -----------------------------------------------
+   INTERSECTION OBSERVER — Reveal on Scroll
+   ----------------------------------------------- */
+(function() {
+    var reveals = document.querySelectorAll('.reveal');
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(function(el) { observer.observe(el); });
+})();
+
+/* -----------------------------------------------
+   COUNTER ANIMATIONS
+   ----------------------------------------------- */
+(function() {
+    function animateCounter(el, target, prefix, suffix, duration) {
+        var start = 0;
+        var startTime = null;
+        prefix = prefix || '';
+        suffix = suffix || '';
+        function step(timestamp) {
+            if (!startTime) startTime = timestamp;
+            var progress = Math.min((timestamp - startTime) / duration, 1);
+            var eased = 1 - Math.pow(1 - progress, 3);
+            var current = Math.round(start + (target - start) * eased);
+            el.textContent = prefix + current + suffix + (el.dataset.isSuffix ? '' : '%');
+            if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
+    /* Stats bar counters */
+    var statObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                var els = entry.target.querySelectorAll('.stat-value[data-count]');
+                els.forEach(function(el) {
+                    var count = parseInt(el.dataset.count);
+                    var prefix = el.dataset.prefix || '';
+                    var suffix = el.dataset.suffix || '';
+                    var hasPercent = el.textContent.includes('%');
+                    el.dataset.isSuffix = hasPercent ? '' : 'true';
+                    animateCounter(el, count, prefix, suffix + (hasPercent ? '%' : ''), 1800);
+                });
+                statObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+    var statsBar = document.querySelector('.stats-bar');
+    if (statsBar) statObserver.observe(statsBar);
+
+    /* Problem section counters */
+    var problemObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                var hoursEl = document.getElementById('studyHours');
+                var forgotEl = document.getElementById('forgotPercent');
+                animateCounter(hoursEl, 10, '', '', 1200);
+                animateCounter(forgotEl, 40, '', '%', 1500);
+                /* Animate SVG curves */
+                document.querySelectorAll('.curve-path').forEach(function(p) {
+                    p.classList.add('animate');
+                });
+                problemObs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+    var problemVisual = document.querySelector('.problem-visual');
+    if (problemVisual) problemObs.observe(problemVisual);
+
+    /* Science big numbers */
+    var scienceObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                var bigs = entry.target.querySelectorAll('.big-number[data-count]');
+                bigs.forEach(function(el) {
+                    var count = parseInt(el.dataset.count);
+                    var text = el.textContent;
+                    var prefix = text.startsWith('+') ? '+' : (text.startsWith('-') ? '-' : '');
+                    animateCounter(el, count, prefix, '%', 2000);
+                });
+                scienceObs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+    var scienceStats = document.querySelector('.science-stats');
+    if (scienceStats) scienceObs.observe(scienceStats);
+})();
+
+/* -----------------------------------------------
+   STROOP DEMO
+   ----------------------------------------------- */
+var STROOP_COLORS = [
+    { name: 'VERMELHO', hex: '#ff3366' },
+    { name: 'AZUL', hex: '#3a86ff' },
+    { name: 'VERDE', hex: '#00e676' },
+    { name: 'AMARELO', hex: '#ffbe0b' },
+    { name: 'ROXO', hex: '#e040fb' }
+];
+var stroopScore = 0;
+var stroopTotal = 0;
+var stroopTimer = null;
+var stroopActive = false;
+
+function startStroopDemo() {
+    stroopScore = 0;
+    stroopTotal = 0;
+    stroopActive = true;
+    showStroopRound();
+    stroopTimer = setTimeout(function() {
+        stroopActive = false;
+        var area = document.getElementById('stroopArea');
+        var pct = stroopTotal > 0 ? Math.round((stroopScore / stroopTotal) * 100) : 0;
+        area.innerHTML =
+            '<div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--cyan);margin-bottom:8px">' + stroopScore + '/' + stroopTotal + ' corretas (' + pct + '%)</div>' +
+            '<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Imagine treinar isso 3x por semana. Seu cortex cingulado anterior agradece.</p>' +
+            '<button class="stroop-start-btn" onclick="startStroopDemo()">Tentar Novamente</button>';
+    }, 5000);
+}
+
+function showStroopRound() {
+    if (!stroopActive) return;
+    var area = document.getElementById('stroopArea');
+    var wordIdx = Math.floor(Math.random() * STROOP_COLORS.length);
+    var colorIdx;
+    do { colorIdx = Math.floor(Math.random() * STROOP_COLORS.length); } while (colorIdx === wordIdx);
+    var word = STROOP_COLORS[wordIdx].name;
+    var displayColor = STROOP_COLORS[colorIdx].hex;
+    var correctAnswer = colorIdx;
+
+    var options = new Set();
+    options.add(colorIdx);
+    while (options.size < 3) {
+        options.add(Math.floor(Math.random() * STROOP_COLORS.length));
+    }
+    var shuffled = Array.from(options).sort(function() { return Math.random() - 0.5; });
+
+    var html = '<div class="stroop-word" style="color:' + displayColor + '">' + word + '</div>';
+    html += '<div class="stroop-options">';
+    shuffled.forEach(function(i) {
+        html += '<button class="stroop-option" style="background:' + STROOP_COLORS[i].hex + '" onclick="answerStroopDemo(' + i + ',' + correctAnswer + ')">' + STROOP_COLORS[i].name + '</button>';
+    });
+    html += '</div><div id="stroopFeedback" class="stroop-result"></div>';
+    area.innerHTML = html;
+}
+
+function answerStroopDemo(chosen, correct) {
+    if (!stroopActive) return;
+    stroopTotal++;
+    var fb = document.getElementById('stroopFeedback');
+    if (chosen === correct) {
+        stroopScore++;
+        fb.className = 'stroop-result correct';
+        fb.textContent = 'Correto!';
+    } else {
+        fb.className = 'stroop-result wrong';
+        fb.textContent = 'Errado!';
+    }
+    setTimeout(function() {
+        if (stroopActive) showStroopRound();
+    }, 400);
+}
+
+/* -----------------------------------------------
+   HEADER SCROLL EFFECT
+   ----------------------------------------------- */
+(function() {
+    var header = document.querySelector('.site-header');
+    var lastScroll = 0;
+    window.addEventListener('scroll', function() {
+        var st = window.pageYOffset;
+        if (st > 100) {
+            header.style.background = 'rgba(3, 3, 8, 0.95)';
+        } else {
+            header.style.background = 'rgba(3, 3, 8, 0.85)';
+        }
+        lastScroll = st;
+    }, { passive: true });
+})();
+</script>
+</body>
+</html>
