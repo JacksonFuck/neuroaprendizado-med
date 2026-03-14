@@ -470,10 +470,11 @@
 
     <div class="login-container">
         <div class="logo-wrap">
-            <span class="logo-icon">🧠</span>
+            <img src="/icons/favicon.svg" alt="NeuroForge" width="48" height="48" style="filter:drop-shadow(0 0 16px rgba(0,240,255,0.4))">
         </div>
-        <h1>Neuroaprendizado Med</h1>
-        <p class="subtitle">Técnicas de estudo baseadas em neurociência<br>para estudantes de medicina</p>
+        <h1>NeuroForge</h1>
+        <p class="subtitle" style="font-size:15px;color:#00f0ff;font-weight:700;letter-spacing:1.5px;margin-bottom:6px">Forje sinapses. Domine o conhecimento.</p>
+        <p class="subtitle" style="font-size:12px;color:#e040fb;font-weight:500;letter-spacing:2px;margin-bottom:24px;text-transform:uppercase">Onde neurociência encontra performance</p>
 
         <div class="auth-tabs">
             <button class="auth-tab active" onclick="switchTab('login')" id="tab-login">Entrar</button>
@@ -545,10 +546,11 @@
     </div>
 
     <script>
-        // Neural network background animation
+        // Neural Intelligence Growth Animation
         const canvas = document.getElementById('neuralBg');
         const ctx = canvas.getContext('2d');
-        let W, H, nodes = [], mouse = { x: -1000, y: -1000 };
+        let W, H, nodes = [], pulses = [], mouse = { x: -1000, y: -1000 };
+        let frame = 0;
 
         function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
         resize();
@@ -556,74 +558,166 @@
         window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
 
         class Neuron {
-            constructor() { this.reset(); }
+            constructor(fixed) {
+                this.fixed = fixed;
+                this.reset();
+                this.born = frame;
+                this.maturity = 0; // grows from 0 to 1 over time
+            }
             reset() {
                 this.x = Math.random() * W;
                 this.y = Math.random() * H;
-                this.vx = (Math.random() - 0.5) * 0.4;
-                this.vy = (Math.random() - 0.5) * 0.4;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = (Math.random() - 0.5) * 0.3;
                 this.r = Math.random() * 2 + 1;
                 this.pulse = Math.random() * Math.PI * 2;
                 this.isCyan = Math.random() > 0.3;
+                this.connections = 0;
             }
             update() {
+                // Neuron "grows" over time — representing learning
+                this.maturity = Math.min(1, (frame - this.born) / 300);
                 this.x += this.vx;
                 this.y += this.vy;
                 this.pulse += 0.02;
-                if (this.x < -50 || this.x > W + 50 || this.y < -50 || this.y > H + 50) this.reset();
-                // Slight attraction to mouse
+                if (this.x < -50 || this.x > W + 50 || this.y < -50 || this.y > H + 50) {
+                    this.reset();
+                    this.born = frame;
+                }
+                // Attraction to mouse (stronger = brain responding to attention)
                 const dx = mouse.x - this.x, dy = mouse.y - this.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 200 && dist > 0) {
-                    this.vx += dx / dist * 0.01;
-                    this.vy += dy / dist * 0.01;
+                if (dist < 250 && dist > 0) {
+                    this.vx += dx / dist * 0.015;
+                    this.vy += dy / dist * 0.015;
                 }
-                // Damping
-                this.vx *= 0.999;
-                this.vy *= 0.999;
+                this.vx *= 0.998;
+                this.vy *= 0.998;
             }
             draw() {
-                const alpha = 0.3 + Math.sin(this.pulse) * 0.2;
+                const alpha = (0.3 + Math.sin(this.pulse) * 0.2) * this.maturity;
+                const size = this.r * (0.5 + this.maturity * 0.5);
                 const color = this.isCyan ? `rgba(0,240,255,${alpha})` : `rgba(224,64,251,${alpha})`;
+
+                // Core
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, size, 0, Math.PI * 2);
                 ctx.fillStyle = color;
                 ctx.fill();
-                // Glow
+
+                // Glow (bigger = more mature neuron)
+                const glowSize = size * (2 + this.maturity * 2);
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.r * 3, 0, Math.PI * 2);
-                ctx.fillStyle = this.isCyan ? `rgba(0,240,255,${alpha * 0.1})` : `rgba(224,64,251,${alpha * 0.1})`;
+                ctx.arc(this.x, this.y, glowSize, 0, Math.PI * 2);
+                const grad = ctx.createRadialGradient(this.x, this.y, size, this.x, this.y, glowSize);
+                grad.addColorStop(0, this.isCyan ? `rgba(0,240,255,${alpha * 0.3})` : `rgba(224,64,251,${alpha * 0.3})`);
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
                 ctx.fill();
             }
         }
 
-        for (let i = 0; i < 80; i++) nodes.push(new Neuron());
+        // Electrical pulse traveling along synapses
+        class SynapsePulse {
+            constructor(from, to) {
+                this.from = from;
+                this.to = to;
+                this.t = 0;
+                this.speed = 0.02 + Math.random() * 0.03;
+                this.isCyan = Math.random() > 0.4;
+            }
+            update() {
+                this.t += this.speed;
+                return this.t < 1;
+            }
+            draw() {
+                const x = this.from.x + (this.to.x - this.from.x) * this.t;
+                const y = this.from.y + (this.to.y - this.from.y) * this.t;
+                const alpha = Math.sin(this.t * Math.PI) * 0.8;
+                const color = this.isCyan ? `rgba(0,240,255,${alpha})` : `rgba(224,64,251,${alpha})`;
+
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.fill();
+
+                // Trail
+                ctx.beginPath();
+                ctx.arc(x, y, 8, 0, Math.PI * 2);
+                ctx.fillStyle = this.isCyan ? `rgba(0,240,255,${alpha * 0.2})` : `rgba(224,64,251,${alpha * 0.2})`;
+                ctx.fill();
+            }
+        }
+
+        // Start with fewer nodes, grow over time (neurogenesis)
+        for (let i = 0; i < 60; i++) nodes.push(new Neuron(false));
+
+        // Periodically "grow" new neurons (neurogenesis effect)
+        setInterval(() => {
+            if (nodes.length < 120) {
+                const n = new Neuron(false);
+                n.born = frame;
+                nodes.push(n);
+            }
+        }, 3000);
 
         function drawConnections() {
+            const maxDist = 180;
             for (let i = 0; i < nodes.length; i++) {
+                nodes[i].connections = 0;
                 for (let j = i + 1; j < nodes.length; j++) {
                     const dx = nodes[i].x - nodes[j].x;
                     const dy = nodes[i].y - nodes[j].y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 160) {
-                        const alpha = (1 - dist / 160) * 0.15;
+                    if (dist < maxDist) {
+                        const minMaturity = Math.min(nodes[i].maturity, nodes[j].maturity);
+                        const alpha = (1 - dist / maxDist) * 0.18 * minMaturity;
+                        nodes[i].connections++;
+                        nodes[j].connections++;
+
+                        // Thicker lines for stronger connections (more mature)
+                        const lineWidth = 0.3 + minMaturity * 0.7;
+
                         ctx.beginPath();
                         ctx.moveTo(nodes[i].x, nodes[i].y);
                         ctx.lineTo(nodes[j].x, nodes[j].y);
                         ctx.strokeStyle = nodes[i].isCyan && nodes[j].isCyan
                             ? `rgba(0,240,255,${alpha})`
                             : `rgba(224,64,251,${alpha})`;
-                        ctx.lineWidth = 0.5;
+                        ctx.lineWidth = lineWidth;
                         ctx.stroke();
+
+                        // Random synapse pulses (electrical signals)
+                        if (Math.random() < 0.0008 * minMaturity) {
+                            pulses.push(new SynapsePulse(nodes[i], nodes[j]));
+                        }
                     }
                 }
             }
         }
 
         function animate() {
+            frame++;
             ctx.clearRect(0, 0, W, H);
+
+            // Subtle gradient background
+            const bgGrad = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W, H) * 0.7);
+            bgGrad.addColorStop(0, 'rgba(0,240,255,0.02)');
+            bgGrad.addColorStop(0.5, 'rgba(224,64,251,0.01)');
+            bgGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, W, H);
+
             nodes.forEach(n => { n.update(); n.draw(); });
             drawConnections();
+
+            // Update and draw pulses
+            pulses = pulses.filter(p => {
+                const alive = p.update();
+                if (alive) p.draw();
+                return alive;
+            });
+
             requestAnimationFrame(animate);
         }
         animate();
