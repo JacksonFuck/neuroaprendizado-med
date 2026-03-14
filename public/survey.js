@@ -17,14 +17,20 @@ let surveyStep = 1;
 
 // ─── CHECK IF SURVEY NEEDED ───
 async function checkOnboardingSurvey() {
+    // Skip if already completed in this browser (localStorage fallback)
+    if (localStorage.getItem('neuroforge_onboarding_done') === 'true') return;
+
     try {
         const res = await fetch('/auth/me');
         if (!res.ok) return;
         const user = await res.json();
-        if (!user.onboarding_completed) {
-            showOnboardingSurvey();
+        // Only show if server explicitly says not completed
+        if (user.onboarding_completed === true) {
+            localStorage.setItem('neuroforge_onboarding_done', 'true');
+            return;
         }
-    } catch (e) { /* silent */ }
+        showOnboardingSurvey();
+    } catch (e) { /* silent — don't block login */ }
 }
 
 // ─── SHOW SURVEY MODAL ───
@@ -334,6 +340,8 @@ async function submitOnboardingSurvey() {
         });
 
         if (res.ok) {
+            // Mark as done in localStorage (prevents showing again even if DB lags)
+            localStorage.setItem('neuroforge_onboarding_done', 'true');
             closeSurvey();
             if (typeof loadXPInfo === 'function') loadXPInfo();
             if (typeof loadUnreadCount === 'function') loadUnreadCount();
