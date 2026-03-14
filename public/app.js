@@ -125,6 +125,7 @@ function switchTab(tabName) {
     // Lazy load tabs
     if (tabName === 'suggestions') loadUserSuggestions();
     if (tabName === 'planner' && typeof loadPlannerData === 'function') loadPlannerData();
+    if (tabName === 'flashcards' && typeof loadFlashcardData === 'function') loadFlashcardData();
 }
 
 function toggleSidebar() {

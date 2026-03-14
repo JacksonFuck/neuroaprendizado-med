@@ -79,6 +79,9 @@
             <button class="nav-item" data-tab="espacamento" onclick="switchTab('espacamento')">
                 <span class="nav-icon">📅</span><span class="nav-label">Espaçamento</span>
             </button>
+            <button class="nav-item" data-tab="flashcards" onclick="switchTab('flashcards')">
+                <span class="nav-icon">🃏</span><span class="nav-label">Flashcards</span>
+            </button>
             <button class="nav-item" data-tab="diario" onclick="switchTab('diario')">
                 <span class="nav-icon">📓</span><span class="nav-label">Diário</span>
             </button>
@@ -563,6 +566,74 @@
             </div>
         </section>
 
+        <!-- FLASHCARDS -->
+        <section id="tab-flashcards" class="tab-panel">
+            <div class="page-header">
+                <h1>🃏 Flashcards</h1>
+                <p class="page-subtitle">Revisao ativa com repeticao espacada FSRS — o metodo mais eficaz de retencao</p>
+            </div>
+
+            <!-- Review Session (hidden by default) -->
+            <div id="flashcardReview" class="glass-card" style="display:none;margin-bottom:24px"></div>
+
+            <!-- Start Review Button -->
+            <div class="glass-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+                <div>
+                    <h3>🧠 Revisao do Dia</h3>
+                    <p style="color:var(--text-dim);font-size:13px;margin-top:4px">Revise todos os cards pendentes usando o algoritmo FSRS</p>
+                </div>
+                <button class="btn-action" onclick="startReviewSession()">Iniciar Revisao</button>
+            </div>
+
+            <!-- Deck Creation -->
+            <div class="glass-card" style="margin-top:24px">
+                <h3>➕ Novo Baralho</h3>
+                <div class="form-row" style="margin-top:12px">
+                    <input type="text" id="deckName" placeholder="Nome do baralho (ex: Cardiologia)" class="input">
+                    <input type="text" id="deckCategory" placeholder="Categoria (ex: Clinica Medica)" class="input">
+                    <input type="color" id="deckColor" value="#00f0ff" class="input" style="max-width:60px;height:42px;padding:4px">
+                    <button class="btn-action" onclick="addDeck()">Criar Baralho</button>
+                </div>
+            </div>
+
+            <!-- Deck List -->
+            <div class="glass-card" style="margin-top:24px">
+                <h3>📚 Seus Baralhos</h3>
+                <div id="flashcardDecks" style="margin-top:12px">
+                    <p class="empty-state">Carregando...</p>
+                </div>
+            </div>
+
+            <!-- Card Creation -->
+            <div class="glass-card" style="margin-top:24px">
+                <h3>➕ Novo Card</h3>
+                <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px">
+                    <select id="cardDeck" class="input">
+                        <option value="">Selecione o baralho</option>
+                    </select>
+                    <textarea id="cardFront" rows="3" placeholder="Frente — pergunta ou conceito" class="input textarea"></textarea>
+                    <textarea id="cardBack" rows="3" placeholder="Verso — resposta ou explicacao" class="input textarea"></textarea>
+                    <button class="btn-action" onclick="addCard()">Adicionar Card</button>
+                </div>
+            </div>
+
+            <!-- Card List -->
+            <div id="flashcardCards" style="margin-top:24px"></div>
+
+            <!-- Import Section -->
+            <div class="glass-card" style="margin-top:24px">
+                <h3>📥 Importar Cards (CSV)</h3>
+                <p style="color:var(--text-dim);font-size:13px;margin:8px 0">Cole o conteudo no formato <code style="color:var(--synapse-cyan)">frente;verso</code> (uma linha por card)</p>
+                <div style="display:flex;flex-direction:column;gap:12px">
+                    <select id="importDeck" class="input">
+                        <option value="">Selecione o baralho</option>
+                    </select>
+                    <textarea id="importText" rows="6" placeholder="Qual a funcao do hipocampo?;Codificacao, consolidacao e recuperacao de memorias&#10;O que e LTP?;Potenciacao de longo prazo — fortalecimento sinaptico" class="input textarea import-textarea"></textarea>
+                    <button class="btn-action" onclick="importCards()">Importar</button>
+                </div>
+            </div>
+        </section>
+
         <!-- DIÁRIO DE ESTUDOS -->
         <section id="tab-diario" class="tab-panel">
             <div class="page-header">
@@ -843,7 +914,7 @@
                         <option value="streak">Sequencia de Dias</option>
                     </select>
                 </div>
-                <div id="rankingTable"></div>
+                <table id="rankingTable" class="ranking-table" style="width:100%;border-collapse:collapse"></table>
             </div>
         </section>
 
@@ -1372,6 +1443,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <script src="app.js"></script>
     <script src="neuro-tools.js"></script>
+    <script src="flashcards.js"></script>
     <script src="planner.js"></script>
     <script src="charts.js"></script>
     <script src="gamification.js"></script>

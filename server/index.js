@@ -112,6 +112,7 @@ app.use('/api/planner', require('./routes/planner'));
 app.use('/api/gamification', require('./routes/gamification'));
 app.use('/api/charts', require('./routes/charts'));
 app.use('/api/export', require('./routes/export'));
+app.use('/api/flashcards', require('./routes/flashcards'));
 
 // SPA fallback — serve index.html for non-API routes
 app.get('*', (req, res) => {
