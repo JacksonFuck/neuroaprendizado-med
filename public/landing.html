@@ -105,11 +105,63 @@
             padding: 8px 20px;
             font-size: 13px;
             font-weight: 700;
+            color: var(--cyan);
+            background: rgba(0,240,255,0.1);
+            border: 1px solid rgba(0,240,255,0.3);
+            border-radius: 6px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .header-cta:hover {
+            background: rgba(0,240,255,0.2);
+            transform: translateY(-1px);
+        }
+        .header-cta-pro {
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 700;
             color: #000;
             background: linear-gradient(135deg, var(--cyan), var(--magenta));
             border-radius: 6px;
             transition: transform 0.2s, box-shadow 0.2s;
+            animation: ctaPulse 2s ease infinite;
         }
+        .header-cta-pro:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0, 240, 255, 0.4);
+        }
+        @keyframes ctaPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(0,240,255,0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(0,240,255,0); }
+        }
+        /* Urgency Banner */
+        .urgency-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+            background: linear-gradient(90deg, #0a0b18, rgba(0,240,255,0.1), rgba(224,64,251,0.1), #0a0b18);
+            border-bottom: 1px solid rgba(0,240,255,0.2);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            font-size: 13px;
+            color: #c5d0e6;
+        }
+        .urgency-cta {
+            padding: 5px 16px;
+            background: linear-gradient(90deg, var(--cyan), var(--magenta));
+            color: #000;
+            font-weight: 700;
+            font-size: 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: transform 0.2s;
+        }
+        .urgency-cta:hover { transform: scale(1.05); }
         .header-cta:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
@@ -1134,7 +1186,13 @@
 <!-- ============================================
      HEADER
      ============================================ -->
-<header class="site-header">
+<!-- Urgency Banner -->
+<div class="urgency-banner" id="urgencyBanner">
+    <span>🧠 <strong>7 dias grátis</strong> para testar o NeuroForge Pro — Flashcards ilimitados, 9 ferramentas neurais, gráficos</span>
+    <a href="#comecar" class="urgency-cta" onclick="document.getElementById('landingSignup').scrollIntoView({behavior:'smooth'});return false;">Assine Agora →</a>
+</div>
+
+<header class="site-header" style="top:36px" id="siteHeader">
     <a href="#" class="header-logo">
         <img src="/icons/favicon.svg" alt="NeuroForge">
         <span>NeuroForge</span>
@@ -1144,9 +1202,10 @@
         <a href="#como-funciona">Como Funciona</a>
         <a href="#ferramentas">Ferramentas</a>
         <a href="#demo">Demo</a>
-        <a href="#ciencia">Ciencia</a>
-        <a href="#precos">Precos</a>
-        <a href="/login.html" class="header-cta">Comecar</a>
+        <a href="#ciencia">Ciência</a>
+        <a href="#precos">Preços</a>
+        <a href="/login.html" class="header-cta" style="margin-right:8px">Entrar</a>
+        <a href="#comecar" class="header-cta-pro" onclick="document.getElementById('landingSignup').scrollIntoView({behavior:'smooth'});return false;">Assine Pro ⚡</a>
     </nav>
     <button class="mobile-menu-btn" onclick="document.getElementById('headerNav').classList.toggle('open')" aria-label="Menu">&#9776;</button>
 </header>
