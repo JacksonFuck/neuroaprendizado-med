@@ -411,8 +411,8 @@ async function loadSpacedTopics() {
           <h4>${t.name}</h4>
           <p class="topic-meta">${t.category} • Proxima: ${formatDate(t.next_review)}</p>
           <div class="retrievability-bar">
-            <div class="r-fill ${rClass}" style="width:${R}%"></div>
-            <span class="r-label">${R}% recall</span>
+            <div class="r-track"><div class="r-fill ${rClass}" style="width:${R}%"></div></div>
+            <span class="r-label">${R}%</span>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
@@ -529,7 +529,9 @@ function formatDate(d) {
     const raw = String(d);
     const date = raw.includes('T') ? new Date(raw) : new Date(raw + 'T00:00:00');
     if (isNaN(date.getTime())) return '';
-    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+    const day = String(date.getDate()).padStart(2, '0');
+    const months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+    return `${day} ${months[date.getMonth()]}`;
 }
 
 function formatDateTime(d) {
