@@ -96,6 +96,10 @@ passport.deserializeUser(async (id, done) => {
     }
 });
 
+// Attach plan info to all requests after passport
+const { attachPlan } = require('./middleware/plan-gate');
+app.use(attachPlan);
+
 // Static files
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
@@ -115,6 +119,8 @@ app.use('/api/export', require('./routes/export'));
 app.use('/api/flashcards', require('./routes/flashcards'));
 app.use('/api/survey', require('./routes/survey'));
 app.use('/api/messages', require('./routes/messages'));
+app.use('/api/register-free', require('./routes/register-free'));
+app.use('/api/plan', require('./routes/plan'));
 
 // SPA fallback — serve index.html for non-API routes
 app.get('*', (req, res) => {

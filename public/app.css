@@ -3655,6 +3655,53 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   PLAN GATE — Free/Pro UI
+   ═══════════════════════════════════════════════════════════════ */
+
+.pro-badge {
+  font-size: 9px;
+  background: linear-gradient(90deg, var(--synapse-cyan), var(--synapse-magenta));
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+.upgrade-banner {
+  background: linear-gradient(90deg, rgba(0,240,255,0.08), rgba(224,64,251,0.08));
+  border: 1px solid rgba(0,240,255,0.2);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.upgrade-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.upgrade-icon {
+  font-size: 24px;
+}
+
+.upgrade-banner-content strong {
+  color: var(--synapse-gold);
+}
+
+.upgrade-btn {
+  background: linear-gradient(90deg, var(--synapse-cyan), var(--synapse-magenta));
+  color: #000;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    RESPONSIVE — Survey & Messages
    ═══════════════════════════════════════════════════════════════ */
 
