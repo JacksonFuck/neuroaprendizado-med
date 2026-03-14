@@ -69,6 +69,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Neuro-Architect Greeting (once per day)
     showNeuroGreeting();
 
+    // Check for onboarding survey (after greeting closes)
+    if (typeof checkOnboardingSurvey === 'function') setTimeout(checkOnboardingSurvey, 1000);
+    // Load unread message count
+    if (typeof loadUnreadCount === 'function') loadUnreadCount();
+
     // Add SVG gradient for timer
     const svg = document.querySelector('.timer-ring svg');
     if (svg) {
@@ -126,6 +131,7 @@ function switchTab(tabName) {
     if (tabName === 'suggestions') loadUserSuggestions();
     if (tabName === 'planner' && typeof loadPlannerData === 'function') loadPlannerData();
     if (tabName === 'flashcards' && typeof loadFlashcardData === 'function') loadFlashcardData();
+    if (tabName === 'messages') { if (typeof loadMessages === 'function') loadMessages(); if (typeof loadGoals === 'function') loadGoals(); }
 }
 
 function toggleSidebar() {
