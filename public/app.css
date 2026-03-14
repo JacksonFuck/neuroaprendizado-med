@@ -2261,6 +2261,31 @@ body {
   line-height: 1.5;
 }
 
+/* N-Back Feedback */
+.nback-feedback { text-align: center; min-height: 24px; font-size: 14px; font-weight: 600; margin-top: 8px; }
+.nback-cell.correct { background: var(--synapse-green) !important; box-shadow: 0 0 20px var(--synapse-green); }
+.nback-cell.wrong { background: #ff8c00 !important; box-shadow: 0 0 20px #ff8c00; }
+.nback-cell.missed { border: 2px solid var(--synapse-red); }
+.nback-shortcut { font-size: 11px; color: var(--text-dim); font-family: 'Space Mono', monospace; margin-right: 4px; }
+
+/* Go/No-Go */
+.gonogo-area { display: flex; justify-content: center; align-items: center; min-height: 180px; cursor: pointer; }
+.gonogo-circle { width: 120px; height: 120px; border-radius: 50%; transition: all 0.15s; opacity: 0; }
+.gonogo-circle.go { background: var(--synapse-green); opacity: 1; box-shadow: 0 0 40px var(--synapse-green); cursor: pointer; }
+.gonogo-circle.nogo { background: var(--synapse-red); opacity: 1; box-shadow: 0 0 40px var(--synapse-red); cursor: not-allowed; }
+.gonogo-circle.flash-correct { animation: gonogoFlash 0.3s; }
+.gonogo-circle.flash-wrong { animation: gonogoFlashRed 0.3s; }
+@keyframes gonogoFlash { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); box-shadow: 0 0 60px var(--synapse-green); } }
+@keyframes gonogoFlashRed { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); box-shadow: 0 0 60px var(--synapse-red); } }
+
+/* PVT */
+.pvt-area { display: flex; justify-content: center; align-items: center; min-height: 180px; cursor: pointer; border-radius: var(--radius-sm); background: var(--bg-neuron); border: 2px dashed var(--border-synapse); transition: border-color 0.2s; }
+.pvt-area.active { border-color: var(--synapse-cyan); cursor: pointer; }
+.pvt-display { font-family: 'Space Mono', monospace; font-size: 48px; font-weight: 700; color: var(--synapse-cyan); }
+.pvt-display.waiting { color: var(--text-dim); font-size: 18px; }
+.pvt-display.stimulus { color: var(--synapse-green); animation: pvtPulse 0.5s infinite; }
+@keyframes pvtPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+
 /* Responsive Neuro-Tools */
 @media (max-width: 768px) {
   .nback-game {
