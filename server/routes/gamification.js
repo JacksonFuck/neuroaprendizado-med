@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../config/db');
 const { ensureAuth } = require('../middleware/auth');
+const { requirePro } = require('../middleware/plan-gate');
 const { getUserLevel } = require('../lib/xp-engine');
 const router = express.Router();
 
@@ -41,8 +42,8 @@ router.get('/achievements', ensureAuth, async (req, res) => {
     }
 });
 
-// GET /rankings — leaderboard (anonymized)
-router.get('/rankings', ensureAuth, async (req, res) => {
+// GET /rankings — leaderboard (anonymized, Pro only)
+router.get('/rankings', ensureAuth, requirePro, async (req, res) => {
     const period = req.query.period || 'alltime';
     const metric = req.query.metric || 'xp';
 

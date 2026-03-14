@@ -979,6 +979,12 @@
             max-width: 500px;
             margin: 0 auto;
         }
+        .landing-signup-form { display:flex; flex-direction:column; gap:12px; max-width:400px; margin:0 auto; }
+        .landing-input { padding:14px 18px; background:rgba(0,0,0,0.5); border:1px solid rgba(0,240,255,0.2); border-radius:10px; color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:15px; }
+        .landing-input:focus { outline:none; border-color:rgba(0,240,255,0.5); box-shadow:0 0 15px rgba(0,240,255,0.15); }
+        .landing-lgpd { display:flex; align-items:center; gap:8px; font-size:13px; color:#7382a6; }
+        .landing-lgpd input { accent-color:#00f0ff; }
+        .landing-lgpd a { color:#00f0ff; text-decoration:underline; }
         .final-cta-form input[type="email"] {
             flex: 1;
             min-width: 240px;
@@ -1551,7 +1557,7 @@
                     <li>3 flashcards por dia</li>
                     <li>Estatisticas basicas</li>
                 </ul>
-                <a href="/login.html" class="pricing-btn pricing-btn-free">Comecar Gratis</a>
+                <a href="#comecar" class="pricing-btn pricing-btn-free" onclick="document.getElementById('landingSignup').scrollIntoView({behavior:'smooth'});return false;">Comecar Gratis</a>
             </div>
             <div class="pricing-card featured reveal reveal-delay-1">
                 <div class="pricing-tier">Pro</div>
@@ -1565,7 +1571,7 @@
                     <li>Prioridade em novas features</li>
                     <li>7 dias gratis para testar</li>
                 </ul>
-                <a href="/login.html" class="pricing-btn pricing-btn-pro">Teste Gratis por 7 Dias</a>
+                <a href="#comecar" class="pricing-btn pricing-btn-pro" onclick="document.getElementById('landingSignup').scrollIntoView({behavior:'smooth'});return false;">Teste Gratis por 7 Dias</a>
             </div>
         </div>
 
@@ -1582,9 +1588,16 @@
     <div class="section-inner">
         <h2 class="final-cta-title reveal">Pronto para forjar suas sinapses?</h2>
         <p class="final-cta-sub reveal">Comece agora &mdash; seus neuronios vao agradecer.</p>
-        <form class="final-cta-form reveal" onsubmit="event.preventDefault(); window.location.href='/login.html'">
-            <input type="email" placeholder="seu@email.com" required>
-            <button type="submit">Criar Conta Gratis</button>
+        <form id="landingSignup" class="landing-signup-form reveal" onsubmit="handleLandingSignup(event)">
+            <input type="text" id="signupName" placeholder="Seu nome completo" required class="landing-input">
+            <input type="email" id="signupEmail" placeholder="Seu melhor e-mail" required class="landing-input">
+            <input type="password" id="signupPassword" placeholder="Crie uma senha (min. 6 caracteres)" minlength="6" required class="landing-input">
+            <label class="landing-lgpd">
+                <input type="checkbox" id="signupLgpd" required>
+                <span>Concordo com a <a href="#" style="color:#00f0ff">Politica de Privacidade</a> (LGPD)</span>
+            </label>
+            <button type="submit" id="signupBtn" class="cta-btn cta-primary" style="width:100%">Criar Conta Gratis</button>
+            <div id="signupMessage" style="margin-top:12px;font-size:14px;text-align:center"></div>
         </form>
     </div>
 </section>
@@ -1960,6 +1973,48 @@ function answerStroopDemo(chosen, correct) {
         lastScroll = st;
     }, { passive: true });
 })();
+
+/* -----------------------------------------------
+   LANDING SIGNUP HANDLER
+   ----------------------------------------------- */
+async function handleLandingSignup(e) {
+    e.preventDefault();
+    var btn = document.getElementById('signupBtn');
+    var msg = document.getElementById('signupMessage');
+    btn.disabled = true;
+    btn.textContent = 'Criando conta...';
+    msg.textContent = '';
+
+    try {
+        var res = await fetch('/api/register-free', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: document.getElementById('signupName').value.trim(),
+                email: document.getElementById('signupEmail').value.trim(),
+                password: document.getElementById('signupPassword').value,
+                accept_lgpd: document.getElementById('signupLgpd').checked
+            })
+        });
+        var data = await res.json();
+
+        if (res.ok && data.success) {
+            msg.style.color = '#00e676';
+            msg.textContent = '\u2705 Conta criada com sucesso! Redirecionando...';
+            setTimeout(function() { window.location.href = data.redirect || '/login.html'; }, 1500);
+        } else {
+            msg.style.color = '#ff3366';
+            msg.textContent = data.error || 'Erro ao criar conta.';
+            btn.disabled = false;
+            btn.textContent = 'Criar Conta Gratis';
+        }
+    } catch (err) {
+        msg.style.color = '#ff3366';
+        msg.textContent = 'Erro de conexao. Tente novamente.';
+        btn.disabled = false;
+        btn.textContent = 'Criar Conta Gratis';
+    }
+}
 </script>
 </body>
 </html>

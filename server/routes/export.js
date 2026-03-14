@@ -1,10 +1,11 @@
 const express = require('express');
 const pool = require('../config/db');
 const { ensureAuth } = require('../middleware/auth');
+const { requirePro } = require('../middleware/plan-gate');
 const router = express.Router();
 
 // GET /csv?type=focus|reviews|topics|all
-router.get('/csv', ensureAuth, async (req, res) => {
+router.get('/csv', ensureAuth, requirePro, async (req, res) => {
     const type = req.query.type || 'all';
     const validTypes = ['focus', 'reviews', 'topics', 'all'];
     if (!validTypes.includes(type)) {

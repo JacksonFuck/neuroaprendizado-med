@@ -2,18 +2,69 @@ const express = require('express');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 const pool = require('../config/db');
 const router = express.Router();
 
 // In-memory store for password reset tokens (for simplicity; in production use DB table)
 const resetTokens = new Map();
 
+// ==========================================
+// Email Transporter (SMTP via nodemailer)
+// ==========================================
+const createTransporter = () => {
+    const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
+    if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) return null;
+    return nodemailer.createTransport({
+        host: SMTP_HOST,
+        port: parseInt(SMTP_PORT || '587', 10),
+        secure: parseInt(SMTP_PORT || '587', 10) === 465,
+        auth: { user: SMTP_USER, pass: SMTP_PASS },
+    });
+};
 
-// Helper para enviar email de ativação (simulado no console)
-const sendActivationEmail = (email, activationToken) => {
-    console.log(`\n\n[EMAIL MOCK] Para: ${email}`);
-    console.log(`Assunto: Ative sua conta no Neuroaprendizado`);
-    console.log(`Link: http://localhost:${process.env.PORT || 3000}/auth/activate/${activationToken}\n\n`);
+// Helper para enviar email de ativação
+const sendActivationEmail = async (email, activationToken) => {
+    const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3005}`;
+    const activationLink = `${baseUrl}/auth/activate/${activationToken}`;
+
+    const transporter = createTransporter();
+
+    if (!transporter) {
+        // SMTP não configurado — log de fallback para que admin possa ativar manualmente
+        console.warn('\n⚠️  [EMAIL] SMTP não configurado. Link de ativação (use para ativar manualmente):');
+        console.warn(`📧  Para: ${email}`);
+        console.warn(`🔗  Link: ${activationLink}\n`);
+        return;
+    }
+
+    const fromName = process.env.SMTP_FROM_NAME || 'Neuroaprendizado Med';
+    const fromEmail = process.env.SMTP_USER;
+
+    await transporter.sendMail({
+        from: `"${fromName}" <${fromEmail}>`,
+        to: email,
+        subject: 'Ative sua conta no Neuroaprendizado Med',
+        html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
+                <h2 style="color: #6d28d9;">🧠 Bem-vindo ao Neuroaprendizado Med!</h2>
+                <p>Seu cadastro foi realizado com sucesso. Para ativar sua conta, clique no botão abaixo:</p>
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="${activationLink}"
+                       style="background: #6d28d9; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-size: 16px; font-weight: bold;">
+                        ✅ Ativar Minha Conta
+                    </a>
+                </div>
+                <p style="color: #6b7280; font-size: 14px;">
+                    Este link expira em <strong>1 hora</strong>. Se você não criou esta conta, ignore este email.
+                </p>
+                <p style="color: #6b7280; font-size: 12px;">Ou copie e cole este link no navegador:<br/>${activationLink}</p>
+            </div>
+        `,
+        text: `Bem-vindo ao Neuroaprendizado Med!\n\nPara ativar sua conta, acesse:\n${activationLink}\n\nEste link expira em 1 hora.`,
+    });
+
+    console.log(`[EMAIL] ✅ Email de ativação enviado para: ${email}`);
 };
 
 // ==========================================
@@ -75,7 +126,7 @@ router.post('/register', async (req, res) => {
 
         await pool.query('COMMIT');
 
-        sendActivationEmail(email, activationToken);
+        await sendActivationEmail(email, activationToken);
 
         res.json({ success: true, message: 'Cadastro realizado com sucesso. Verifique seu e-mail para ativar a conta.' });
     } catch (err) {
@@ -148,7 +199,9 @@ router.get('/me', (req, res) => {
         email: req.user.email,
         avatar_url: req.user.avatar_url,
         role: req.user.role,
-        is_active: req.user.is_active
+        is_active: req.user.is_active,
+        plan: req.user.plan || 'free',
+        plan_expires_at: req.user.plan_expires_at || null
     });
 });
 
@@ -204,15 +257,45 @@ router.post('/forgot-password', async (req, res) => {
         const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3005}`;
         const resetLink = `${baseUrl}/reset-password.html?token=${token}`;
 
-        // Log the link so admin can share manually if SMTP not configured
         console.log(`[RESET PASSWORD] Link para ${email}: ${resetLink}`);
 
-        // Return the link in the response for admin-assisted recovery
+        const transporter = createTransporter();
+        if (transporter) {
+            const fromName = process.env.SMTP_FROM_NAME || 'Neuroaprendizado Med';
+            const fromEmail = process.env.SMTP_USER;
+            try {
+                await transporter.sendMail({
+                    from: `"${fromName}" <${fromEmail}>`,
+                    to: email,
+                    subject: 'Redefinição de Senha - Neuroaprendizado Med',
+                    html: `
+                        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
+                            <h2 style="color: #6d28d9;">🧠 Redefinição de Senha</h2>
+                            <p>Você solicitou a redefinição de sua senha. Clique no botão abaixo para criar uma nova senha:</p>
+                            <div style="text-align: center; margin: 32px 0;">
+                                <a href="${resetLink}"
+                                   style="background: #6d28d9; color: white; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-size: 16px; font-weight: bold;">
+                                    🔑 Redefinir Senha
+                                </a>
+                            </div>
+                            <p style="color: #6b7280; font-size: 14px;">
+                                Este link expira em <strong>1 hora</strong>. Se você não solicitou, ignore este email.
+                            </p>
+                            <p style="color: #6b7280; font-size: 12px;">Ou copie e cole este link:<br/>${resetLink}</p>
+                        </div>
+                    `,
+                    text: `Você solicitou a redefinição de sua senha.\n\nAcesse:\n${resetLink}\n\nEste link expira em 1 hora.`
+                });
+                console.log(`[EMAIL] ✅ Email de redefinição enviado para: ${email}`);
+            } catch (err) {
+                console.error('[EMAIL ERROR] Erro ao enviar redefinição:', err.message);
+            }
+        }
+
         const isAdmin = req.isAuthenticated && req.isAuthenticated() && req.user && req.user.role === 'admin';
         res.json({
             success: true,
             message: 'Link de redefinição gerado com sucesso.',
-            // Only expose link directly in non-production or if admin is making the request
             ...(process.env.NODE_ENV !== 'production' || isAdmin ? { reset_link: resetLink } : {})
         });
     } catch (err) {

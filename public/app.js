@@ -59,6 +59,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (typeof initCharts === 'function') initCharts();
         // Load sidebar level badge
         if (typeof loadXPInfo === 'function') loadXPInfo();
+        // Load plan info for feature gating
+        if (typeof loadUserPlan === 'function') loadUserPlan();
     } catch {
         window.location.href = '/login.html';
         return;
