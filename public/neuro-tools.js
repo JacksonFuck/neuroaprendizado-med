@@ -336,15 +336,45 @@ function stopStroop() {
 }
 
 
-// ─── 6. DUAL N-BACK (with server persistence & auto-level) ───
+// ─── 6. DUAL N-BACK (with server persistence, auto-level, audio, keyboard, feedback) ───
 const NBACK_LETTERS = 'BCDFGHJKLMNPQRSTVWXYZ';
 let nbackInterval = null;
 let nbackN = 2;
 let nbackHistory = []; // {pos, letter}
 let nbackRound = 0;
-let nbackTotal = 20; // rounds
+let nbackTotal = 20; // rounds (configurable)
 let nbackScore = { posHit: 0, posMiss: 0, letHit: 0, letMiss: 0, posFalse: 0, letFalse: 0 };
 let nbackUserResponse = { pos: false, let: false };
+
+// --- Audio: Speech Synthesis for letters ---
+
+function speakLetter(letter) {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(letter);
+        utt.lang = 'pt-BR';
+        utt.rate = 0.9;
+        utt.volume = 0.7;
+        speechSynthesis.speak(utt);
+    }
+}
+
+// --- Visual feedback helpers ---
+
+function flashNBackCell(cellIndex, feedbackClass) {
+    const cells = document.querySelectorAll('.nback-cell');
+    const cell = cells[cellIndex];
+    if (!cell) return;
+    cell.classList.add(feedbackClass);
+    setTimeout(() => cell.classList.remove(feedbackClass), 600);
+}
+
+function showNBackFeedback(messages) {
+    const el = document.getElementById('nbackFeedback');
+    if (!el) return;
+    el.innerHTML = messages.join(' &nbsp;|&nbsp; ');
+    setTimeout(() => { el.innerHTML = ''; }, 1500);
+}
 
 // --- Server persistence helpers ---
 
@@ -440,6 +470,10 @@ async function loadNBackHistory() {
 function startNBack() {
     if (nbackInterval) { stopNBack(); return; }
 
+    // Read configurable rounds
+    const roundsSelect = document.getElementById('nbackRoundsSelect');
+    if (roundsSelect) nbackTotal = parseInt(roundsSelect.value) || 20;
+
     nbackHistory = [];
     nbackRound = 0;
     nbackScore = { posHit: 0, posMiss: 0, letHit: 0, letMiss: 0, posFalse: 0, letFalse: 0 };
@@ -448,6 +482,9 @@ function startNBack() {
     document.getElementById('nbackPosBtn').disabled = false;
     document.getElementById('nbackLetBtn').disabled = false;
     document.getElementById('nbackScore').textContent = `Rodada 0/${nbackTotal} | N=${nbackN}`;
+
+    const feedbackEl = document.getElementById('nbackFeedback');
+    if (feedbackEl) feedbackEl.innerHTML = '';
 
     showNBackRound();
 }
@@ -477,10 +514,13 @@ function showNBackRound() {
 
     // Display
     const cells = document.querySelectorAll('.nback-cell');
-    cells.forEach(c => c.classList.remove('active'));
+    cells.forEach(c => c.classList.remove('active', 'correct', 'wrong', 'missed'));
     cells[finalPos]?.classList.add('active');
     document.getElementById('nbackLetter').textContent = finalLetter;
     document.getElementById('nbackScore').textContent = `Rodada ${nbackRound}/${nbackTotal} | N=${nbackN}`;
+
+    // Audio: speak the letter
+    speakLetter(finalLetter);
 
     // Reset buttons visual
     document.getElementById('nbackPosBtn').classList.remove('btn-correct', 'btn-wrong');
@@ -488,6 +528,8 @@ function showNBackRound() {
 
     // After display time, score and move to next
     nbackInterval = setTimeout(() => {
+        const feedbackMessages = [];
+
         // Score this round
         if (nbackRound > nbackN) {
             const target = nbackHistory[nbackRound - 1 - nbackN];
@@ -496,13 +538,34 @@ function showNBackRound() {
             const posMatch = target.pos === current.pos;
             const letMatch = target.letter === current.letter;
 
-            if (posMatch && nbackUserResponse.pos) nbackScore.posHit++;
-            else if (posMatch && !nbackUserResponse.pos) nbackScore.posMiss++;
-            else if (!posMatch && nbackUserResponse.pos) nbackScore.posFalse++;
+            if (posMatch && nbackUserResponse.pos) {
+                nbackScore.posHit++;
+                flashNBackCell(current.pos, 'correct');
+                feedbackMessages.push('<span style="color:var(--synapse-green)">✓ Posição</span>');
+            } else if (posMatch && !nbackUserResponse.pos) {
+                nbackScore.posMiss++;
+                flashNBackCell(current.pos, 'missed');
+                feedbackMessages.push('<span style="color:var(--synapse-red)">✗ Posição perdida</span>');
+            } else if (!posMatch && nbackUserResponse.pos) {
+                nbackScore.posFalse++;
+                flashNBackCell(current.pos, 'wrong');
+                feedbackMessages.push('<span style="color:#ff8c00">⚠ Posição falsa</span>');
+            }
 
-            if (letMatch && nbackUserResponse.let) nbackScore.letHit++;
-            else if (letMatch && !nbackUserResponse.let) nbackScore.letMiss++;
-            else if (!letMatch && nbackUserResponse.let) nbackScore.letFalse++;
+            if (letMatch && nbackUserResponse.let) {
+                nbackScore.letHit++;
+                feedbackMessages.push('<span style="color:var(--synapse-green)">✓ Letra</span>');
+            } else if (letMatch && !nbackUserResponse.let) {
+                nbackScore.letMiss++;
+                feedbackMessages.push('<span style="color:var(--synapse-red)">✗ Letra perdida</span>');
+            } else if (!letMatch && nbackUserResponse.let) {
+                nbackScore.letFalse++;
+                feedbackMessages.push('<span style="color:#ff8c00">⚠ Letra falsa</span>');
+            }
+        }
+
+        if (feedbackMessages.length > 0) {
+            showNBackFeedback(feedbackMessages);
         }
 
         cells.forEach(c => c.classList.remove('active'));
@@ -513,6 +576,7 @@ function showNBackRound() {
 }
 
 function nbackMatch(type) {
+    if (!nbackInterval) return;
     if (type === 'position') {
         nbackUserResponse.pos = true;
         document.getElementById('nbackPosBtn').classList.add('btn-correct');
@@ -540,8 +604,336 @@ function stopNBack() {
     document.getElementById('nbackStartBtn').textContent = `Iniciar ${nbackN}-Back`;
     document.getElementById('nbackPosBtn').disabled = true;
     document.getElementById('nbackLetBtn').disabled = true;
-    document.querySelectorAll('.nback-cell').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.nback-cell').forEach(c => c.classList.remove('active', 'correct', 'wrong', 'missed'));
     document.getElementById('nbackLetter').textContent = '';
+}
+
+
+// ─── 8. GO/NO-GO TASK — Response Inhibition Training ───
+let gonogoTimeout = null;
+let gonogoTrials = [];
+let gonogoIndex = 0;
+let gonogoRT = [];
+let gonogoScore = { hits: 0, correctRejects: 0, falseAlarms: 0, misses: 0 };
+let gonogoStimulusTime = 0;
+let gonogoResponded = false;
+let gonogoActive = false;
+
+function generateGoNoGoTrials(count) {
+    const trials = [];
+    const goCount = Math.round(count * 0.7);
+    for (let i = 0; i < goCount; i++) trials.push('go');
+    for (let i = goCount; i < count; i++) trials.push('nogo');
+    // Fisher-Yates shuffle
+    for (let i = trials.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [trials[i], trials[j]] = [trials[j], trials[i]];
+    }
+    return trials;
+}
+
+function startGoNoGo() {
+    if (gonogoActive) { stopGoNoGo(); return; }
+
+    gonogoTrials = generateGoNoGoTrials(30);
+    gonogoIndex = 0;
+    gonogoRT = [];
+    gonogoScore = { hits: 0, correctRejects: 0, falseAlarms: 0, misses: 0 };
+    gonogoActive = true;
+
+    document.getElementById('gonogoBtn').textContent = '⏹ Parar';
+    document.getElementById('gonogoScore').textContent = 'Prepare-se...';
+
+    const circle = document.getElementById('gonogoCircle');
+    circle.className = 'gonogo-circle';
+    circle.style.opacity = '0';
+
+    setTimeout(() => showGoNoGoTrial(), 1500);
+}
+
+function showGoNoGoTrial() {
+    if (!gonogoActive || gonogoIndex >= gonogoTrials.length) {
+        finishGoNoGo();
+        return;
+    }
+
+    gonogoResponded = false;
+    const type = gonogoTrials[gonogoIndex];
+    const circle = document.getElementById('gonogoCircle');
+
+    circle.className = 'gonogo-circle';
+    circle.style.opacity = '0';
+
+    document.getElementById('gonogoScore').textContent =
+        `Estímulo ${gonogoIndex + 1}/${gonogoTrials.length} | Acertos: ${gonogoScore.hits} | Alarmes falsos: ${gonogoScore.falseAlarms}`;
+
+    // Random inter-stimulus interval (1-3s)
+    const delay = 1000 + Math.random() * 2000;
+
+    gonogoTimeout = setTimeout(() => {
+        if (!gonogoActive) return;
+
+        circle.className = type === 'go' ? 'gonogo-circle go' : 'gonogo-circle nogo';
+        gonogoStimulusTime = performance.now();
+
+        // Auto-advance after stimulus display time (1.2s)
+        gonogoTimeout = setTimeout(() => {
+            if (!gonogoActive) return;
+
+            if (type === 'go' && !gonogoResponded) {
+                gonogoScore.misses++;
+            } else if (type === 'nogo' && !gonogoResponded) {
+                gonogoScore.correctRejects++;
+            }
+
+            circle.className = 'gonogo-circle';
+            circle.style.opacity = '0';
+            gonogoIndex++;
+            showGoNoGoTrial();
+        }, 1200);
+    }, delay);
+}
+
+function gonogoResponse() {
+    if (!gonogoActive || gonogoResponded) return;
+    const circle = document.getElementById('gonogoCircle');
+    if (!circle.classList.contains('go') && !circle.classList.contains('nogo')) return;
+
+    gonogoResponded = true;
+    const rt = performance.now() - gonogoStimulusTime;
+    const type = gonogoTrials[gonogoIndex];
+
+    if (type === 'go') {
+        gonogoScore.hits++;
+        gonogoRT.push(rt);
+        circle.classList.add('flash-correct');
+    } else {
+        gonogoScore.falseAlarms++;
+        circle.classList.add('flash-wrong');
+    }
+
+    // Clear current timeout and advance
+    clearTimeout(gonogoTimeout);
+    setTimeout(() => {
+        if (!gonogoActive) return;
+        circle.className = 'gonogo-circle';
+        circle.style.opacity = '0';
+        gonogoIndex++;
+        showGoNoGoTrial();
+    }, 400);
+}
+
+function finishGoNoGo() {
+    gonogoActive = false;
+    clearTimeout(gonogoTimeout);
+    gonogoTimeout = null;
+
+    const avgRT = gonogoRT.length > 0 ? Math.round(gonogoRT.reduce((a, b) => a + b, 0) / gonogoRT.length) : 0;
+    const total = gonogoScore.hits + gonogoScore.correctRejects + gonogoScore.falseAlarms + gonogoScore.misses;
+    const inhibitionRate = total > 0
+        ? Math.round(((gonogoScore.correctRejects) / (gonogoScore.correctRejects + gonogoScore.falseAlarms)) * 100)
+        : 0;
+
+    let rating = '';
+    if (inhibitionRate >= 90 && avgRT < 400) rating = 'Excelente controle inibitório!';
+    else if (inhibitionRate >= 75) rating = 'Bom controle. Continue treinando.';
+    else if (inhibitionRate >= 50) rating = 'Moderado. Foco na inibição de impulsos.';
+    else rating = 'Impulsividade alta. Treine mais vezes.';
+
+    const circle = document.getElementById('gonogoCircle');
+    circle.className = 'gonogo-circle';
+    circle.style.opacity = '0';
+
+    document.getElementById('gonogoBtn').textContent = 'Iniciar (30 estímulos)';
+    document.getElementById('gonogoScore').innerHTML =
+        `<strong>Resultado:</strong> GO corretos: ${gonogoScore.hits} | NO-GO corretos: ${gonogoScore.correctRejects} | ` +
+        `Alarmes falsos: ${gonogoScore.falseAlarms} | Perdidos: ${gonogoScore.misses}<br>` +
+        `TR médio: ${avgRT}ms | Controle inibitório: ${inhibitionRate}%<br>` +
+        `<em>${rating}</em>`;
+}
+
+function stopGoNoGo() {
+    gonogoActive = false;
+    clearTimeout(gonogoTimeout);
+    gonogoTimeout = null;
+    document.getElementById('gonogoBtn').textContent = 'Iniciar (30 estímulos)';
+    const circle = document.getElementById('gonogoCircle');
+    circle.className = 'gonogo-circle';
+    circle.style.opacity = '0';
+    document.getElementById('gonogoScore').textContent = '';
+}
+
+
+// ─── 9. PVT — Psychomotor Vigilance Task ───
+let pvtTimeout = null;
+let pvtCounterInterval = null;
+let pvtTrials = [];
+let pvtTrialIndex = 0;
+let pvtState = 'idle'; // idle, waiting, stimulus, responded, tooEarly
+let pvtStimulusTime = 0;
+const PVT_TOTAL_TRIALS = 10;
+
+function startPVT() {
+    if (pvtState !== 'idle') { stopPVT(); return; }
+
+    pvtTrials = [];
+    pvtTrialIndex = 0;
+    pvtState = 'waiting';
+
+    document.getElementById('pvtBtn').textContent = '⏹ Parar';
+    document.getElementById('pvtScore').textContent = `Tentativa 1/${PVT_TOTAL_TRIALS}`;
+
+    const display = document.getElementById('pvtDisplay');
+    display.className = 'pvt-display waiting';
+    display.textContent = 'Aguarde o contador...';
+
+    const area = document.getElementById('pvtArea');
+    area.classList.add('active');
+
+    schedulePVTStimulus();
+}
+
+function schedulePVTStimulus() {
+    // Random delay 2-10 seconds
+    const delay = 2000 + Math.random() * 8000;
+
+    const display = document.getElementById('pvtDisplay');
+    display.className = 'pvt-display waiting';
+    display.textContent = 'Aguarde...';
+    pvtState = 'waiting';
+
+    pvtTimeout = setTimeout(() => {
+        if (pvtState !== 'waiting') return;
+        showPVTStimulus();
+    }, delay);
+}
+
+function showPVTStimulus() {
+    pvtState = 'stimulus';
+    pvtStimulusTime = performance.now();
+
+    const display = document.getElementById('pvtDisplay');
+    display.className = 'pvt-display stimulus';
+
+    // Start running counter
+    let counterMs = 0;
+    display.textContent = '000';
+
+    pvtCounterInterval = setInterval(() => {
+        counterMs = Math.round(performance.now() - pvtStimulusTime);
+        display.textContent = String(counterMs).padStart(3, '0');
+
+        // Auto-stop after 5 seconds (lapse)
+        if (counterMs >= 5000) {
+            clearInterval(pvtCounterInterval);
+            pvtCounterInterval = null;
+            pvtTrials.push(5000);
+            pvtTrialIndex++;
+            display.textContent = 'LAPSO (>5s)';
+            display.className = 'pvt-display';
+            display.style.color = 'var(--synapse-red)';
+            setTimeout(() => {
+                display.style.color = '';
+                if (pvtTrialIndex < PVT_TOTAL_TRIALS) {
+                    document.getElementById('pvtScore').textContent = `Tentativa ${pvtTrialIndex + 1}/${PVT_TOTAL_TRIALS}`;
+                    schedulePVTStimulus();
+                } else {
+                    finishPVT();
+                }
+            }, 1000);
+        }
+    }, 10);
+}
+
+function pvtResponse() {
+    if (pvtState === 'waiting') {
+        // Clicked too early
+        clearTimeout(pvtTimeout);
+        pvtTimeout = null;
+        const display = document.getElementById('pvtDisplay');
+        display.className = 'pvt-display';
+        display.textContent = 'Cedo demais!';
+        display.style.color = 'var(--synapse-red)';
+        pvtState = 'tooEarly';
+        setTimeout(() => {
+            display.style.color = '';
+            if (pvtState === 'tooEarly') {
+                schedulePVTStimulus();
+            }
+        }, 1000);
+        return;
+    }
+
+    if (pvtState !== 'stimulus') return;
+
+    const rt = Math.round(performance.now() - pvtStimulusTime);
+    pvtState = 'responded';
+
+    clearInterval(pvtCounterInterval);
+    pvtCounterInterval = null;
+
+    pvtTrials.push(rt);
+    pvtTrialIndex++;
+
+    const display = document.getElementById('pvtDisplay');
+    display.className = 'pvt-display';
+    display.textContent = `${rt} ms`;
+    display.style.color = rt < 300 ? 'var(--synapse-green)' : rt < 500 ? 'var(--synapse-gold)' : 'var(--synapse-red)';
+
+    document.getElementById('pvtScore').textContent = `Tentativa ${Math.min(pvtTrialIndex + 1, PVT_TOTAL_TRIALS)}/${PVT_TOTAL_TRIALS} | Último: ${rt}ms`;
+
+    setTimeout(() => {
+        display.style.color = '';
+        if (pvtTrialIndex < PVT_TOTAL_TRIALS) {
+            schedulePVTStimulus();
+        } else {
+            finishPVT();
+        }
+    }, 1200);
+}
+
+function finishPVT() {
+    pvtState = 'idle';
+    clearTimeout(pvtTimeout);
+    clearInterval(pvtCounterInterval);
+    pvtTimeout = null;
+    pvtCounterInterval = null;
+
+    const validTrials = pvtTrials.filter(t => t < 5000);
+    const avg = validTrials.length > 0 ? Math.round(validTrials.reduce((a, b) => a + b, 0) / validTrials.length) : 0;
+    const best = validTrials.length > 0 ? Math.min(...validTrials) : 0;
+    const worst = validTrials.length > 0 ? Math.max(...validTrials) : 0;
+    const lapses = pvtTrials.filter(t => t >= 5000).length;
+
+    let rating = '';
+    if (avg < 300) rating = 'Excelente — Alerta máximo!';
+    else if (avg < 400) rating = 'Bom — Alerta adequado.';
+    else if (avg < 500) rating = 'Moderado — Atenção caindo.';
+    else rating = 'Fatigado — Recomenda-se descanso!';
+
+    document.getElementById('pvtBtn').textContent = 'Iniciar (10 tentativas)';
+    document.getElementById('pvtArea').classList.remove('active');
+    document.getElementById('pvtDisplay').className = 'pvt-display waiting';
+    document.getElementById('pvtDisplay').textContent = 'Concluído';
+
+    document.getElementById('pvtScore').innerHTML =
+        `<strong>Resultado:</strong> TR médio: ${avg}ms | Melhor: ${best}ms | Pior: ${worst}ms` +
+        (lapses > 0 ? ` | Lapsos: ${lapses}` : '') +
+        `<br><em>${rating}</em>`;
+}
+
+function stopPVT() {
+    pvtState = 'idle';
+    clearTimeout(pvtTimeout);
+    clearInterval(pvtCounterInterval);
+    pvtTimeout = null;
+    pvtCounterInterval = null;
+
+    document.getElementById('pvtBtn').textContent = 'Iniciar (10 tentativas)';
+    document.getElementById('pvtArea').classList.remove('active');
+    document.getElementById('pvtDisplay').className = 'pvt-display waiting';
+    document.getElementById('pvtDisplay').textContent = 'Clique em Iniciar';
+    document.getElementById('pvtScore').textContent = '';
 }
 
 
@@ -604,3 +996,17 @@ if (_origLoadStats) {
         updateFatigueMonitor();
     };
 }
+
+// ─── KEYBOARD SHORTCUTS (N-Back: A/Left=Position, L/Right=Letter) ───
+function handleNBackKeyboard(e) {
+    if (!nbackInterval) return;
+    if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        nbackMatch('position');
+    }
+    if (e.key === 'l' || e.key === 'L' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        nbackMatch('letter');
+    }
+}
+document.addEventListener('keydown', handleNBackKeyboard);

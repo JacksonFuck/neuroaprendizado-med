@@ -1310,18 +1310,64 @@
                         <div id="nbackLetter" class="nback-letter"></div>
                     </div>
                     <div class="nback-buttons">
-                        <button class="btn-action btn-nback" id="nbackPosBtn" onclick="nbackMatch('position')" disabled>Posição Igual</button>
-                        <button class="btn-action btn-nback" id="nbackLetBtn" onclick="nbackMatch('letter')" disabled>Letra Igual</button>
+                        <button class="btn-action btn-nback" id="nbackPosBtn" onclick="nbackMatch('position')" disabled>
+                            <span class="nback-shortcut">(A)</span> Posição Igual
+                        </button>
+                        <button class="btn-action btn-nback" id="nbackLetBtn" onclick="nbackMatch('letter')" disabled>
+                            <span class="nback-shortcut">(L)</span> Letra Igual
+                        </button>
                     </div>
                     <div id="nbackScore" class="tool-timer"></div>
+                    <div id="nbackFeedback" class="nback-feedback"></div>
                     <div class="nback-level-selector">
                         <label>Nível: </label>
                         <select id="nbackLevelSelect" class="input" style="max-width:120px">
                             <option value="2">2-Back</option>
                         </select>
+                        <label style="margin-left:12px">Rodadas: </label>
+                        <select id="nbackRoundsSelect" class="input" style="max-width:100px">
+                            <option value="15">15</option>
+                            <option value="20" selected>20</option>
+                            <option value="25">25</option>
+                            <option value="30">30</option>
+                        </select>
                     </div>
                     <button class="btn-action" id="nbackStartBtn" onclick="startNBack()">Iniciar 2-Back</button>
                     <div id="nbackHistory" class="nback-history" style="margin-top:16px"></div>
+                </div>
+            </div>
+
+            <!-- Go/No-Go Task -->
+            <div class="glass-card neuro-tool-card">
+                <h3 class="tool-toggle" onclick="toggleExpand(this.parentElement)">
+                    <span>🚦 Go/No-Go — Controle Inibitório</span>
+                    <span class="toggle-arrow">▸</span>
+                </h3>
+                <div class="tool-body">
+                    <p class="tool-science">Treina o <strong>giro frontal inferior direito</strong> e o ACC a inibir respostas impulsivas.
+                        Verde = clique rápido. Vermelho = NÃO clique. Fundamental para manter foco sem reagir a distrações.</p>
+                    <div id="gonogoArea" class="gonogo-area">
+                        <div id="gonogoCircle" class="gonogo-circle" onclick="gonogoResponse()"></div>
+                    </div>
+                    <div id="gonogoScore" class="tool-timer"></div>
+                    <button class="btn-action" id="gonogoBtn" onclick="startGoNoGo()">Iniciar (30 estímulos)</button>
+                </div>
+            </div>
+
+            <!-- PVT — Psychomotor Vigilance Task -->
+            <div class="glass-card neuro-tool-card">
+                <h3 class="tool-toggle" onclick="toggleExpand(this.parentElement)">
+                    <span>⚡ PVT — Teste de Vigilância</span>
+                    <span class="toggle-arrow">▸</span>
+                </h3>
+                <div class="tool-body">
+                    <p class="tool-science">Padrão NASA/militar para medir <strong>tempo de reação</strong> e nível de alerta.
+                        Quando o contador aparecer, clique o mais rápido possível. TR > 500ms indica fadiga neural significativa.</p>
+                    <div id="pvtArea" class="pvt-area" onclick="pvtResponse()">
+                        <div id="pvtDisplay" class="pvt-display waiting">Clique em Iniciar</div>
+                    </div>
+                    <div id="pvtScore" class="tool-timer"></div>
+                    <button class="btn-action" id="pvtBtn" onclick="startPVT()">Iniciar (10 tentativas)</button>
                 </div>
             </div>
 
