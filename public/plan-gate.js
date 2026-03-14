@@ -43,12 +43,35 @@ function applyPlanRestrictions() {
             <div class="upgrade-banner-content">
                 <span class="upgrade-icon">\u26A1</span>
                 <div>
-                    <strong>Plano Gratuito</strong> \u2014 Desbloqueie todas as 9 ferramentas, flashcards ilimitados, graficos e ranking.
+                    <strong>Plano Gratuito</strong> — Desbloqueie todas as 9 ferramentas, flashcards ilimitados, gráficos e ranking.
                 </div>
-                <a href="/landing.html#pricing" class="upgrade-btn">Conhecer Pro</a>
+                <button class="upgrade-btn" onclick="startProCheckout()">Assinar Pro — R$ 29,90/mês</button>
             </div>
         `;
         dashboard.insertBefore(banner, dashboard.firstChild.nextSibling);
+    }
+}
+
+// Go to Stripe Checkout
+async function startProCheckout() {
+    try {
+        const btn = event?.target;
+        if (btn) { btn.disabled = true; btn.textContent = 'Redirecionando...'; }
+
+        const res = await fetch('/api/stripe/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+
+        if (data.url) {
+            window.location.href = data.url;
+        } else {
+            alert(data.error || 'Erro ao iniciar pagamento. Tente novamente.');
+            if (btn) { btn.disabled = false; btn.textContent = 'Assinar Pro — R$ 29,90/mês'; }
+        }
+    } catch (e) {
+        alert('Erro de conexão. Tente novamente.');
     }
 }
 
@@ -71,24 +94,25 @@ function showUpgradeModal(feature) {
         <div class="neuro-greeting" style="max-width:420px">
             <div class="greeting-brain-icon">\u26A1</div>
             <h2 class="greeting-title">Recurso Pro</h2>
-            <p class="greeting-subtitle">Este recurso esta disponivel no plano Pro.</p>
+            <p class="greeting-subtitle">Este recurso está disponível no plano Pro.</p>
             <div style="text-align:left;margin:20px 0;font-size:14px;color:#c5d0e6">
-                <p>Com o <strong style="color:#00f0ff">NeuroForge Pro</strong> voce desbloqueia:</p>
+                <p>Com o <strong style="color:#00f0ff">NeuroForge Pro</strong> você desbloqueia:</p>
                 <ul style="margin:12px 0 0 20px;line-height:2">
                     <li>9 ferramentas de foco neural</li>
                     <li>Flashcards ilimitados</li>
-                    <li>Topicos e materias ilimitados</li>
-                    <li>N-Back com auto-progressao</li>
-                    <li>Graficos e heatmap de evolucao</li>
+                    <li>Tópicos e matérias ilimitados</li>
+                    <li>N-Back com auto-progressão</li>
+                    <li>Gráficos e heatmap de evolução</li>
                     <li>Ranking entre estudantes</li>
-                    <li>Exportacao de dados (CSV)</li>
+                    <li>Exportação de dados (CSV)</li>
                 </ul>
             </div>
-            <a href="/landing.html#pricing" class="greeting-option" style="justify-content:center;text-decoration:none;margin-bottom:12px">
-                <span style="font-size:20px">\uD83D\uDE80</span>
-                <span class="option-label">Assinar Pro \u2014 R$ 29,90/mes</span>
-            </a>
-            <button class="greeting-skip" onclick="document.getElementById('upgradeModal').remove()">Continuar no plano gratis</button>
+            <button onclick="startProCheckout();document.getElementById('upgradeModal').remove()" class="greeting-option" style="justify-content:center;border:none;cursor:pointer;margin-bottom:12px;width:100%">
+                <span style="font-size:20px">🚀</span>
+                <span class="option-label">Assinar Pro — R$ 29,90/mês</span>
+            </button>
+            <p style="text-align:center;font-size:12px;color:#5e6a8a;margin-bottom:12px">7 dias grátis para testar • Cancele quando quiser</p>
+            <button class="greeting-skip" onclick="document.getElementById('upgradeModal').remove()">Continuar no plano grátis</button>
         </div>
     `;
     document.body.appendChild(overlay);
