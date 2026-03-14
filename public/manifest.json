@@ -1,7 +1,7 @@
 {
-    "name": "Neuroaprendizado Med",
-    "short_name": "NeuroApp",
-    "description": "Técnicas de estudo baseadas em neurociência para estudantes de medicina.",
+    "name": "NeuroForge — Engenharia Neural",
+    "short_name": "NeuroForge",
+    "description": "Plataforma de estudo com repetição espaçada FSRS, treino cognitivo e ferramentas de foco baseadas em neurociência.",
     "start_url": "/login.html",
     "display": "standalone",
     "background_color": "#030308",
@@ -9,14 +9,15 @@
     "orientation": "portrait-primary",
     "icons": [
         {
-            "src": "/icons/icon-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
+            "src": "/icons/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
         },
         {
-            "src": "/icons/icon-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
+            "src": "/icons/favicon-32.svg",
+            "sizes": "32x32",
+            "type": "image/svg+xml"
         }
     ]
 }
