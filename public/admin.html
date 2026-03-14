@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — Neuroaprendizado</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="description" content="Dashboard administrativo da plataforma Neuroaprendizado.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="app.css">
+    <style>
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .admin-card {
+            background: var(--bg-neuron);
+            border: 1px solid var(--border-synapse);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+
+        .admin-stat {
+            font-size: 32px;
+            font-family: 'Space Mono', monospace;
+            color: var(--synapse-cyan);
+            font-weight: 700;
+            margin: 8px 0;
+            text-shadow: var(--glow-cyan);
+        }
+
+        .stat-card.mini {
+            background: rgba(0, 240, 255, 0.04);
+            border: 1px solid rgba(0, 240, 255, 0.1);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .stat-card.mini .stat-num {
+            font-size: 22px;
+            font-family: 'Space Mono', monospace;
+            color: #9b59f5;
+            font-weight: 700;
+        }
+
+        .stat-card.mini .stat-label {
+            font-size: 11px;
+            color: #5e6a8a;
+            margin-top: 4px;
+        }
+
+        #extended-kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+            vertical-align: top;
+        }
+
+        th {
+            font-family: 'Space Mono', monospace;
+            color: var(--synapse-magenta);
+            font-size: 11px;
+            text-transform: uppercase;
+            position: sticky;
+            top: 0;
+            background: var(--bg-deep, #050510);
+        }
+
+        tr:hover td {
+            background: rgba(0, 240, 255, 0.03);
+        }
+
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: rgba(255, 179, 0, 0.2);
+            color: var(--synapse-gold);
+        }
+
+        .status-approved,
+        .status-ativo {
+            background: rgba(0, 230, 118, 0.2);
+            color: var(--synapse-green);
+        }
+
+        .status-rejected {
+            background: rgba(255, 51, 102, 0.2);
+            color: var(--synapse-red);
+        }
+
+        .status-done {
+            background: rgba(0, 240, 255, 0.2);
+            color: var(--synapse-cyan);
+        }
+
+        .role-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .role-admin {
+            background: rgba(224, 64, 251, 0.2);
+            color: #e040fb;
+        }
+
+        .role-user {
+            background: rgba(0, 240, 255, 0.1);
+            color: #00f0ff;
+        }
+
+        .btn-action {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: inherit;
+            font-weight: 600;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-action:hover {
+            opacity: 0.8;
+        }
+
+        .btn-action:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        .btn-warn {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .btn-ok {
+            background: rgba(0, 230, 118, 0.15);
+            color: #00e676;
+        }
+
+        .btn-danger {
+            background: rgba(255, 51, 102, 0.15);
+            color: #ff3366;
+        }
+
+        .user-search {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: #e0f7ff;
+            font-size: 0.9rem;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .user-search:focus {
+            border-color: rgba(0, 240, 255, 0.4);
+        }
+
+        /* Modal for reset link */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-box {
+            background: #090b1e;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 520px;
+            width: 92vw;
+        }
+
+        .modal-box h3 {
+            color: #e0f7ff;
+            margin-bottom: 8px;
+        }
+
+        .modal-box p {
+            font-size: 0.85rem;
+            color: #6c7a9c;
+            margin-bottom: 16px;
+        }
+
+        .link-box {
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.82rem;
+            color: #00f0ff;
+            word-break: break-all;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .link-box:hover {
+            background: rgba(0, 240, 255, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .modal-btn-copy {
+            background: linear-gradient(135deg, #00f0ff, #9b59f5);
+            color: #fff;
+        }
+
+        .modal-btn-close {
+            background: rgba(255, 255, 255, 0.08);
+            color: #b0bcd8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>NEURO<span class="highlight">ADMIN</span></h2>
+                <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-item active" data-tab="metrics" onclick="switchAdminTab('metrics')">
+                    <span class="nav-icon">📊</span> <span class="nav-label">Métricas</span>
+                </div>
+                <div class="nav-item" data-tab="users" onclick="switchAdminTab('users')">
+                    <span class="nav-icon">👥</span> <span class="nav-label">Usuários</span>
+                </div>
+                <div class="nav-item" data-tab="suggestions" onclick="switchAdminTab('suggestions')">
+                    <span class="nav-icon">💡</span> <span class="nav-label">Sugestões</span>
+                </div>
+                <div class="nav-item" data-tab="tokens" onclick="switchAdminTab('tokens')">
+                    <span class="nav-icon">🔑</span> <span class="nav-label">Convites</span>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/index.html" class="nav-item">
+                    <span class="nav-icon">⬅️</span> <span class="nav-label">Voltar ao App</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <header class="topbar">
+                <button class="hamburger" onclick="toggleSidebar()">☰</button>
+                <div class="topbar-right">
+                    <h1 class="page-title">Painel de Controle</h1>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div id="loadingAdmin" class="empty-state">Carregando dados seguros...</div>
+
+                <!-- METRICS TAB -->
+                <div id="tab-metrics" class="tab-panel active" style="display:none">
+                    <div class="admin-grid">
+                        <div class="admin-card">
+                            <h3>Total de Usuários</h3>
+                            <div class="admin-stat" id="stat-total-users">0</div>
+                            <p class="topic-meta">Registrados na plataforma</p>
+                        </div>
+                        <div class="admin-card">
+                            <h3>Usuários Ativos</h3>
+                            <div class="admin-stat" id="stat-active-users">0</div>
+                            <p class="topic-meta">E-mails ativados</p>
+                        </div>
+                        <div class="admin-card">
+                            <h3>Sugestões Pendentes</h3>
+                            <div class="admin-stat" id="stat-pending-sugg">0</div>
+                            <p class="topic-meta">Aguardando revisão</p>
+                        </div>
+                    </div>
+
+                    <!-- Extended KPIs -->
+                    <div id="extended-kpis"></div>
+                </div>
+
+                <!-- USERS TAB -->
+                <div id="tab-users" class="tab-panel" style="display:none">
+                    <div class="glass-card">
+                        <div
+                            style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+                            <h3>Gestão de Usuários</h3>
+                            <button class="btn-action btn-warn" onclick="fetchMetrics()">↺ Atualizar</button>
+                        </div>
+                        <input type="search" class="user-search" placeholder="🔍 Buscar por nome ou e-mail..."
+                            oninput="filterUsers(this.value)" />
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Usuário</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Uso</th>
+                                        <th>Cadastro / LGPD</th>
+                                        <th>Último Login</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUGGESTIONS TAB -->
+                <div id="tab-suggestions" class="tab-panel" style="display:none">
+                    <div class="glass-card">
+                        <h3>Caixa de Sugestões</h3>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Usuário</th>
+                                        <th>Título</th>
+                                        <th>Status</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="suggestions-table">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOKENS TAB -->
+                <div id="tab-tokens" class="tab-panel" style="display:none">
+                    <div class="glass-card" style="margin-bottom: 20px;">
+                        <h3>Gerar Novo Convite</h3>
+                        <div style="display: flex; gap: 10px; max-width: 300px; margin-top: 10px;">
+                            <button class="btn-action btn-ok" style="padding:10px 20px;font-size:13px;"
+                                onclick="generateToken()">＋ Gerar Token</button>
+                        </div>
+                        <p id="tokenResult" class="topic-meta" style="margin-top: 10px; color: var(--synapse-green);">
+                        </p>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3>Tokens de Convite</h3>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Token</th>
+                                        <th>Status</th>
+                                        <th>Usado por</th>
+                                        <th>Criado em</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tokens-table">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- RESET LINK MODAL -->
+    <div class="modal-overlay" id="reset-link-modal" onclick="if(event.target===this)closeResetModal()">
+        <div class="modal-box">
+            <h3>🔑 Link de Redefinição de Senha</h3>
+            <p>Envie este link para o usuário <strong id="reset-link-email"></strong>. Ele expira em 24 horas.</p>
+            <div class="link-box" id="reset-link-content" onclick="copyResetLink()"></div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-close" onclick="closeResetModal()">Fechar</button>
+                <button class="modal-btn modal-btn-copy" onclick="copyResetLink()">📋 Copiar Link</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+    <script>
+        function closeResetModal() {
+            document.getElementById('reset-link-modal').style.display = 'none';
+        }
+        function copyResetLink() {
+            const link = document.getElementById('reset-link-content').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                const btn = document.querySelector('.modal-btn-copy');
+                btn.textContent = '✅ Copiado!';
+                setTimeout(() => btn.textContent = '📋 Copiar Link', 2000);
+            });
+        }
+    </script>
+    <script src="/cookie-consent.js"></script>
+</body>
+
+</html>

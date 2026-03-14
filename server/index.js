@@ -10,7 +10,7 @@ const path = require('path');
 const pool = require('./config/db');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3005;
 
 // Trust nginx proxy for secure cookies
 app.set('trust proxy', 1);
@@ -51,38 +51,40 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL,
-    proxy: true
-}, async (accessToken, refreshToken, profile, done) => {
-    try {
-        const { rows } = await pool.query(
-            'SELECT * FROM users WHERE google_id = $1',
-            [profile.id]
-        );
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    passport.use(new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL,
+        proxy: true
+    }, async (accessToken, refreshToken, profile, done) => {
+        try {
+            const { rows } = await pool.query(
+                'SELECT * FROM users WHERE google_id = $1',
+                [profile.id]
+            );
 
-        if (rows.length) {
-            await pool.query('UPDATE users SET last_login = NOW() WHERE id = $1', [rows[0].id]);
-            return done(null, rows[0]);
+            if (rows.length) {
+                await pool.query('UPDATE users SET last_login = NOW() WHERE id = $1', [rows[0].id]);
+                return done(null, rows[0]);
+            }
+
+            const { rows: newUser } = await pool.query(
+                `INSERT INTO users (google_id, email, name, avatar_url)
+           VALUES ($1, $2, $3, $4) RETURNING *`,
+                [
+                    profile.id,
+                    profile.emails[0].value,
+                    profile.displayName,
+                    profile.photos?.[0]?.value || null
+                ]
+            );
+            done(null, newUser[0]);
+        } catch (err) {
+            done(err, null);
         }
-
-        const { rows: newUser } = await pool.query(
-            `INSERT INTO users (google_id, email, name, avatar_url)
-       VALUES ($1, $2, $3, $4) RETURNING *`,
-            [
-                profile.id,
-                profile.emails[0].value,
-                profile.displayName,
-                profile.photos?.[0]?.value || null
-            ]
-        );
-        done(null, newUser[0]);
-    } catch (err) {
-        done(err, null);
-    }
-}));
+    }));
+}
 
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
@@ -103,6 +105,8 @@ app.use('/api/diary', require('./routes/diary'));
 app.use('/api/spaced', require('./routes/spaced'));
 app.use('/api/pomodoro', require('./routes/pomodoro'));
 app.use('/api/content', require('./routes/content'));
+app.use('/api/admin', require('./routes/admin'));
+app.use('/api/suggestions', require('./routes/suggestions'));
 
 // SPA fallback — serve index.html for non-API routes
 app.get('*', (req, res) => {

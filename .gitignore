@@ -25,3 +25,23 @@ public/fonts/*.zip
 # Misc docs not part of the app
 *.html.bak
 "Fontes/"
+
+# Environment & Secrets (AIOX)
+.env.*.local
+*.key
+*.pem
+
+# Dependencies (AIOX)
+node_modules
+
+# Build & Logs (AIOX)
+dist/
+build/
+
+# IDE & OS (AIOX)
+*.swp
+
+# AIOX Local (AIOX)
+.aiox-core/local/
+.claude/settings.local.json
+.aiox/install-log.txt
