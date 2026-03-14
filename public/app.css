@@ -822,7 +822,8 @@ body {
 
 .technique-card.expanded .tc-details,
 .habit-card.expanded .tc-details,
-.supp-card.expanded .tc-details {
+.supp-card.expanded .tc-details,
+.onboarding-tool.expanded .tc-details {
   max-height: 2000px;
   padding-top: 18px;
 }
@@ -3041,4 +3042,54 @@ body {
   .deck-card {
     transition: none;
   }
+}
+
+/* ═══ ONBOARDING TAB ═══ */
+.onboarding-section { margin-bottom: 0; }
+.onboarding-section h2 { font-family: 'Quicksand', sans-serif; color: var(--text-bright); margin-bottom: 12px; }
+.neuro-pathway-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 16px; }
+.pathway-card { padding: 20px; background: var(--bg-neuron); border-radius: var(--radius-sm); border: 1px solid var(--border-synapse); }
+.pathway-card h4 { color: var(--synapse-cyan); margin: 8px 0; font-family: 'Quicksand', sans-serif; }
+.pathway-card p { color: var(--text-dim); font-size: 14px; line-height: 1.5; margin-bottom: 8px; }
+.pathway-icon { font-size: 28px; }
+
+.study-timeline { margin-top: 16px; }
+.timeline-step { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border-synapse); }
+.step-time { min-width: 70px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--synapse-cyan); padding-top: 4px; }
+.step-content h4 { color: var(--text-bright); margin-bottom: 4px; }
+.step-content p { color: var(--text-dim); font-size: 14px; }
+.step-gain { display: inline-block; margin-top: 6px; font-size: 13px; font-weight: 700; color: var(--synapse-green); background: rgba(0,230,118,0.1); padding: 3px 10px; border-radius: 20px; }
+
+.onboarding-tool { margin-top: 16px; padding: 16px; background: var(--bg-neuron); border-radius: var(--radius-sm); border: 1px solid var(--border-synapse); cursor: pointer; transition: var(--transition); }
+.onboarding-tool:hover { border-color: var(--synapse-cyan); }
+.tool-header-onb { display: flex; align-items: center; gap: 12px; }
+.tool-header-onb h3 { color: var(--text-bright); font-size: 16px; }
+.tool-icon-onb { font-size: 28px; }
+.tool-when { font-size: 12px; color: var(--synapse-gold); }
+.onboarding-tool .tc-details { margin-top: 16px; }
+.onboarding-tool .tc-details h4 { color: var(--synapse-cyan); margin: 16px 0 8px; font-size: 14px; }
+.onboarding-tool .tc-details p, .onboarding-tool .tc-details li { color: var(--text-dim); font-size: 14px; line-height: 1.6; }
+.onboarding-tool .tc-details ol, .onboarding-tool .tc-details ul { padding-left: 20px; }
+.tool-refs li { margin-bottom: 6px; }
+
+.xp-explanation-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 16px; }
+.xp-explain-card { padding: 16px; background: var(--bg-neuron); border-radius: var(--radius-sm); text-align: center; border: 1px solid var(--border-synapse); }
+.xp-value { font-size: 24px; font-weight: 700; color: var(--synapse-gold); font-family: 'Space Mono', monospace; display: block; margin-bottom: 8px; }
+.xp-explain-card p { font-size: 13px; color: var(--text-dim); }
+
+.level-progression { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.level-step { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--bg-neuron); border-radius: var(--radius-sm); border: 1px solid var(--border-synapse); font-size: 14px; color: var(--text-bright); }
+.level-icon-onb { font-size: 20px; }
+.level-xp { font-size: 11px; color: var(--text-dim); font-family: 'Space Mono', monospace; margin-left: 4px; }
+
+.neuro-tip { border-left: 3px solid var(--synapse-gold); }
+
+.onboarding-tool .toggle-arrow { margin-left: auto; font-size: 18px; }
+.onboarding-tool.expanded .toggle-arrow { transform: rotate(90deg); }
+
+@media (max-width: 768px) {
+  .neuro-pathway-grid { grid-template-columns: 1fr; }
+  .level-progression { flex-direction: column; }
+  .timeline-step { flex-direction: column; gap: 8px; }
+  .step-time { min-width: auto; }
 }
