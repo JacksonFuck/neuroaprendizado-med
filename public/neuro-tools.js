@@ -124,8 +124,8 @@ function startBreathingExercise() {
     let phase = 'inhale'; // inhale → exhale → inhale ...
     let phaseTime = 0;
 
-    const INHALE_TIME = 1.5; // segundos
-    const EXHALE_TIME = 1.0; // segundos (mais rapido = hiperventilacao)
+    const INHALE_TIME = 5.0; // segundos — inspiracao profunda
+    const EXHALE_TIME = 5.0; // segundos — expiracao controlada
     const TOTAL_BREATHS = 20;
 
     counter.textContent = `0 / ${TOTAL_BREATHS} respiracoes`;
