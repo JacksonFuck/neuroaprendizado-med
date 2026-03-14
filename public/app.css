@@ -68,11 +68,15 @@
   /* Alert / Urgency */
   --synapse-blue: #3a86ff;
   /* Calm / Depth */
+  --synapse-amber: #ffb300;
+  /* Warmth / Focus */
 
   /* Text layers */
   --text-bright: #ffffff;
   --text-normal: #c5d0e6;
   --text-dim: #7382a6;
+  --text-primary: #ffffff;
+  --text-secondary: #7382a6;
 
   /* Borders — soft neon glow */
   --border-synapse: rgba(0, 240, 255, 0.15);
@@ -2710,4 +2714,331 @@ body {
 .ref-link:hover {
   color: var(--synapse-magenta);
   text-decoration-style: solid;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FLASHCARDS — Decks, Cards & Review Session
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Deck Cards */
+.deck-card {
+  padding: 16px;
+  margin-bottom: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-neuron);
+  border: 1px solid var(--border-synapse);
+  border-left: 4px solid var(--synapse-cyan);
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.deck-card:hover {
+  background: var(--bg-neuron-hover);
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-2px);
+}
+.deck-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.deck-card-header h4 {
+  color: var(--text-bright);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+}
+.deck-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.deck-stat {
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text-dim);
+}
+.deck-stat-due {
+  color: var(--synapse-red);
+  font-weight: 700;
+}
+.deck-stat-ok {
+  color: var(--synapse-green);
+}
+.deck-category {
+  font-size: 11px;
+  color: var(--text-dim);
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(0, 240, 255, 0.06);
+}
+
+/* Card List Items */
+.fc-card-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-neuron);
+  border: 1px solid var(--border-synapse);
+  transition: background 0.2s;
+}
+.fc-card-item:hover {
+  background: var(--bg-neuron-hover);
+}
+.fc-card-front {
+  flex: 1;
+  color: var(--text-bright);
+  font-size: 14px;
+  font-weight: 600;
+}
+.fc-card-back {
+  flex: 1;
+  color: var(--text-dim);
+  font-size: 13px;
+  border-left: 1px solid var(--border-synapse);
+  padding-left: 12px;
+}
+
+/* ─── REVIEW SESSION ─── */
+.review-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 0;
+}
+.review-progress {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  color: var(--synapse-cyan);
+  letter-spacing: 1px;
+}
+
+/* 3D Flip Card */
+.review-flip-card {
+  perspective: 1000px;
+  width: 100%;
+  max-width: 520px;
+  min-height: 260px;
+  cursor: pointer;
+}
+.review-flip-inner {
+  position: relative;
+  width: 100%;
+  min-height: 260px;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+.review-flip-inner.flipped {
+  transform: rotateY(180deg);
+}
+.review-front,
+.review-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  border-radius: var(--radius);
+  font-size: 18px;
+  line-height: 1.6;
+  text-align: center;
+  word-break: break-word;
+}
+.review-front {
+  background: linear-gradient(145deg, rgba(0, 240, 255, 0.08), rgba(10, 12, 28, 0.9));
+  border: 1px solid var(--border-synapse-hover);
+  color: var(--text-bright);
+  font-weight: 700;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 20px;
+  box-shadow: 0 0 40px rgba(0, 240, 255, 0.08);
+}
+.review-back {
+  background: linear-gradient(145deg, rgba(224, 64, 251, 0.08), rgba(10, 12, 28, 0.9));
+  border: 1px solid var(--border-magenta);
+  color: var(--text-normal);
+  font-size: 16px;
+  transform: rotateY(180deg);
+  box-shadow: 0 0 40px rgba(224, 64, 251, 0.08);
+}
+
+/* Flip glow effect */
+.review-flip-inner.flipped .review-back {
+  box-shadow: 0 0 60px rgba(224, 64, 251, 0.15), 0 0 120px rgba(224, 64, 251, 0.05);
+}
+
+/* Show Answer Button */
+.review-show-btn {
+  font-size: 16px;
+  padding: 14px 32px;
+  letter-spacing: 0.5px;
+}
+
+/* Rating Buttons (large, for review) */
+.review-rating-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn-rating-lg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 20px;
+  min-width: 90px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-synapse);
+  background: var(--bg-neuron);
+  cursor: pointer;
+  font-size: 24px;
+  transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+}
+.btn-rating-lg:hover {
+  transform: scale(1.08);
+}
+.rating-label {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Quicksand', sans-serif;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+}
+.btn-again-lg:hover {
+  box-shadow: 0 0 20px var(--synapse-red);
+  background: rgba(255, 51, 102, 0.12);
+  border-color: var(--synapse-red);
+}
+.btn-hard-lg:hover {
+  box-shadow: 0 0 20px #ff8c00;
+  background: rgba(255, 140, 0, 0.12);
+  border-color: #ff8c00;
+}
+.btn-good-lg:hover {
+  box-shadow: 0 0 20px var(--synapse-green);
+  background: rgba(0, 230, 118, 0.12);
+  border-color: var(--synapse-green);
+}
+.btn-easy-lg:hover {
+  box-shadow: 0 0 20px var(--synapse-cyan);
+  background: rgba(0, 240, 255, 0.12);
+  border-color: var(--synapse-cyan);
+}
+
+/* Review Summary */
+.review-summary {
+  text-align: center;
+  padding: 32px 16px;
+}
+.review-summary-icon {
+  font-size: 56px;
+  display: block;
+  margin-bottom: 12px;
+  animation: greetPulse 2s ease infinite;
+}
+.review-summary h3 {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 24px;
+}
+.review-summary-stats {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.review-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 100px;
+}
+.review-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: 'Space Mono', monospace;
+  color: var(--synapse-cyan);
+}
+.review-stat-label {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.review-empty {
+  text-align: center;
+  padding: 40px 16px;
+}
+.review-empty h3 {
+  font-family: 'Quicksand', sans-serif;
+  color: var(--text-bright);
+  margin: 12px 0 8px;
+}
+.review-empty p {
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+/* Import textarea */
+.import-textarea {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+}
+
+/* Responsive Flashcards */
+@media (max-width: 768px) {
+  .review-flip-card {
+    min-height: 200px;
+  }
+  .review-flip-inner {
+    min-height: 200px;
+  }
+  .review-front,
+  .review-back {
+    padding: 20px;
+    font-size: 16px;
+  }
+  .review-front {
+    font-size: 18px;
+  }
+  .review-rating-buttons {
+    gap: 8px;
+  }
+  .btn-rating-lg {
+    padding: 10px 14px;
+    min-width: 72px;
+    font-size: 20px;
+  }
+  .fc-card-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .fc-card-back {
+    border-left: none;
+    border-top: 1px solid var(--border-synapse);
+    padding-left: 0;
+    padding-top: 8px;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .review-flip-inner {
+    transition: none;
+  }
+  .review-summary-icon {
+    animation: none;
+  }
+  .deck-card {
+    transition: none;
+  }
 }

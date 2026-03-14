@@ -195,6 +195,35 @@ CREATE INDEX IF NOT EXISTS idx_xp_log_user ON xp_log(user_id);
 -- Phase 2: User gamification columns
 ALTER TABLE users ADD COLUMN IF NOT EXISTS total_xp INT DEFAULT 0;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS display_name VARCHAR(100);
+
+-- Phase 3: Flashcard system
+CREATE TABLE IF NOT EXISTS flashcard_decks (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
+  category VARCHAR(255) DEFAULT 'Geral',
+  color VARCHAR(7) DEFAULT '#00f0ff',
+  created_at TIMESTAMP DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_flashcard_decks_user ON flashcard_decks(user_id);
+
+CREATE TABLE IF NOT EXISTS flashcards (
+  id SERIAL PRIMARY KEY,
+  deck_id INT NOT NULL REFERENCES flashcard_decks(id) ON DELETE CASCADE,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  front TEXT NOT NULL,
+  back TEXT NOT NULL,
+  difficulty REAL DEFAULT 5.0,
+  stability REAL DEFAULT 1.0,
+  next_review DATE,
+  last_review DATE,
+  reps INT DEFAULT 0,
+  lapses INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_flashcards_deck ON flashcards(deck_id);
+CREATE INDEX IF NOT EXISTS idx_flashcards_user ON flashcards(user_id);
+CREATE INDEX IF NOT EXISTS idx_flashcards_review ON flashcards(user_id, next_review);
 `;
 
 async function initDB() {
