@@ -336,7 +336,7 @@ function stopStroop() {
 }
 
 
-// ─── 6. DUAL N-BACK ───
+// ─── 6. DUAL N-BACK (with server persistence & auto-level) ───
 const NBACK_LETTERS = 'BCDFGHJKLMNPQRSTVWXYZ';
 let nbackInterval = null;
 let nbackN = 2;
@@ -345,6 +345,97 @@ let nbackRound = 0;
 let nbackTotal = 20; // rounds
 let nbackScore = { posHit: 0, posMiss: 0, letHit: 0, letMiss: 0, posFalse: 0, letFalse: 0 };
 let nbackUserResponse = { pos: false, let: false };
+
+// --- Server persistence helpers ---
+
+async function loadNBackProgress() {
+    try {
+        const res = await fetch('/api/nback/progress');
+        if (!res.ok) return;
+        const prog = await res.json();
+        nbackN = prog.current_level || 2;
+        renderNBackLevelSelector(prog.max_unlocked_level || 2);
+        document.getElementById('nbackStartBtn').textContent = `Iniciar ${nbackN}-Back`;
+    } catch (e) { console.error('NBack progress error:', e); }
+}
+
+async function saveNBackSession() {
+    const possible = nbackScore.posHit + nbackScore.posMiss + nbackScore.letHit + nbackScore.letMiss;
+    const hits = nbackScore.posHit + nbackScore.letHit;
+    const pct = possible > 0 ? Math.round((hits / possible) * 100) : 0;
+
+    try {
+        const res = await fetch('/api/nback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                n_level: nbackN,
+                total_rounds: nbackTotal,
+                pos_hits: nbackScore.posHit,
+                pos_misses: nbackScore.posMiss,
+                pos_false_alarms: nbackScore.posFalse,
+                let_hits: nbackScore.letHit,
+                let_misses: nbackScore.letMiss,
+                let_false_alarms: nbackScore.letFalse,
+                accuracy_pct: pct
+            })
+        });
+        const data = await res.json();
+        if (data.level_up) {
+            showNBackLevelUp(data.new_level);
+        }
+        if (data.achievements_earned?.length) {
+            data.achievements_earned.forEach(a => {
+                if (typeof showXPPopup === 'function') showXPPopup(a.xp, a.name);
+            });
+        }
+        loadNBackHistory();
+        loadNBackProgress();
+    } catch (e) { console.error('Save NBack error:', e); }
+}
+
+function renderNBackLevelSelector(maxLevel) {
+    const sel = document.getElementById('nbackLevelSelect');
+    if (!sel) return;
+    sel.innerHTML = '';
+    for (let i = 2; i <= Math.max(maxLevel, 2); i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `${i}-Back`;
+        if (i === nbackN) opt.selected = true;
+        sel.appendChild(opt);
+    }
+    sel.onchange = (e) => {
+        nbackN = parseInt(e.target.value);
+        document.getElementById('nbackStartBtn').textContent = `Iniciar ${nbackN}-Back`;
+    };
+}
+
+function showNBackLevelUp(newLevel) {
+    const el = document.getElementById('nbackScore');
+    if (el) {
+        el.innerHTML = `<div class="level-up-flash">🎉 NIVEL ${newLevel}-BACK DESBLOQUEADO! 🧬</div>`;
+        setTimeout(() => { el.querySelector('.level-up-flash')?.classList.add('fade'); }, 3000);
+    }
+}
+
+async function loadNBackHistory() {
+    try {
+        const res = await fetch('/api/nback/sessions');
+        if (!res.ok) return;
+        const sessions = await res.json();
+        const el = document.getElementById('nbackHistory');
+        if (!el || !sessions.length) {
+            if (el) el.innerHTML = '<p class="empty-state">Nenhuma sessao registrada</p>';
+            return;
+        }
+        el.innerHTML = '<table class="nback-history-table"><thead><tr><th>Data</th><th>Nivel</th><th>Precisao</th></tr></thead><tbody>' +
+            sessions.slice(0, 10).map(s => `<tr><td>${formatDate(s.completed_at)}</td><td>${s.n_level}-Back</td><td>${s.accuracy_pct}%</td></tr>`).join('') +
+            '</tbody></table>';
+    } catch (e) { console.error('NBack history error:', e); }
+}
+
+// --- Core N-Back game logic ---
 
 function startNBack() {
     if (nbackInterval) { stopNBack(); return; }
@@ -365,13 +456,6 @@ function showNBackRound() {
     if (nbackRound >= nbackTotal) {
         finishNBack();
         return;
-    }
-
-    // Score previous round responses (skip first N rounds)
-    if (nbackRound >= nbackN) {
-        const prev = nbackHistory[nbackRound - nbackN];
-        const curr = nbackHistory[nbackRound - 1]; // last shown
-        // This is scored when the NEW round starts
     }
 
     nbackUserResponse = { pos: false, let: false };
@@ -439,8 +523,6 @@ function nbackMatch(type) {
 }
 
 function finishNBack() {
-    const total = nbackScore.posHit + nbackScore.posMiss + nbackScore.posFalse +
-                  nbackScore.letHit + nbackScore.letMiss + nbackScore.letFalse;
     const hits = nbackScore.posHit + nbackScore.letHit;
     const possible = nbackScore.posHit + nbackScore.posMiss + nbackScore.letHit + nbackScore.letMiss;
     const pct = possible > 0 ? Math.round((hits / possible) * 100) : 0;
@@ -449,12 +531,13 @@ function finishNBack() {
         `Resultado: ${hits}/${possible} acertos (${pct}%) — Pos: ${nbackScore.posHit}✓ ${nbackScore.posMiss}✗ | Let: ${nbackScore.letHit}✓ ${nbackScore.letMiss}✗`;
 
     stopNBack();
+    saveNBackSession();
 }
 
 function stopNBack() {
     clearTimeout(nbackInterval);
     nbackInterval = null;
-    document.getElementById('nbackStartBtn').textContent = 'Iniciar 2-Back';
+    document.getElementById('nbackStartBtn').textContent = `Iniciar ${nbackN}-Back`;
     document.getElementById('nbackPosBtn').disabled = true;
     document.getElementById('nbackLetBtn').disabled = true;
     document.querySelectorAll('.nback-cell').forEach(c => c.classList.remove('active'));
@@ -500,12 +583,16 @@ function updateFatigueMonitor() {
     }
 }
 
-// Update fatigue on tab switch
+// Update fatigue + N-Back data on tab switch
 const _originalSwitchTab = window.switchTab;
 if (_originalSwitchTab) {
     window.switchTab = function (tabName) {
         _originalSwitchTab(tabName);
-        if (tabName === 'neurotools') updateFatigueMonitor();
+        if (tabName === 'neurotools') {
+            updateFatigueMonitor();
+            loadNBackProgress();
+            loadNBackHistory();
+        }
     };
 }
 

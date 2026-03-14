@@ -2277,3 +2277,437 @@ body {
     align-items: stretch;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 2 — Dashboard Charts
+   ═══════════════════════════════════════════════════════════════ */
+.dashboard-charts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+.chart-card {
+  min-height: 280px;
+}
+.chart-card canvas {
+  max-height: 260px;
+}
+.chart-card-wide {
+  grid-column: 1 / -1;
+  min-height: 200px;
+}
+.export-section h3 {
+  margin-bottom: 8px;
+}
+@media (max-width: 768px) {
+  .dashboard-charts {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 2 — Streak Heatmap
+   ═══════════════════════════════════════════════════════════════ */
+.streak-heatmap {
+  position: relative;
+  overflow-x: auto;
+  padding: 24px 0 8px 36px;
+}
+.heatmap-grid {
+  display: grid;
+  grid-template-rows: repeat(7, 14px);
+  grid-auto-flow: column;
+  gap: 3px;
+}
+.heatmap-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: rgba(0, 240, 255, 0.05);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.heatmap-cell:hover {
+  transform: scale(1.4);
+}
+.heatmap-day-labels {
+  position: absolute;
+  left: 0;
+  top: 24px;
+  display: grid;
+  grid-template-rows: repeat(7, 14px);
+  gap: 3px;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+.heatmap-month-labels {
+  display: flex;
+  gap: 0;
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+  padding-left: 36px;
+}
+.heatmap-tooltip {
+  position: fixed;
+  background: var(--bg-cortex);
+  border: 1px solid var(--border-synapse);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--text-bright);
+  pointer-events: none;
+  z-index: 100;
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 2 — Study Planner
+   ═══════════════════════════════════════════════════════════════ */
+.planner-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 24px;
+}
+.planner-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.planner-stat-card {
+  background: var(--bg-neuron);
+  border: 1px solid var(--border-synapse);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  text-align: center;
+}
+.planner-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: 'Space Mono', monospace;
+  color: var(--synapse-cyan);
+}
+.planner-stat-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+.subject-card {
+  padding: 16px;
+  margin-bottom: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-neuron);
+  cursor: pointer;
+  transition: var(--transition);
+  border-left: 4px solid var(--synapse-blue);
+}
+.subject-card:hover, .subject-card.active {
+  background: var(--bg-neuron-hover);
+  box-shadow: var(--glow-cyan);
+}
+.subject-card h4 {
+  color: var(--text-bright);
+  margin-bottom: 4px;
+}
+.subject-meta {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.subject-progress {
+  height: 6px;
+  background: var(--bg-neuron-hover);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.subject-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s;
+}
+.topic-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-neuron);
+  transition: var(--transition);
+}
+.topic-item:hover {
+  background: var(--bg-neuron-hover);
+}
+.topic-item.completed {
+  opacity: 0.6;
+}
+.topic-item.completed .topic-name {
+  text-decoration: line-through;
+}
+.topic-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--synapse-cyan);
+}
+.topic-name {
+  flex: 1;
+  color: var(--text-bright);
+}
+.topic-meta-info {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.topic-delete {
+  background: none;
+  border: none;
+  color: var(--synapse-red);
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+.topic-delete:hover {
+  opacity: 1;
+}
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .planner-layout {
+    grid-template-columns: 1fr;
+  }
+  .planner-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 2 — Achievements & XP
+   ═══════════════════════════════════════════════════════════════ */
+.xp-level-display {
+  text-align: center;
+  padding: 16px 0;
+}
+.xp-level-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+.xp-level-title {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: 'Quicksand', sans-serif;
+  color: var(--text-bright);
+}
+.xp-bar-container {
+  margin: 16px 0;
+}
+.xp-bar-track {
+  height: 12px;
+  background: var(--bg-neuron-hover);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.xp-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--synapse-cyan), var(--synapse-magenta));
+  transition: width 0.8s ease;
+}
+.xp-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  font-family: 'Space Mono', monospace;
+}
+.xp-total {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.achievement-card {
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-neuron);
+  border: 1px solid var(--border-synapse);
+  text-align: center;
+  transition: var(--transition);
+}
+.achievement-card.earned {
+  border-color: var(--synapse-gold);
+  box-shadow: var(--glow-gold);
+}
+.achievement-card.locked {
+  filter: grayscale(0.8);
+  opacity: 0.5;
+}
+.achievement-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.achievement-name {
+  font-weight: 700;
+  font-family: 'Quicksand', sans-serif;
+  color: var(--text-bright);
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.achievement-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+.achievement-xp {
+  font-size: 11px;
+  color: var(--synapse-gold);
+  font-family: 'Space Mono', monospace;
+  margin-top: 8px;
+}
+.sidebar-level {
+  text-align: center;
+  padding: 4px 12px 8px;
+  font-size: 12px;
+  color: var(--synapse-gold);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 2 — Rankings / Leaderboard
+   ═══════════════════════════════════════════════════════════════ */
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ranking-table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border-synapse);
+  font-family: 'Space Mono', monospace;
+}
+.ranking-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.05);
+  font-size: 14px;
+}
+.ranking-row.current-user {
+  background: rgba(0, 240, 255, 0.08);
+  border-left: 3px solid var(--synapse-cyan);
+}
+.ranking-rank {
+  font-weight: 700;
+  font-family: 'Space Mono', monospace;
+  width: 50px;
+}
+.ranking-medal {
+  font-size: 18px;
+}
+.ranking-anonymous {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 2 — XP Popup Animation
+   ═══════════════════════════════════════════════════════════════ */
+.xp-popup-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  pointer-events: none;
+}
+.xp-popup {
+  color: var(--synapse-gold);
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 8px 16px;
+  background: rgba(10, 12, 28, 0.9);
+  border: 1px solid var(--synapse-gold);
+  border-radius: var(--radius-sm);
+  animation: xpFloat 2s ease-out forwards;
+  margin-bottom: 8px;
+}
+@keyframes xpFloat {
+  0% { opacity: 1; transform: translateY(0); }
+  70% { opacity: 1; transform: translateY(-30px); }
+  100% { opacity: 0; transform: translateY(-50px); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 2 — N-Back Level Up & History
+   ═══════════════════════════════════════════════════════════════ */
+.nback-level-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+.level-up-flash {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Quicksand', sans-serif;
+  color: var(--synapse-gold);
+  text-align: center;
+  animation: levelFlash 0.5s ease;
+}
+.level-up-flash.fade {
+  opacity: 0;
+  transition: opacity 1s;
+}
+@keyframes levelFlash {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.nback-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.nback-history-table th {
+  text-align: left;
+  padding: 8px;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border-synapse);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+}
+.nback-history-table td {
+  padding: 8px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 2 — Scientific References
+   ═══════════════════════════════════════════════════════════════ */
+.ref-link {
+  color: var(--synapse-cyan);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
+  transition: var(--transition);
+}
+.ref-link:hover {
+  color: var(--synapse-magenta);
+  text-decoration-style: solid;
+}

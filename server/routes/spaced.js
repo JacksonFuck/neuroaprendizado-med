@@ -2,6 +2,7 @@ const express = require('express');
 const pool = require('../config/db');
 const { ensureAuth } = require('../middleware/auth');
 const { review, retrievability, FACTOR, DECAY } = require('../lib/fsrs');
+const { grantXP, XP_VALUES, checkAndGrantAchievements } = require('../lib/xp-engine');
 const router = express.Router();
 
 // Legacy intervals (kept as fallback for backward compatibility)
@@ -109,7 +110,18 @@ router.put('/:id/review', ensureAuth, async (req, res) => {
                 req.params.id
             ]
         );
-        res.json({ ...rows[0], retrievability: result.retrievability, interval: result.interval });
+        // Grant XP — bonus if reviewed on exact due date
+        const dueDate = topic.next_review ? new Date(topic.next_review).toISOString().split('T')[0] : null;
+        const today = new Date().toISOString().split('T')[0];
+        const isOnTime = dueDate && dueDate === today;
+
+        await grantXP(pool, req.user.id, XP_VALUES.review_complete, 'review', rows[0].id);
+        if (isOnTime) {
+            await grantXP(pool, req.user.id, XP_VALUES.review_optimal, 'review_on_time', rows[0].id);
+        }
+        const achievements_earned = await checkAndGrantAchievements(pool, req.user.id);
+
+        res.json({ ...rows[0], retrievability: result.retrievability, interval: result.interval, on_time_bonus: isOnTime, achievements_earned });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

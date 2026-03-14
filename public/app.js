@@ -55,6 +55,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderUserInfo();
         setGreeting();
         await Promise.all([loadStats(), loadUpcoming(), loadLastDiary(), loadSpacedTopics(), loadDiaryEntries(), loadPomodoroLog()]);
+        // Initialize dashboard charts after data loads
+        if (typeof initCharts === 'function') initCharts();
+        // Load sidebar level badge
+        if (typeof loadXPInfo === 'function') loadXPInfo();
     } catch {
         window.location.href = '/login.html';
         return;
@@ -118,8 +122,9 @@ function switchTab(tabName) {
     if (window.innerWidth <= 768) {
         document.getElementById('sidebar').classList.remove('open');
     }
-    // Lazy load suggestions
+    // Lazy load tabs
     if (tabName === 'suggestions') loadUserSuggestions();
+    if (tabName === 'planner' && typeof loadPlannerData === 'function') loadPlannerData();
 }
 
 function toggleSidebar() {
