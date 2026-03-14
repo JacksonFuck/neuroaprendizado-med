@@ -1,10 +1,15 @@
-const CACHE_NAME = 'neuroapp-v1';
+const CACHE_NAME = 'neuroapp-v3';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
     '/login.html',
     '/app.css',
     '/app.js',
+    '/neuro-tools.js',
+    '/flashcards.js',
+    '/planner.js',
+    '/charts.js',
+    '/gamification.js',
     '/manifest.json'
 ];
 
@@ -36,10 +41,18 @@ self.addEventListener('fetch', event => {
         return;
     }
 
+    // Network-first strategy: always try fresh version, fallback to cache
     event.respondWith(
-        caches.match(event.request)
+        fetch(event.request)
             .then(response => {
-                return response || fetch(event.request);
+                // Clone and cache the fresh response
+                const clone = response.clone();
+                caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+                return response;
+            })
+            .catch(() => {
+                // Offline fallback: serve from cache
+                return caches.match(event.request);
             })
     );
 });
