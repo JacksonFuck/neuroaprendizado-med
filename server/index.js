@@ -20,7 +20,7 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
             scriptSrcAttr: ["'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
@@ -107,6 +107,11 @@ app.use('/api/pomodoro', require('./routes/pomodoro'));
 app.use('/api/content', require('./routes/content'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/suggestions', require('./routes/suggestions'));
+app.use('/api/nback', require('./routes/nback'));
+app.use('/api/planner', require('./routes/planner'));
+app.use('/api/gamification', require('./routes/gamification'));
+app.use('/api/charts', require('./routes/charts'));
+app.use('/api/export', require('./routes/export'));
 
 // SPA fallback — serve index.html for non-API routes
 app.get('*', (req, res) => {

@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../config/db');
 const { ensureAuth } = require('../middleware/auth');
+const { grantXP, XP_VALUES, checkAndGrantAchievements } = require('../lib/xp-engine');
 const router = express.Router();
 
 // Log a completed pomodoro session
@@ -14,7 +15,9 @@ router.post('/', ensureAuth, async (req, res) => {
             'INSERT INTO pomodoro_sessions (user_id, focus_minutes) VALUES ($1, $2) RETURNING *',
             [req.user.id, focus_minutes]
         );
-        res.status(201).json(rows[0]);
+        await grantXP(pool, req.user.id, XP_VALUES.pomodoro_complete, 'pomodoro', rows[0].id);
+        const achievements_earned = await checkAndGrantAchievements(pool, req.user.id);
+        res.status(201).json({ ...rows[0], achievements_earned });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

@@ -62,6 +62,7 @@
             <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
         </div>
         <div class="sidebar-user" id="sidebarUser"></div>
+        <div id="sidebarLevel" class="sidebar-level"></div>
         <div class="sidebar-nav">
             <button class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard')">
                 <span class="nav-icon">📊</span><span class="nav-label">Dashboard</span>
@@ -83,6 +84,15 @@
             </button>
             <button class="nav-item" data-tab="neurotools" onclick="switchTab('neurotools')">
                 <span class="nav-icon">🧪</span><span class="nav-label">Ferramentas de Foco</span>
+            </button>
+            <button class="nav-item" data-tab="planner" onclick="switchTab('planner')">
+                <span class="nav-icon">📚</span><span class="nav-label">Planejador</span>
+            </button>
+            <button class="nav-item" data-tab="achievements" onclick="switchTab('achievements')">
+                <span class="nav-icon">🏆</span><span class="nav-label">Conquistas</span>
+            </button>
+            <button class="nav-item" data-tab="ranking" onclick="switchTab('ranking')">
+                <span class="nav-icon">🏅</span><span class="nav-label">Ranking</span>
             </button>
             <div class="nav-divider"></div>
             <button class="nav-item" data-tab="habitos" onclick="switchTab('habitos')">
@@ -165,6 +175,42 @@
                     liberação de dopamina proporcionalmente ao esforço investido. Quando você resolve algo difícil, o
                     prazer é amplificado — seu cérebro aprende a "querer" resolver problemas complexos.</p>
                 <span class="citation">Nature, 2026 • Westbrook et al., 2025</span>
+            </div>
+            <div class="dashboard-charts">
+                <div class="glass-card chart-card">
+                    <h3>📊 Minutos Focados por Semana</h3>
+                    <canvas id="chartFocusWeekly"></canvas>
+                </div>
+                <div class="glass-card chart-card">
+                    <h3>🧠 Retencao de Topicos</h3>
+                    <canvas id="chartRetention"></canvas>
+                </div>
+                <div class="glass-card chart-card">
+                    <h3>🔢 Progressao N-Back</h3>
+                    <canvas id="chartNBackProgression"></canvas>
+                </div>
+                <div class="glass-card chart-card">
+                    <h3>🎯 Precisao de Revisoes</h3>
+                    <canvas id="chartReviewAccuracy"></canvas>
+                </div>
+                <div class="glass-card chart-card chart-card-wide">
+                    <h3>🔥 Atividade Diaria (365 dias)</h3>
+                    <div id="streakHeatmap" class="streak-heatmap"></div>
+                </div>
+            </div>
+            <div class="glass-card" style="margin-top:24px">
+                <div class="export-section">
+                    <h3>📥 Exportar Dados</h3>
+                    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px">
+                        <select id="exportType" class="input" style="max-width:200px">
+                            <option value="all">Todos os Dados</option>
+                            <option value="focus">Sessoes de Foco</option>
+                            <option value="reviews">Revisoes</option>
+                            <option value="topics">Topicos</option>
+                        </select>
+                        <button class="btn-action" onclick="exportCSV(document.getElementById('exportType').value)">Exportar CSV</button>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -690,7 +736,14 @@
                         <button class="btn-action btn-nback" id="nbackLetBtn" onclick="nbackMatch('letter')" disabled>Letra Igual</button>
                     </div>
                     <div id="nbackScore" class="tool-timer"></div>
+                    <div class="nback-level-selector">
+                        <label>Nivel: </label>
+                        <select id="nbackLevelSelect" class="input" style="max-width:120px">
+                            <option value="2">2-Back</option>
+                        </select>
+                    </div>
                     <button class="btn-action" id="nbackStartBtn" onclick="startNBack()">Iniciar 2-Back</button>
+                    <div id="nbackHistory" class="nback-history" style="margin-top:16px"></div>
                 </div>
             </div>
 
@@ -707,6 +760,90 @@
                         <div class="fatigue-recommendation" id="fatigueRec"></div>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- PLANEJADOR DE ESTUDOS -->
+        <section id="tab-planner" class="tab-panel">
+            <div class="page-header">
+                <h1>📚 Planejador de Estudos</h1>
+                <p class="page-subtitle">Organize suas materias e topicos — o app guia o que falta estudar</p>
+            </div>
+            <div class="glass-card">
+                <h3>➕ Nova Materia</h3>
+                <div class="form-row">
+                    <input type="text" id="subjectName" placeholder="Nome da materia (ex: Cardiologia)" class="input">
+                    <input type="color" id="subjectColor" value="#3a86ff" class="input" style="max-width:60px;height:42px;padding:4px">
+                    <input type="number" id="subjectHours" placeholder="Horas-alvo" step="0.5" min="0" class="input" style="max-width:120px">
+                    <button class="btn-action" onclick="addSubject()">Adicionar</button>
+                </div>
+            </div>
+            <div id="plannerStats" class="planner-stats" style="margin-top:16px"></div>
+            <div class="planner-layout" style="margin-top:24px">
+                <div class="glass-card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                        <h3>📋 Materias</h3>
+                        <select id="plannerTimeView" class="input" style="max-width:150px" onchange="filterByTimeView(this.value)">
+                            <option value="all">Todos</option>
+                            <option value="semana">Esta Semana</option>
+                            <option value="mes">Este Mes</option>
+                            <option value="semestre">Este Semestre</option>
+                            <option value="ano">Este Ano</option>
+                        </select>
+                    </div>
+                    <div id="plannerSubjects"></div>
+                </div>
+                <div class="glass-card">
+                    <h3>📝 Topicos</h3>
+                    <div class="form-row" style="margin-bottom:16px">
+                        <input type="text" id="topicName" placeholder="Nome do topico" class="input">
+                        <select id="topicSubject" class="input" style="max-width:180px"></select>
+                        <input type="number" id="topicHours" placeholder="Horas est." step="0.5" min="0" class="input" style="max-width:100px">
+                        <input type="date" id="topicDate" class="input" style="max-width:160px">
+                        <label class="checkbox-label"><input type="checkbox" id="topicAddSpaced"> Espacar</label>
+                        <button class="btn-action" onclick="addTopic()">Adicionar</button>
+                    </div>
+                    <div id="plannerTopics"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONQUISTAS -->
+        <section id="tab-achievements" class="tab-panel">
+            <div class="page-header">
+                <h1>🏆 Conquistas & Nivel</h1>
+                <p class="page-subtitle">Seu progresso neural traduzido em marcos mensuraveis</p>
+            </div>
+            <div class="glass-card">
+                <div id="xpLevelBadge" class="xp-level-display"></div>
+                <div id="xpBar" class="xp-bar-container"></div>
+                <div id="xpTotal" class="xp-total"></div>
+            </div>
+            <div class="glass-card" style="margin-top:24px">
+                <h3>🎖️ Conquistas</h3>
+                <div id="achievementGrid" class="achievement-grid"></div>
+            </div>
+        </section>
+
+        <!-- RANKING -->
+        <section id="tab-ranking" class="tab-panel">
+            <div class="page-header">
+                <h1>🏅 Ranking Anonimo</h1>
+                <p class="page-subtitle">Compare seu progresso com outros estudantes (identidades protegidas)</p>
+            </div>
+            <div class="glass-card">
+                <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+                    <select id="rankingPeriod" class="input" style="max-width:160px">
+                        <option value="weekly">Semanal</option>
+                        <option value="alltime">Geral</option>
+                    </select>
+                    <select id="rankingMetric" class="input" style="max-width:160px">
+                        <option value="xp">XP Total</option>
+                        <option value="minutes">Minutos de Foco</option>
+                        <option value="streak">Sequencia de Dias</option>
+                    </select>
+                </div>
+                <div id="rankingTable"></div>
             </div>
         </section>
 
@@ -1232,8 +1369,12 @@
 
     <audio id="pomodoroAlarm" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"
         preload="auto"></audio>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <script src="app.js"></script>
     <script src="neuro-tools.js"></script>
+    <script src="planner.js"></script>
+    <script src="charts.js"></script>
+    <script src="gamification.js"></script>
     <script>
         // Register PWA Service Worker
         if ('serviceWorker' in navigator) {
@@ -1245,6 +1386,7 @@
         }
     </script>
     <script src="/cookie-consent.js"></script>
+    <div id="xpPopupContainer" class="xp-popup-container"></div>
 </body>
 
 </html>
