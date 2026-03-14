@@ -113,6 +113,8 @@ app.use('/api/gamification', require('./routes/gamification'));
 app.use('/api/charts', require('./routes/charts'));
 app.use('/api/export', require('./routes/export'));
 app.use('/api/flashcards', require('./routes/flashcards'));
+app.use('/api/survey', require('./routes/survey'));
+app.use('/api/messages', require('./routes/messages'));
 
 // SPA fallback — serve index.html for non-API routes
 app.get('*', (req, res) => {

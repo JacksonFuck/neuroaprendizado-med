@@ -112,6 +112,10 @@
             <button class="nav-item" data-tab="ranking" onclick="switchTab('ranking')">
                 <span class="nav-icon">🏅</span><span class="nav-label">Ranking</span>
             </button>
+            <button class="nav-item" data-tab="messages" onclick="switchTab('messages')">
+                <span class="nav-icon">💬</span><span class="nav-label">Mensagens</span>
+                <span class="message-badge" id="messageBadge" style="display:none">0</span>
+            </button>
             <div class="nav-divider"></div>
             <button class="nav-item" data-tab="habitos" onclick="switchTab('habitos')">
                 <span class="nav-icon">🌙</span><span class="nav-label">Hábitos de Vida</span>
@@ -1501,6 +1505,25 @@
             </div>
         </section>
 
+        <!-- MESSAGES -->
+        <section id="tab-messages" class="tab-panel">
+            <div class="page-header">
+                <h1>💬 Mensagens</h1>
+                <p class="page-subtitle">Dicas, conquistas e acompanhamento do seu progresso</p>
+            </div>
+            <div class="glass-card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                    <h3>📥 Caixa de Entrada</h3>
+                    <button class="btn-action" onclick="markAllAsRead()" style="font-size:13px">Marcar todas como lidas</button>
+                </div>
+                <div id="messagesList"></div>
+            </div>
+            <div class="glass-card" style="margin-top:24px">
+                <h3>🎯 Meus Objetivos</h3>
+                <div id="goalsList"></div>
+            </div>
+        </section>
+
         <!-- HÁBITOS DE VIDA -->
         <section id="tab-habitos" class="tab-panel">
             <div class="page-header">
@@ -2074,6 +2097,8 @@
     <script src="planner.js"></script>
     <script src="charts.js"></script>
     <script src="gamification.js"></script>
+    <script src="survey.js"></script>
+    <script src="messages.js"></script>
     <script>
         // Register PWA Service Worker
         if ('serviceWorker' in navigator) {

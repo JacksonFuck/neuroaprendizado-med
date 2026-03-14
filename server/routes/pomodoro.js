@@ -2,6 +2,7 @@ const express = require('express');
 const pool = require('../config/db');
 const { ensureAuth } = require('../middleware/auth');
 const { grantXP, XP_VALUES, checkAndGrantAchievements } = require('../lib/xp-engine');
+const { generateAutoMessages } = require('./messages');
 const router = express.Router();
 
 // Log a completed pomodoro session
@@ -17,6 +18,12 @@ router.post('/', ensureAuth, async (req, res) => {
         );
         await grantXP(pool, req.user.id, XP_VALUES.pomodoro_complete, 'pomodoro', rows[0].id);
         const achievements_earned = await checkAndGrantAchievements(pool, req.user.id);
+
+        // Check for milestone messages (non-blocking)
+        generateAutoMessages(pool, req.user.id).catch(err =>
+            console.error('Auto-message generation error (non-fatal):', err)
+        );
+
         res.status(201).json({ ...rows[0], achievements_earned });
     } catch (err) {
         res.status(500).json({ error: err.message });
