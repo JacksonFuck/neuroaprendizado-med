@@ -305,23 +305,48 @@ async function submitOnboardingSurvey() {
     const btn = document.querySelector('.survey-btn-start');
     if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
 
+    // Transform surveyData to match backend format
+    const goals = [];
+    if (surveyData.goal_immediate) goals.push({ type: 'immediate', description: surveyData.goal_immediate });
+    if (surveyData.goal_medium) goals.push({ type: 'medium_term', description: surveyData.goal_medium });
+    if (surveyData.goal_long) goals.push({ type: 'long_term', description: surveyData.goal_long });
+
+    // Ensure at least one goal
+    if (!goals.length) {
+        alert('Defina pelo menos um objetivo para continuar.');
+        if (btn) { btn.disabled = false; btn.textContent = 'Começar minha jornada ⚡'; }
+        return;
+    }
+
+    const payload = {
+        goals,
+        study_hours_per_day: parseFloat(surveyData.hours_per_day) || 2,
+        main_challenge: surveyData.main_challenge || 'foco',
+        experience_level: surveyData.experience_level || 'iniciante',
+        allow_tracking: !!surveyData.opt_in_tracking
+    };
+
     try {
-        const res = await fetch('/api/onboarding', {
+        const res = await fetch('/api/survey/onboarding', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(surveyData)
+            body: JSON.stringify(payload)
         });
 
         if (res.ok) {
             closeSurvey();
-            // Reload user data
             if (typeof loadXPInfo === 'function') loadXPInfo();
+            if (typeof loadUnreadCount === 'function') loadUnreadCount();
         } else {
-            if (btn) { btn.disabled = false; btn.textContent = 'Comecar minha jornada \u26A1'; }
+            const data = await res.json().catch(() => ({}));
+            console.error('Survey error:', data);
+            alert('Erro ao salvar: ' + (data.error || 'Tente novamente.'));
+            if (btn) { btn.disabled = false; btn.textContent = 'Começar minha jornada ⚡'; }
         }
     } catch (e) {
         console.error('Survey submit error:', e);
-        if (btn) { btn.disabled = false; btn.textContent = 'Comecar minha jornada \u26A1'; }
+        alert('Erro de conexão. Tente novamente.');
+        if (btn) { btn.disabled = false; btn.textContent = 'Começar minha jornada ⚡'; }
     }
 }
 
@@ -339,7 +364,7 @@ async function loadGoals() {
     if (!el) return;
 
     try {
-        const res = await fetch('/api/goals');
+        const res = await fetch('/api/survey/goals');
         if (!res.ok) {
             el.innerHTML = '<p class="empty-state">Nenhum objetivo definido. Complete o onboarding para definir seus objetivos.</p>';
             return;
@@ -393,7 +418,7 @@ async function updateGoalStatus(goalId, status) {
 // ─── MONTHLY CHECK-IN ───
 async function showMonthlyCheckin() {
     try {
-        const res = await fetch('/api/checkin/needed');
+        const res = await fetch('/api/survey/checkin/needed');
         if (!res.ok) return;
         const { needed } = await res.json();
         if (!needed) return;
@@ -441,7 +466,7 @@ async function submitCheckin() {
     };
 
     try {
-        await fetch('/api/checkin', {
+        await fetch('/api/survey/checkin', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
