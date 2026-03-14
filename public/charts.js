@@ -217,7 +217,7 @@ async function renderNBackProgressionChart() {
       labels,
       datasets: [
         {
-          label: 'Precisao (%)',
+          label: 'Precisão (%)',
           data: accuracy,
           borderColor: COLORS.gold,
           backgroundColor: 'rgba(255,190,11,0.10)',
@@ -230,7 +230,7 @@ async function renderNBackProgressionChart() {
           yAxisID: 'yAccuracy',
         },
         {
-          label: 'Nivel N',
+          label: 'Nível N',
           data: nLevels,
           borderColor: COLORS.blue,
           borderDash: [6, 3],
@@ -255,8 +255,8 @@ async function renderNBackProgressionChart() {
         tooltip: {
           callbacks: {
             label: (tip) => {
-              if (tip.datasetIndex === 0) return `Precisao: ${tip.raw}%`;
-              return `Nivel: ${tip.raw}-back`;
+              if (tip.datasetIndex === 0) return `Precisão: ${tip.raw}%`;
+              return `Nível: ${tip.raw}-back`;
             },
           },
         },
@@ -274,7 +274,7 @@ async function renderNBackProgressionChart() {
           position: 'left',
           min: 0,
           max: 100,
-          title: { display: true, text: 'Precisao (%)' },
+          title: { display: true, text: 'Precisão (%)' },
           ticks: { callback: (v) => v + '%' },
         },
         yLevel: {
@@ -282,7 +282,7 @@ async function renderNBackProgressionChart() {
           position: 'right',
           min: 0,
           suggestedMax: 6,
-          title: { display: true, text: 'Nivel N' },
+          title: { display: true, text: 'Nível N' },
           grid: { drawOnChartArea: false },
           ticks: { stepSize: 1 },
         },
@@ -307,7 +307,7 @@ async function renderReviewAccuracyChart() {
   chartInstances.reviewAccuracy = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: ['De novo', 'Dificil', 'Bom', 'Facil'],
+      labels: ['De novo', 'Difícil', 'Bom', 'Fácil'],
       datasets: [
         {
           data: [data.again, data.hard, data.good, data.easy],
@@ -354,7 +354,7 @@ async function renderReviewAccuracyChart() {
           drawCtx.fillText(total.toLocaleString('pt-BR'), width / 2, height / 2 - 8);
           drawCtx.font = "12px 'Plus Jakarta Sans', sans-serif";
           drawCtx.fillStyle = 'rgba(197,208,230,0.6)';
-          drawCtx.fillText('revisoes', width / 2, height / 2 + 14);
+          drawCtx.fillText('revisões', width / 2, height / 2 + 14);
           drawCtx.restore();
         },
       },
@@ -501,7 +501,7 @@ async function renderStreakHeatmap() {
       cell.addEventListener('mouseenter', (e) => {
         if (cellDate > today) return;
         tooltip.style.display = 'block';
-        tooltip.innerHTML = `<strong>${formatDateBR(cellDate)}</strong><br>${minutes} min &middot; ${sessions} sessao${sessions !== 1 ? 'es' : ''}`;
+        tooltip.innerHTML = `<strong>${formatDateBR(cellDate)}</strong><br>${minutes} min &middot; ${sessions} sessão${sessions !== 1 ? 'es' : ''}`;
         positionTooltip(e, tooltip);
       });
 

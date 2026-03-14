@@ -128,7 +128,7 @@ async function startReviewSession() {
     const container = document.getElementById('flashcardReview');
     if (!container) return;
 
-    container.innerHTML = '<p style="text-align:center;color:var(--synapse-cyan)">Carregando cards para revisao...</p>';
+    container.innerHTML = '<p style="text-align:center;color:var(--synapse-cyan)">Carregando cards para revisão...</p>';
     container.style.display = 'block';
 
     try {
@@ -137,7 +137,7 @@ async function startReviewSession() {
         const cards = await res.json();
 
         if (!cards || cards.length === 0) {
-            container.innerHTML = '<div class="review-empty"><span style="font-size:48px">🎉</span><h3>Nenhum card pendente!</h3><p>Todos os cards estao em dia. Volte mais tarde.</p></div>';
+            container.innerHTML = '<div class="review-empty"><span style="font-size:48px">🎉</span><h3>Nenhum card pendente!</h3><p>Todos os cards estão em dia. Volte mais tarde.</p></div>';
             return;
         }
 
@@ -152,7 +152,7 @@ async function startReviewSession() {
         showCurrentCard();
     } catch (err) {
         console.error('startReviewSession:', err);
-        container.innerHTML = '<p class="empty-state">Erro ao iniciar revisao</p>';
+        container.innerHTML = '<p class="empty-state">Erro ao iniciar revisão</p>';
     }
 }
 
@@ -231,10 +231,10 @@ function showReviewSummary() {
     container.innerHTML =
         '<div class="review-summary">'
         + '<span class="review-summary-icon">🧠</span>'
-        + '<h3>Sessao Concluida!</h3>'
+        + '<h3>Sessão Concluída!</h3>'
         + '<div class="review-summary-stats">'
         + '<div class="review-stat"><span class="review-stat-value">' + _reviewTotal + '</span><span class="review-stat-label">Cards Revisados</span></div>'
-        + '<div class="review-stat"><span class="review-stat-value" style="color:' + accuracyColor + '">' + accuracy + '%</span><span class="review-stat-label">Precisao</span></div>'
+        + '<div class="review-stat"><span class="review-stat-value" style="color:' + accuracyColor + '">' + accuracy + '%</span><span class="review-stat-label">Precisão</span></div>'
         + '<div class="review-stat"><span class="review-stat-value" style="color:var(--synapse-gold)">+' + _reviewXP + '</span><span class="review-stat-label">XP Ganho</span></div>'
         + '</div>'
         + '<button class="btn-action" onclick="closeReviewSession()" style="margin-top:20px">Fechar</button>'
@@ -259,7 +259,7 @@ async function importCards() {
     const deckId = document.getElementById('importDeck').value;
     const text = document.getElementById('importText').value.trim();
     if (!deckId || !text) {
-        alert('Selecione um baralho e cole o conteudo.\nFormatos aceitos:\n• pergunta;resposta (ponto e virgula)\n• pergunta[TAB]resposta (tab — formato Anki)\n• pergunta|resposta (pipe)\n• pergunta,resposta (virgula — se so houver uma)');
+        alert('Selecione um baralho e cole o conteúdo.\nFormatos aceitos:\n• pergunta;resposta (ponto e vírgula)\n• pergunta[TAB]resposta (tab — formato Anki)\n• pergunta|resposta (pipe)\n• pergunta,resposta (vírgula — se só houver uma)');
         return;
     }
 
@@ -271,7 +271,7 @@ async function importCards() {
         });
         const data = await res.json();
         if (!res.ok) {
-            alert('Erro: ' + (data.error || 'Falha na importacao') + (data.details ? '\n' + data.details.join('\n') : ''));
+            alert('Erro: ' + (data.error || 'Falha na importação') + (data.details ? '\n' + data.details.join('\n') : ''));
             return;
         }
         const msg = 'Importados ' + (data.imported || 0) + ' cards com sucesso!' +
@@ -282,7 +282,7 @@ async function importCards() {
         await loadFlashcardData();
     } catch (err) {
         console.error('importCards:', err);
-        alert('Erro de conexao ao importar cards.');
+        alert('Erro de conexão ao importar cards.');
     }
 }
 
@@ -349,10 +349,10 @@ function renderReviewUI() {
         + '</div>'
         + '<button class="btn-action review-show-btn" id="reviewShowBtn" onclick="flipCard()">Mostrar Resposta</button>'
         + '<div class="review-rating-buttons" id="reviewRatingBtns" style="display:none">'
-        + '<button class="btn-rating-lg btn-again-lg" onclick="rateCard(1)" title="Nao lembrei"><span>&#10060;</span><span class="rating-label">Nao lembrei</span></button>'
-        + '<button class="btn-rating-lg btn-hard-lg" onclick="rateCard(2)" title="Dificil"><span>&#128547;</span><span class="rating-label">Dificil</span></button>'
+        + '<button class="btn-rating-lg btn-again-lg" onclick="rateCard(1)" title="Não lembrei"><span>&#10060;</span><span class="rating-label">Não lembrei</span></button>'
+        + '<button class="btn-rating-lg btn-hard-lg" onclick="rateCard(2)" title="Difícil"><span>&#128547;</span><span class="rating-label">Difícil</span></button>'
         + '<button class="btn-rating-lg btn-good-lg" onclick="rateCard(3)" title="Lembrei"><span>&#9989;</span><span class="rating-label">Lembrei</span></button>'
-        + '<button class="btn-rating-lg btn-easy-lg" onclick="rateCard(4)" title="Facil"><span>&#128640;</span><span class="rating-label">Facil</span></button>'
+        + '<button class="btn-rating-lg btn-easy-lg" onclick="rateCard(4)" title="Fácil"><span>&#128640;</span><span class="rating-label">Fácil</span></button>'
         + '</div>'
         + '</div>';
 }
