@@ -2268,6 +2268,71 @@ body {
 .nback-cell.missed { border: 2px solid var(--synapse-red); }
 .nback-shortcut { font-size: 11px; color: var(--text-dim); font-family: 'Space Mono', monospace; margin-right: 4px; }
 
+/* N-Back Instructions & Level Display */
+.nback-instructions {
+  background: rgba(0, 240, 255, 0.05);
+  border: 1px solid var(--border-synapse);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.nback-instructions h4 {
+  color: var(--synapse-cyan);
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.nback-instruction-grid {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.nback-instr-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-normal);
+}
+.nback-instr-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  background: var(--bg-neuron-hover);
+  border: 1px solid var(--border-synapse);
+  border-radius: 6px;
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--synapse-cyan);
+  padding: 0 8px;
+}
+.nback-instr-tip {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+.nback-current-level {
+  text-align: center;
+  margin: 16px 0;
+}
+.nback-level-number {
+  font-size: 64px;
+  font-weight: 800;
+  font-family: 'Quicksand', sans-serif;
+  color: var(--synapse-cyan);
+  line-height: 1;
+  text-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+}
+.nback-level-label {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: 'Quicksand', sans-serif;
+  color: var(--text-dim);
+}
+
 /* Go/No-Go */
 .gonogo-area { display: flex; justify-content: center; align-items: center; min-height: 180px; cursor: pointer; }
 .gonogo-circle { width: 120px; height: 120px; border-radius: 50%; transition: all 0.15s; opacity: 0; }
