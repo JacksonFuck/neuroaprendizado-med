@@ -27,6 +27,9 @@
 </head>
 
 <body>
+    <!-- Neural Network Background -->
+    <canvas id="neuralBg"></canvas>
+
     <!-- Loading -->
     <div id="loadingScreen" class="loading-screen">
         <div class="loading-brain">🧠</div>
@@ -2111,6 +2114,101 @@
     </script>
     <script src="/cookie-consent.js"></script>
     <div id="xpPopupContainer" class="xp-popup-container"></div>
+
+    <!-- Neural Network Background Animation (subtle, all pages) -->
+    <script>
+    (function() {
+        const canvas = document.getElementById('neuralBg');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let W, H, nodes = [], pulses = [], frame = 0, mouse = { x: -1000, y: -1000 };
+        let isVisible = true;
+
+        function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+        resize();
+        window.addEventListener('resize', resize);
+        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+        // Pause when tab not visible (performance)
+        document.addEventListener('visibilitychange', () => { isVisible = !document.hidden; });
+
+        class Neuron {
+            constructor() { this.reset(); this.born = frame; this.maturity = 0; }
+            reset() {
+                this.x = Math.random() * W; this.y = Math.random() * H;
+                this.vx = (Math.random() - 0.5) * 0.2; this.vy = (Math.random() - 0.5) * 0.2;
+                this.r = Math.random() * 1.5 + 0.5;
+                this.pulse = Math.random() * Math.PI * 2;
+                this.isCyan = Math.random() > 0.35;
+            }
+            update() {
+                this.maturity = Math.min(1, (frame - this.born) / 400);
+                this.x += this.vx; this.y += this.vy; this.pulse += 0.015;
+                if (this.x < -50 || this.x > W + 50 || this.y < -50 || this.y > H + 50) { this.reset(); this.born = frame; }
+                const dx = mouse.x - this.x, dy = mouse.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 200 && dist > 0) { this.vx += dx / dist * 0.008; this.vy += dy / dist * 0.008; }
+                this.vx *= 0.998; this.vy *= 0.998;
+            }
+            draw() {
+                const a = (0.2 + Math.sin(this.pulse) * 0.1) * this.maturity;
+                const s = this.r * (0.5 + this.maturity * 0.5);
+                ctx.beginPath(); ctx.arc(this.x, this.y, s, 0, Math.PI * 2);
+                ctx.fillStyle = this.isCyan ? `rgba(0,240,255,${a})` : `rgba(224,64,251,${a})`;
+                ctx.fill();
+                const gs = s * (2 + this.maturity);
+                const g = ctx.createRadialGradient(this.x, this.y, s, this.x, this.y, gs);
+                g.addColorStop(0, this.isCyan ? `rgba(0,240,255,${a*0.2})` : `rgba(224,64,251,${a*0.2})`);
+                g.addColorStop(1, 'transparent');
+                ctx.beginPath(); ctx.arc(this.x, this.y, gs, 0, Math.PI * 2);
+                ctx.fillStyle = g; ctx.fill();
+            }
+        }
+
+        class Pulse {
+            constructor(a, b) { this.a = a; this.b = b; this.t = 0; this.spd = 0.015 + Math.random() * 0.02; this.c = Math.random() > 0.4; }
+            update() { this.t += this.spd; return this.t < 1; }
+            draw() {
+                const x = this.a.x + (this.b.x - this.a.x) * this.t;
+                const y = this.a.y + (this.b.y - this.a.y) * this.t;
+                const a = Math.sin(this.t * Math.PI) * 0.5;
+                ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = this.c ? `rgba(0,240,255,${a})` : `rgba(224,64,251,${a})`;
+                ctx.fill();
+            }
+        }
+
+        // Fewer nodes for subtlety (40 instead of 80)
+        for (let i = 0; i < 40; i++) nodes.push(new Neuron());
+        // Slow neurogenesis
+        setInterval(() => { if (nodes.length < 60) nodes.push(new Neuron()); }, 5000);
+
+        function animate() {
+            if (!isVisible) { requestAnimationFrame(animate); return; }
+            frame++;
+            ctx.clearRect(0, 0, W, H);
+            nodes.forEach(n => { n.update(); n.draw(); });
+            // Connections (subtle)
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d < 150) {
+                        const m = Math.min(nodes[i].maturity, nodes[j].maturity);
+                        const a = (1 - d / 150) * 0.08 * m;
+                        ctx.beginPath(); ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.strokeStyle = nodes[i].isCyan && nodes[j].isCyan ? `rgba(0,240,255,${a})` : `rgba(224,64,251,${a})`;
+                        ctx.lineWidth = 0.3 + m * 0.3; ctx.stroke();
+                        if (Math.random() < 0.0003 * m) pulses.push(new Pulse(nodes[i], nodes[j]));
+                    }
+                }
+            }
+            pulses = pulses.filter(p => { const ok = p.update(); if (ok) p.draw(); return ok; });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    })();
+    </script>
 </body>
 
 </html>
