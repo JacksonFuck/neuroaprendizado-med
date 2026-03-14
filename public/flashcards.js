@@ -259,7 +259,7 @@ async function importCards() {
     const deckId = document.getElementById('importDeck').value;
     const text = document.getElementById('importText').value.trim();
     if (!deckId || !text) {
-        alert('Selecione um baralho e cole o conteudo CSV (frente;verso por linha).');
+        alert('Selecione um baralho e cole o conteudo.\nFormatos aceitos:\n• pergunta;resposta (ponto e virgula)\n• pergunta[TAB]resposta (tab — formato Anki)\n• pergunta|resposta (pipe)\n• pergunta,resposta (virgula — se so houver uma)');
         return;
     }
 
@@ -269,15 +269,20 @@ async function importCards() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ csv: text })
         });
-        if (!res.ok) throw new Error('Failed to import');
         const data = await res.json();
-        alert('Importados ' + (data.count || 0) + ' cards com sucesso!');
+        if (!res.ok) {
+            alert('Erro: ' + (data.error || 'Falha na importacao') + (data.details ? '\n' + data.details.join('\n') : ''));
+            return;
+        }
+        const msg = 'Importados ' + (data.imported || 0) + ' cards com sucesso!' +
+            (data.errors && data.errors.length ? '\n\nAvisos:\n' + data.errors.join('\n') : '');
+        alert(msg);
         document.getElementById('importText').value = '';
         _flashcardDataLoaded = false;
         await loadFlashcardData();
     } catch (err) {
         console.error('importCards:', err);
-        alert('Erro ao importar cards.');
+        alert('Erro de conexao ao importar cards.');
     }
 }
 

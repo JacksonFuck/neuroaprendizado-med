@@ -339,12 +339,31 @@ router.post('/:deckId/import', ensureAuth, async (req, res) => {
         const errors = [];
 
         for (let i = 0; i < lines.length; i++) {
-            const parts = lines[i].split(';');
+            const line = lines[i];
+            // Accept multiple separators: semicolon, tab, or pipe
+            let parts;
+            if (line.includes('\t')) {
+                parts = line.split('\t');
+            } else if (line.includes(';')) {
+                parts = line.split(';');
+            } else if (line.includes('|')) {
+                parts = line.split('|');
+            } else {
+                // Try comma but only if there's exactly one comma (avoid splitting answers with commas)
+                const commaCount = (line.match(/,/g) || []).length;
+                if (commaCount === 1) {
+                    parts = line.split(',');
+                } else {
+                    errors.push(`Linha ${i + 1}: separador nao encontrado (use ; ou tab ou |)`);
+                    continue;
+                }
+            }
             if (parts.length < 2 || !parts[0].trim() || !parts[1].trim()) {
                 errors.push(`Linha ${i + 1}: formato invalido (esperado: frente;verso)`);
                 continue;
             }
-            cards.push({ front: parts[0].trim(), back: parts[1].trim() });
+            // Join remaining parts as "back" in case separator appears in the answer
+            cards.push({ front: parts[0].trim(), back: parts.slice(1).join(';').trim() });
         }
 
         if (!cards.length) {
