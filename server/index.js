@@ -30,6 +30,10 @@ app.use(helmet({
     }
 }));
 app.use(compression());
+
+// Stripe webhook needs raw body — must come before express.json()
+app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -121,6 +125,7 @@ app.use('/api/survey', require('./routes/survey'));
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/register-free', require('./routes/register-free'));
 app.use('/api/plan', require('./routes/plan'));
+app.use('/api/stripe', require('./routes/stripe'));
 
 // SPA fallback — serve index.html for non-API routes
 app.get('*', (req, res) => {
