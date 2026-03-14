@@ -43,9 +43,23 @@ router.get('/', ensureAuth, async (req, res) => {
     }
 });
 
-// POST /api/plan/upgrade — Placeholder for Stripe webhook
+// POST /api/plan/upgrade — Redirect to Stripe checkout
 router.post('/upgrade', ensureAuth, async (req, res) => {
-    res.json({ message: 'Integracao Stripe em breve. Entre em contato para acesso Pro.' });
+    // Frontend should call /api/stripe/checkout directly for Stripe integration.
+    // This endpoint kept for backwards compatibility.
+    try {
+        const response = await fetch(`${req.protocol}://${req.get('host')}/api/stripe/checkout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cookie': req.headers.cookie
+            }
+        });
+        const data = await response.json();
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: 'Erro ao iniciar checkout.' });
+    }
 });
 
 module.exports = router;
