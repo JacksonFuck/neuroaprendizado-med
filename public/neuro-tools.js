@@ -20,7 +20,7 @@ function startAnchorExercise() {
     anchorInterval = setInterval(() => {
         seconds--;
         if (seconds > 0) {
-            timer.textContent = `${seconds}s — Mantenha o foco. Pisque o minimo.`;
+            timer.textContent = `${seconds}s — Mantenha o foco. Pisque o mínimo.`;
         } else {
             stopAnchorExercise();
             timer.textContent = '✅ LC-NE ativado. Noradrenalina liberada. Comece a estudar.';
@@ -128,7 +128,7 @@ function startBreathingExercise() {
     const EXHALE_TIME = 5.0; // segundos — expiracao controlada
     const TOTAL_BREATHS = 20;
 
-    counter.textContent = `0 / ${TOTAL_BREATHS} respiracoes`;
+    counter.textContent = `0 / ${TOTAL_BREATHS} respirações`;
 
     breathInterval = setInterval(() => {
         phaseTime += 0.1;
@@ -151,7 +151,7 @@ function startBreathingExercise() {
 
             if (phaseTime >= EXHALE_TIME) {
                 breathsDone++;
-                counter.textContent = `${breathsDone} / ${TOTAL_BREATHS} respiracoes`;
+                counter.textContent = `${breathsDone} / ${TOTAL_BREATHS} respirações`;
                 phase = 'inhale';
                 phaseTime = 0;
 
@@ -284,7 +284,7 @@ function startStroop() {
             stopStroop();
             const pct = stroopTotal > 0 ? Math.round((stroopScore / stroopTotal) * 100) : 0;
             scoreEl.textContent = `Resultado: ${stroopScore}/${stroopTotal} (${pct}%) — ${pct >= 80 ? 'Excelente!' : pct >= 60 ? 'Bom.' : 'Treine mais.'}`;
-            document.getElementById('stroopArea').innerHTML = '<p class="empty-state">Sessao encerrada. Clique para jogar novamente.</p>';
+            document.getElementById('stroopArea').innerHTML = '<p class="empty-state">Sessão encerrada. Clique para jogar novamente.</p>';
         }
     }, 1000);
 }
@@ -414,7 +414,7 @@ function renderNBackLevelSelector(maxLevel) {
 function showNBackLevelUp(newLevel) {
     const el = document.getElementById('nbackScore');
     if (el) {
-        el.innerHTML = `<div class="level-up-flash">🎉 NIVEL ${newLevel}-BACK DESBLOQUEADO! 🧬</div>`;
+        el.innerHTML = `<div class="level-up-flash">🎉 NÍVEL ${newLevel}-BACK DESBLOQUEADO! 🧬</div>`;
         setTimeout(() => { el.querySelector('.level-up-flash')?.classList.add('fade'); }, 3000);
     }
 }
@@ -426,10 +426,10 @@ async function loadNBackHistory() {
         const sessions = await res.json();
         const el = document.getElementById('nbackHistory');
         if (!el || !sessions.length) {
-            if (el) el.innerHTML = '<p class="empty-state">Nenhuma sessao registrada</p>';
+            if (el) el.innerHTML = '<p class="empty-state">Nenhuma sessão registrada</p>';
             return;
         }
-        el.innerHTML = '<table class="nback-history-table"><thead><tr><th>Data</th><th>Nivel</th><th>Precisao</th></tr></thead><tbody>' +
+        el.innerHTML = '<table class="nback-history-table"><thead><tr><th>Data</th><th>Nível</th><th>Precisão</th></tr></thead><tbody>' +
             sessions.slice(0, 10).map(s => `<tr><td>${formatDate(s.completed_at)}</td><td>${s.n_level}-Back</td><td>${s.accuracy_pct}%</td></tr>`).join('') +
             '</tbody></table>';
     } catch (e) { console.error('NBack history error:', e); }
@@ -564,22 +564,22 @@ function updateFatigueMonitor() {
         fill.style.background = 'var(--synapse-green)';
         status.textContent = `🟢 Fresco — ${mins} min hoje`;
         status.style.color = 'var(--synapse-green)';
-        rec.textContent = 'Cortex pre-frontal com reservas plenas. Ideal para tarefas dificeis.';
+        rec.textContent = 'Córtex pré-frontal com reservas plenas. Ideal para tarefas difíceis.';
     } else if (mins < 90) {
         fill.style.background = 'var(--synapse-gold)';
         status.textContent = `🟡 Aquecido — ${mins} min hoje`;
         status.style.color = 'var(--synapse-gold)';
-        rec.textContent = 'Adenosina acumulando. Considere uma micro-pausa de 5min com panoramic vision.';
+        rec.textContent = 'Adenosina acumulando. Considere uma micro-pausa de 5min com visão panorâmica.';
     } else if (mins < 180) {
         fill.style.background = 'var(--synapse-red)';
         status.textContent = `🟠 Alerta — ${mins} min hoje`;
         status.style.color = '#ff8c00';
-        rec.textContent = 'Fadiga significativa. NSDR de 15min recomendado para clearance glinfatico.';
+        rec.textContent = 'Fadiga significativa. NSDR de 15min recomendado para clearance glinfático.';
     } else {
         fill.style.background = 'var(--synapse-red)';
-        status.textContent = `🔴 Fadiga Critica — ${mins} min hoje`;
+        status.textContent = `🔴 Fadiga Crítica — ${mins} min hoje`;
         status.style.color = 'var(--synapse-red)';
-        rec.textContent = 'ACC sobrecarregado. Pare agora. NSDR obrigatorio + sono de qualidade esta noite.';
+        rec.textContent = 'ACC sobrecarregado. Pare agora. NSDR obrigatório + sono de qualidade esta noite.';
     }
 }
 

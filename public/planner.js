@@ -27,7 +27,7 @@ async function loadSubjects() {
         plannerSubjects = await res.json();
         renderSubjectCards(plannerSubjects);
         populateSubjectSelect(plannerSubjects);
-    } catch (e) { console.error('Erro ao carregar materias:', e); }
+    } catch (e) { console.error('Erro ao carregar matérias:', e); }
 }
 
 async function addSubject() {
@@ -50,14 +50,14 @@ async function addSubject() {
         nameEl.value = '';
         hoursEl.value = '';
         await Promise.all([loadSubjects(), loadPlannerStats()]);
-    } catch (e) { console.error('Erro ao adicionar materia:', e); }
+    } catch (e) { console.error('Erro ao adicionar matéria:', e); }
 }
 
 async function editSubject(id) {
     const subject = plannerSubjects.find(s => s.id === id);
     if (!subject) return;
 
-    const newName = prompt('Nome da materia:', subject.name);
+    const newName = prompt('Nome da matéria:', subject.name);
     if (!newName || newName.trim() === subject.name) return;
 
     try {
@@ -67,11 +67,11 @@ async function editSubject(id) {
             body: JSON.stringify({ name: newName.trim(), color: subject.color, target_hours: subject.target_hours })
         });
         await loadSubjects();
-    } catch (e) { console.error('Erro ao editar materia:', e); }
+    } catch (e) { console.error('Erro ao editar matéria:', e); }
 }
 
 async function deleteSubject(id) {
-    if (!confirm('Remover esta materia e todos os seus topicos?')) return;
+    if (!confirm('Remover esta matéria e todos os seus tópicos?')) return;
     try {
         await fetch(`/api/planner/subjects/${id}`, { method: 'DELETE' });
         if (plannerCurrentSubjectId === id) {
@@ -79,7 +79,7 @@ async function deleteSubject(id) {
             document.getElementById('plannerTopics').innerHTML = '';
         }
         await Promise.all([loadSubjects(), loadPlannerStats()]);
-    } catch (e) { console.error('Erro ao remover materia:', e); }
+    } catch (e) { console.error('Erro ao remover matéria:', e); }
 }
 
 // ─── TOPICS CRUD ───
@@ -97,7 +97,7 @@ async function loadTopics(subjectId) {
         if (!res.ok) return;
         const topics = await res.json();
         renderTopicList(topics, subjectId);
-    } catch (e) { console.error('Erro ao carregar topicos:', e); }
+    } catch (e) { console.error('Erro ao carregar tópicos:', e); }
 }
 
 async function addTopic() {
@@ -130,7 +130,7 @@ async function addTopic() {
             await loadTopics(subject_id);
         }
         await Promise.all([loadSubjects(), loadPlannerStats()]);
-    } catch (e) { console.error('Erro ao adicionar topico:', e); }
+    } catch (e) { console.error('Erro ao adicionar tópico:', e); }
 }
 
 async function updateTopicStatus(topicId, newStatus) {
@@ -146,12 +146,12 @@ async function updateTopicStatus(topicId, newStatus) {
 }
 
 async function deleteTopic(id) {
-    if (!confirm('Remover este topico?')) return;
+    if (!confirm('Remover este tópico?')) return;
     try {
         await fetch(`/api/planner/topics/${id}`, { method: 'DELETE' });
         if (plannerCurrentSubjectId) await loadTopics(plannerCurrentSubjectId);
         await Promise.all([loadSubjects(), loadPlannerStats()]);
-    } catch (e) { console.error('Erro ao remover topico:', e); }
+    } catch (e) { console.error('Erro ao remover tópico:', e); }
 }
 
 // ─── STATS ───
@@ -170,7 +170,7 @@ async function loadPlannerStats() {
 function renderSubjectCards(subjects) {
     const el = document.getElementById('plannerSubjects');
     if (!subjects.length) {
-        el.innerHTML = '<p class="empty-state">Nenhuma materia cadastrada. Adicione sua primeira materia acima.</p>';
+        el.innerHTML = '<p class="empty-state">Nenhuma matéria cadastrada. Adicione sua primeira matéria acima.</p>';
         return;
     }
 
@@ -187,18 +187,18 @@ function renderSubjectCards(subjects) {
             <div class="subject-card-header">
                 <h4 class="subject-card-name" style="color: ${s.color}">${escapeHtml(s.name)}</h4>
                 <div class="subject-card-actions">
-                    <button class="btn-icon" onclick="event.stopPropagation(); editSubject(${s.id})" title="Editar" aria-label="Editar materia ${escapeHtml(s.name)}">&#9998;</button>
-                    <button class="btn-icon btn-danger" onclick="event.stopPropagation(); deleteSubject(${s.id})" title="Remover" aria-label="Remover materia ${escapeHtml(s.name)}">&#10005;</button>
+                    <button class="btn-icon" onclick="event.stopPropagation(); editSubject(${s.id})" title="Editar" aria-label="Editar matéria ${escapeHtml(s.name)}">&#9998;</button>
+                    <button class="btn-icon btn-danger" onclick="event.stopPropagation(); deleteSubject(${s.id})" title="Remover" aria-label="Remover matéria ${escapeHtml(s.name)}">&#10005;</button>
                 </div>
             </div>
             <div class="subject-card-meta">
-                <span>${totalTopics} topico${totalTopics !== 1 ? 's' : ''}</span>
+                <span>${totalTopics} tópico${totalTopics !== 1 ? 's' : ''}</span>
                 <span>${actualHours}h / ${targetHours}h</span>
             </div>
             <div class="progress-bar-container">
                 <div class="progress-bar-fill" style="width: ${pct}%; background: ${s.color}"></div>
             </div>
-            <span class="progress-label">${pct}% concluido</span>
+            <span class="progress-label">${pct}% concluído</span>
         </div>`;
     }).join('');
 }
@@ -211,9 +211,9 @@ function renderTopicList(topics, subjectId) {
     if (!topics.length) {
         el.innerHTML = `
             <div class="topic-list-header">
-                <h3>Topicos de ${escapeHtml(subjectName)}</h3>
+                <h3>Tópicos de ${escapeHtml(subjectName)}</h3>
             </div>
-            <p class="empty-state">Nenhum topico nesta materia. Adicione um topico abaixo.</p>`;
+            <p class="empty-state">Nenhum tópico nesta matéria. Adicione um tópico abaixo.</p>`;
         return;
     }
 
@@ -238,14 +238,14 @@ function renderTopicList(topics, subjectId) {
                 <span class="topic-name ${nameClass}">${escapeHtml(t.name)}</span>
                 <span class="topic-meta">${t.estimated_hours || 0}h estimadas${dateDisplay ? ' &bull; ' + dateDisplay : ''}</span>
             </div>
-            <button class="btn-icon btn-danger" onclick="deleteTopic(${t.id})" title="Remover topico" aria-label="Remover topico ${escapeHtml(t.name)}">&#10005;</button>
+            <button class="btn-icon btn-danger" onclick="deleteTopic(${t.id})" title="Remover tópico" aria-label="Remover tópico ${escapeHtml(t.name)}">&#10005;</button>
         </div>`;
     }).join('');
 
     el.innerHTML = `
         <div class="topic-list-header">
-            <h3>Topicos de ${escapeHtml(subjectName)}</h3>
-            <span class="topic-count">${topics.length} topico${topics.length !== 1 ? 's' : ''}</span>
+            <h3>Tópicos de ${escapeHtml(subjectName)}</h3>
+            <span class="topic-count">${topics.length} tópico${topics.length !== 1 ? 's' : ''}</span>
         </div>
         ${topicRows}`;
 }
@@ -265,11 +265,11 @@ function renderPlannerStats(stats) {
         <div class="planner-stats-grid">
             <div class="planner-stat-card">
                 <span class="stat-value">${totalSubjects}</span>
-                <span class="stat-label">Materias</span>
+                <span class="stat-label">Matérias</span>
             </div>
             <div class="planner-stat-card">
                 <span class="stat-value">${totalTopics}</span>
-                <span class="stat-label">Topicos</span>
+                <span class="stat-label">Tópicos</span>
             </div>
             <div class="planner-stat-card">
                 <span class="stat-value">${overallPct}%</span>
@@ -284,7 +284,7 @@ function renderPlannerStats(stats) {
             <div class="progress-bar-container large">
                 <div class="progress-bar-fill" style="width: ${overallPct}%"></div>
             </div>
-            <span class="progress-label">${completedTopics} de ${totalTopics} topicos concluidos</span>
+            <span class="progress-label">${completedTopics} de ${totalTopics} tópicos concluídos</span>
         </div>`;
 }
 
@@ -372,7 +372,7 @@ function populateSubjectSelect(subjects) {
     if (!select) return;
 
     const currentVal = select.value;
-    select.innerHTML = '<option value="">Selecione a materia</option>' +
+    select.innerHTML = '<option value="">Selecione a matéria</option>' +
         subjects.map(s => `<option value="${s.id}" ${s.id == currentVal ? 'selected' : ''}>${escapeHtml(s.name)}</option>`).join('');
 }
 

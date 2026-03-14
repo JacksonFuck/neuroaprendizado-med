@@ -415,7 +415,7 @@ async function loadSpacedTopics() {
       <div class="spaced-topic-item">
         <div class="topic-info">
           <h4>${t.name}</h4>
-          <p class="topic-meta">${t.category} • Proxima: ${formatDate(t.next_review)}</p>
+          <p class="topic-meta">${t.category} • Próxima: ${formatDate(t.next_review)}</p>
           <div class="retrievability-bar">
             <div class="r-track"><div class="r-fill ${rClass}" style="width:${R}%"></div></div>
             <span class="r-label">${R}%</span>
@@ -424,10 +424,10 @@ async function loadSpacedTopics() {
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
           <div class="topic-stage">${dots}</div>
           <div class="topic-actions rating-actions">
-            <button class="btn-rating btn-again" onclick="reviewTopic(${t.id}, 1)" title="Nao lembrei">❌</button>
-            <button class="btn-rating btn-hard" onclick="reviewTopic(${t.id}, 2)" title="Dificil">😓</button>
+            <button class="btn-rating btn-again" onclick="reviewTopic(${t.id}, 1)" title="Não lembrei">❌</button>
+            <button class="btn-rating btn-hard" onclick="reviewTopic(${t.id}, 2)" title="Difícil">😓</button>
             <button class="btn-rating btn-good" onclick="reviewTopic(${t.id}, 3)" title="Lembrei">✅</button>
-            <button class="btn-rating btn-easy" onclick="reviewTopic(${t.id}, 4)" title="Facil">🚀</button>
+            <button class="btn-rating btn-easy" onclick="reviewTopic(${t.id}, 4)" title="Fácil">🚀</button>
             <button class="btn-delete" onclick="deleteSpacedTopic(${t.id})">✕</button>
           </div>
         </div>
@@ -651,7 +651,7 @@ function showNeuroGreeting() {
     const countEl = document.getElementById('greetingReviewCount');
     if (countEl) {
         const n = parseInt(reviewCount) || 0;
-        countEl.textContent = n > 0 ? `${n} revisao${n > 1 ? 'es' : ''} pendente${n > 1 ? 's' : ''}` : 'Nenhuma revisao pendente';
+        countEl.textContent = n > 0 ? `${n} revisão${n > 1 ? 'es' : ''} pendente${n > 1 ? 's' : ''}` : 'Nenhuma revisão pendente';
     }
 }
 

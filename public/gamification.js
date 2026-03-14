@@ -95,7 +95,7 @@ function renderAchievementGrid(achievements) {
     if (!grid) return;
 
     if (!achievements || achievements.length === 0) {
-        grid.innerHTML = '<p style="color:var(--text-secondary);font-size:14px">Nenhuma conquista disponivel ainda.</p>';
+        grid.innerHTML = '<p style="color:var(--text-secondary);font-size:14px">Nenhuma conquista disponível ainda.</p>';
         return;
     }
 
@@ -149,7 +149,7 @@ function renderLeaderboard(rankings) {
     if (!table) return;
 
     if (!rankings || rankings.length === 0) {
-        table.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text-secondary)">Nenhum dado de ranking disponivel.</td></tr>';
+        table.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text-secondary)">Nenhum dado de ranking disponível.</td></tr>';
         return;
     }
 
@@ -161,7 +161,7 @@ function renderLeaderboard(rankings) {
         const positionCls = r.rank <= 3 ? 'ranking-position top-' + r.rank : 'ranking-position';
         const medal = MEDAL_MAP[r.rank] || '';
         const displayName = isCurrent
-            ? sanitize(r.name || 'Voce')
+            ? sanitize(r.name || 'Você')
             : sanitize(r.name || 'Estudante #' + r.rank);
         const formattedValue = formatRankingValue(r.value, getCurrentMetric());
 
