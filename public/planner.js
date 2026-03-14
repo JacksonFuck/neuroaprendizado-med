@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════
    PLANNER — Study Planner with Subject & Topic Management
    CRUD de materias/topicos, progresso, filtro temporal,
-   link automatico com repeticao espacada
+   link automatico com repetição espaçada
    ═══════════════════════════════════════════════════════════════ */
 
 let plannerSubjects = [];

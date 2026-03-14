@@ -108,7 +108,7 @@ function stopNoise() {
 }
 
 
-// ─── 3. HIPERVENTILACAO CONTROLADA (20 respiracoes) ───
+// ─── 3. HIPERVENTILAÇÃO CONTROLADA (20 respirações) ───
 let breathInterval = null;
 
 function startBreathingExercise() {
@@ -124,8 +124,8 @@ function startBreathingExercise() {
     let phase = 'inhale'; // inhale → exhale → inhale ...
     let phaseTime = 0;
 
-    const INHALE_TIME = 5.0; // segundos — inspiracao profunda
-    const EXHALE_TIME = 5.0; // segundos — expiracao controlada
+    const INHALE_TIME = 5.0; // segundos — inspiração profunda
+    const EXHALE_TIME = 5.0; // segundos — expiração controlada
     const TOTAL_BREATHS = 20;
 
     counter.textContent = `0 / ${TOTAL_BREATHS} respirações`;
