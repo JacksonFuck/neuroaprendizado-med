@@ -19,7 +19,8 @@ router.get('/focus-weekly', ensureAuth, async (req, res) => {
         );
         res.json(rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Charts error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -54,7 +55,8 @@ router.get('/retention', ensureAuth, async (req, res) => {
 
         res.json(result);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Charts error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -70,7 +72,8 @@ router.get('/nback-progression', ensureAuth, async (req, res) => {
         );
         res.json(rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Charts error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -101,7 +104,8 @@ router.get('/review-accuracy', ensureAuth, async (req, res) => {
 
         res.json(result);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Charts error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -118,7 +122,8 @@ router.get('/streak-heatmap', ensureAuth, async (req, res) => {
         );
         res.json(rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Charts error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 

@@ -22,7 +22,8 @@ router.get('/xp', ensureAuth, async (req, res) => {
 
         res.json({ total_xp: totalXp, level, recent_xp: recent });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Gamification error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -38,7 +39,8 @@ router.get('/achievements', ensureAuth, async (req, res) => {
         );
         res.json(rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Gamification error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -129,7 +131,8 @@ router.get('/rankings', ensureAuth, requirePro, async (req, res) => {
 
         res.json({ rankings: anonymized, your_position: userPosition || null });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Gamification error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 

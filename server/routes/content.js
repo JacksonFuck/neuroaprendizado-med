@@ -11,7 +11,8 @@ router.get('/:tab', async (req, res) => {
         );
         res.json(rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Content error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 

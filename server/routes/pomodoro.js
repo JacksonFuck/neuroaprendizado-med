@@ -26,7 +26,8 @@ router.post('/', ensureAuth, async (req, res) => {
 
         res.status(201).json({ ...rows[0], achievements_earned });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Pomodoro error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -70,7 +71,8 @@ router.get('/stats', ensureAuth, async (req, res) => {
             streak_days: parseInt(streakResult.rows[0]?.streak || 0)
         });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Pomodoro error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -83,7 +85,8 @@ router.get('/recent', ensureAuth, async (req, res) => {
         );
         res.json(rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Pomodoro error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 

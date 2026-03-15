@@ -28,7 +28,8 @@ router.get('/subjects', ensureAuth, async (req, res) => {
         );
         res.json(rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Planner error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -43,7 +44,8 @@ router.post('/subjects', ensureAuth, async (req, res) => {
         );
         res.status(201).json(rows[0]);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Planner error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -62,7 +64,8 @@ router.put('/subjects/:id', ensureAuth, async (req, res) => {
         if (!rowCount) return res.status(404).json({ error: 'Materia nao encontrada' });
         res.json(rows[0]);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Planner error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -76,7 +79,8 @@ router.delete('/subjects/:id', ensureAuth, async (req, res) => {
         if (!rowCount) return res.status(404).json({ error: 'Materia nao encontrada' });
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Planner error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -94,7 +98,8 @@ router.get('/topics', ensureAuth, async (req, res) => {
         const { rows } = await pool.query(query, params);
         res.json(rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Planner error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -132,7 +137,8 @@ router.post('/topics', ensureAuth, async (req, res) => {
         res.status(201).json(rows[0]);
     } catch (err) {
         await client.query('ROLLBACK');
-        res.status(500).json({ error: err.message });
+        console.error('Planner error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     } finally {
         client.release();
     }
@@ -172,7 +178,8 @@ router.put('/topics/:id', ensureAuth, async (req, res) => {
 
         res.json({ ...rows[0], achievements_earned });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Planner error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -186,7 +193,8 @@ router.delete('/topics/:id', ensureAuth, async (req, res) => {
         if (!rowCount) return res.status(404).json({ error: 'Topico nao encontrado' });
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Planner error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -210,7 +218,8 @@ router.get('/stats', ensureAuth, async (req, res) => {
         );
         res.json(rows[0]);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Planner error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 

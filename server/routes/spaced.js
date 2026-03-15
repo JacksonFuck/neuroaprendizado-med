@@ -32,7 +32,8 @@ router.get('/', ensureAuth, async (req, res) => {
 
         res.json(enriched);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Spaced error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -53,7 +54,8 @@ router.post('/', ensureAuth, async (req, res) => {
         );
         res.status(201).json(rows[0]);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Spaced error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -123,7 +125,8 @@ router.put('/:id/review', ensureAuth, async (req, res) => {
 
         res.json({ ...rows[0], retrievability: result.retrievability, interval: result.interval, on_time_bonus: isOnTime, achievements_earned });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Spaced error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -137,7 +140,8 @@ router.delete('/:id', ensureAuth, async (req, res) => {
         if (!rowCount) return res.status(404).json({ error: 'Tópico não encontrado' });
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Spaced error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 

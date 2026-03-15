@@ -292,11 +292,10 @@ router.post('/forgot-password', async (req, res) => {
             }
         }
 
-        const isAdmin = req.isAuthenticated && req.isAuthenticated() && req.user && req.user.role === 'admin';
+        // Never return reset_link to client — it is sent via email only
         res.json({
             success: true,
-            message: 'Link de redefinição gerado com sucesso.',
-            ...(process.env.NODE_ENV !== 'production' || isAdmin ? { reset_link: resetLink } : {})
+            message: 'Se o e-mail estiver cadastrado, voce recebera as instrucoes.'
         });
     } catch (err) {
         console.error('Forgot password error:', err);
@@ -307,7 +306,7 @@ router.post('/forgot-password', async (req, res) => {
 router.post('/reset-password', async (req, res) => {
     const { token, password } = req.body;
     if (!token || !password) return res.status(400).json({ error: 'Token e nova senha são obrigatórios.' });
-    if (password.length < 6) return res.status(400).json({ error: 'A senha deve ter no mínimo 6 caracteres.' });
+    if (password.length < 8) return res.status(400).json({ error: 'A senha deve ter no minimo 8 caracteres.' });
 
     const record = resetTokens.get(token);
     if (!record || Date.now() > record.expires) {

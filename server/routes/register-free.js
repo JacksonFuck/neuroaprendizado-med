@@ -14,8 +14,8 @@ router.post('/', async (req, res) => {
     if (!accept_lgpd) {
         return res.status(400).json({ error: 'Aceite da politica de privacidade e obrigatorio.' });
     }
-    if (password.length < 6) {
-        return res.status(400).json({ error: 'Senha deve ter no minimo 6 caracteres.' });
+    if (password.length < 8) {
+        return res.status(400).json({ error: 'Senha deve ter no minimo 8 caracteres.' });
     }
 
     try {

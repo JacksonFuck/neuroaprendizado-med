@@ -45,3 +45,18 @@ build/
 .aiox-core/local/
 .claude/settings.local.json
 .aiox/install-log.txt
+
+# Security — never commit
+deploy_and_resend.js
+local_restart.js
+create_admin.js
+create_admin.sql
+auth_b64.txt
+set_admin.js
+.env.backup*
+release.tar.gz
+deploy-quick.js
+check-*.js
+upgrade-*.js
+setup-*.js
+test-*.js
