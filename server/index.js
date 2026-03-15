@@ -161,6 +161,7 @@ app.use('/api/messages', require('./routes/messages'));
 app.use('/api/register-free', require('./routes/register-free'));
 app.use('/api/plan', require('./routes/plan'));
 app.use('/api/stripe', require('./routes/stripe'));
+app.use('/api/assessment', require('./routes/assessment'));
 
 // SPA fallback — serve index.html for non-API routes
 app.get('*', (req, res) => {

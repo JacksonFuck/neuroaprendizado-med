@@ -73,6 +73,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Check for onboarding survey (after greeting closes)
     if (typeof checkOnboardingSurvey === 'function') setTimeout(checkOnboardingSurvey, 1000);
+    // Check for neurocognitive assessment (after onboarding)
+    if (typeof checkAssessmentDue === 'function') setTimeout(checkAssessmentDue, 2000);
     // Load unread message count
     if (typeof loadUnreadCount === 'function') loadUnreadCount();
 
