@@ -393,20 +393,31 @@ function renderGoals(goals) {
         return;
     }
 
-    const typeLabels = { immediate: 'Este mes', medium: 'Este semestre', long: 'Este ano' };
-    const typeIcons = { immediate: '&#128197;', medium: '&#128218;', long: '&#127942;' };
+    const typeLabels = {
+        'immediate': 'Objetivo Imediato',
+        'medium_term': 'Médio Prazo',
+        'long_term': 'Longo Prazo'
+    };
+    const typeIcons = {
+        'immediate': '🎯',
+        'medium_term': '📅',
+        'long_term': '🏆'
+    };
 
     el.innerHTML = goals.map(g => {
         const isAchieved = g.status === 'achieved';
+        const gType = g.goal_type || g.type || 'immediate';
+        const label = typeLabels[gType] || gType;
+        const icon = typeIcons[gType] || '🎯';
         return `
         <div class="goal-item ${isAchieved ? 'achieved' : ''}">
-            <button class="goal-status-btn" onclick="updateGoalStatus(${g.id}, '${isAchieved ? 'active' : 'achieved'}')" title="${isAchieved ? 'Reabrir' : 'Marcar como alcancado'}">
-                ${isAchieved ? '&#9989;' : '&#9723;'}
+            <button class="goal-status-btn" onclick="updateGoalStatus(${g.id}, '${isAchieved ? 'active' : 'achieved'}')" title="${isAchieved ? 'Reabrir' : 'Marcar como alcançado'}">
+                ${isAchieved ? '✅' : '⬜'}
             </button>
             <div class="goal-text">
-                <div class="goal-type">${typeIcons[g.type] || ''} ${typeLabels[g.type] || g.type}</div>
+                <div class="goal-type">${icon} ${label}</div>
                 <div class="goal-desc">${g.description}</div>
-                ${g.target_date ? `<div class="goal-target">Meta: ${formatDate(g.target_date)}</div>` : ''}
+                ${g.target_date ? `<div class="goal-target">Meta: ${typeof formatDate === 'function' ? formatDate(g.target_date) : g.target_date}</div>` : ''}
             </div>
         </div>`;
     }).join('');
