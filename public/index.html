@@ -132,6 +132,10 @@
             <button class="nav-item" data-tab="ciencia" onclick="switchTab('ciencia')">
                 <span class="nav-icon">🔬</span><span class="nav-label">Ciência</span>
             </button>
+            <button class="nav-item" data-tab="artigos" onclick="switchTab('artigos')">
+                <span class="nav-icon">📄</span><span class="nav-label">Artigos Científicos</span>
+                <span class="pro-badge">PRO</span>
+            </button>
             <div class="nav-divider"></div>
             <div class="nav-item" data-tab="suggestions" onclick="switchTab('suggestions')">
                 <span class="nav-icon">💡</span> <span class="nav-label">Sugestões de Melhoria</span>
@@ -2062,6 +2066,17 @@
             </div>
         </section>
 
+        <!-- ARTIGOS CIENTÍFICOS -->
+        <section id="tab-artigos" class="tab-panel">
+            <div class="page-header">
+                <h1>📄 Biblioteca Científica</h1>
+                <p class="page-subtitle">23 artigos completos das melhores revistas — acesso exclusivo Pro</p>
+            </div>
+            <div class="glass-card">
+                <div id="articlesList"></div>
+            </div>
+        </section>
+
         <!-- SUGESTÕES -->
         <section id="tab-suggestions" class="tab-panel">
             <div class="page-header">
@@ -2100,6 +2115,7 @@
     <script src="gamification.js"></script>
     <script src="plan-gate.js"></script>
     <script src="assessment.js"></script>
+    <script src="articles.js"></script>
     <script src="survey.js"></script>
     <script src="messages.js"></script>
     <script>
