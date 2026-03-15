@@ -37,9 +37,9 @@
             --magenta: #e040fb;
             --gold: #ffbe0b;
             --green: #00e676;
-            --text: #b0bcd8;
-            --text-dim: #5e6a8a;
-            --text-bright: #eaf0ff;
+            --text: #c5d0e8;
+            --text-dim: #94a3c0;
+            --text-bright: #f0f4ff;
             --surface: rgba(10, 11, 30, 0.7);
             --border: rgba(0, 240, 255, 0.1);
             --font-display: 'Quicksand', sans-serif;
@@ -1178,6 +1178,14 @@
         @media (max-width: 480px) {
             section { padding: 60px 16px; }
             .hero { padding: 80px 16px 40px; }
+            /* Better readability on small screens */
+            body { font-size: 15px; }
+            .section-desc, .pathway-desc, .feature-desc, .demo-subtitle, .usecase-text, .pricing-features li {
+                font-size: 14px;
+                line-height: 1.6;
+                color: var(--text);
+            }
+            .urgency-banner { font-size: 11px; padding: 6px 10px; }
         }
     </style>
 </head>
