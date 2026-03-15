@@ -1424,27 +1424,34 @@
                 <h3>Mini Teste Stroop</h3>
                 <p class="demo-subtitle">Clique na COR em que a palavra está escrita, não na palavra em si.</p>
                 <div class="demo-area" id="stroopArea">
-                    <button class="stroop-start-btn" onclick="startStroopDemo()">Iniciar Teste (5 segundos)</button>
+                    <button class="stroop-start-btn" onclick="startStroopDemo()">Iniciar Teste (15 segundos)</button>
                 </div>
             </div>
             <!-- Flashcard Demo -->
             <div class="demo-card reveal reveal-delay-1">
-                <h3>Flashcard FSRS</h3>
-                <p class="demo-subtitle">Clique no card para virar. No NeuroForge, cada card tem seu próprio algoritmo.</p>
+                <h3>Flashcards FSRS</h3>
+                <p class="demo-subtitle">Clique no card para virar. Cada card tem seu próprio algoritmo de memória.</p>
                 <div class="demo-area">
-                    <div class="flashcard-container" onclick="this.querySelector('.flashcard-inner').classList.toggle('flipped')">
-                        <div class="flashcard-inner">
-                            <div class="flashcard-face flashcard-front">
+                    <div class="flashcard-container" id="demoFlashcard" onclick="flipDemoCard()">
+                        <div class="flashcard-inner" id="demoFlashcardInner">
+                            <div class="flashcard-face flashcard-front" id="demoFront">
                                 <div class="fc-label">PERGUNTA</div>
-                                <div>Qual estrutura cerebral é principal responsável pela consolidação da memória declarativa?</div>
+                                <div id="demoFrontText"></div>
                             </div>
-                            <div class="flashcard-face flashcard-back">
+                            <div class="flashcard-face flashcard-back" id="demoBack">
                                 <div class="fc-label">RESPOSTA</div>
-                                <div><strong style="color:var(--cyan)">Hipocampo</strong> &mdash; responsável pela consolidação de memórias declarativas (explícitas) do curto para o longo prazo.</div>
+                                <div id="demoBackText"></div>
                             </div>
                         </div>
                     </div>
-                    <p class="fc-bottom-text">No NeuroForge, cada card tem seu próprio algoritmo FSRS. A revisão é agendada no momento exato em que a sinapse quase se perde.</p>
+                    <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+                        <button onclick="prevDemoCard()" style="padding:6px 16px;border-radius:6px;border:1px solid rgba(0,240,255,0.2);background:transparent;color:var(--text-dim);cursor:pointer;font-size:13px">← Anterior</button>
+                        <span id="demoCardCounter" style="padding:6px 12px;font-family:var(--font-mono);font-size:12px;color:var(--text-dim)">1/5</span>
+                        <button onclick="nextDemoCard()" style="padding:6px 16px;border-radius:6px;border:1px solid rgba(0,240,255,0.2);background:transparent;color:var(--text-dim);cursor:pointer;font-size:13px">Próximo →</button>
+                    </div>
+                    <p class="fc-bottom-text" style="margin-top:16px">
+                        <strong style="color:var(--cyan)">Importe facilmente</strong> seus flashcards do <strong>Anki</strong> (export TAB) e do <strong>NotebookLM</strong> (export CSV). O FSRS agenda cada revisão no momento exato em que a sinapse quase se perde.
+                    </p>
                 </div>
             </div>
         </div>
@@ -1965,20 +1972,34 @@ var stroopTotal = 0;
 var stroopTimer = null;
 var stroopActive = false;
 
+var stroopCountdown = null;
 function startStroopDemo() {
     stroopScore = 0;
     stroopTotal = 0;
     stroopActive = true;
+    var timeLeft = 15;
     showStroopRound();
+    // Live countdown
+    clearInterval(stroopCountdown);
+    stroopCountdown = setInterval(function() {
+        timeLeft--;
+        var area = document.getElementById('stroopArea');
+        var counter = area ? area.querySelector('.stroop-timer') : null;
+        if (counter) counter.textContent = timeLeft + 's | Acertos: ' + stroopScore + '/' + stroopTotal;
+        if (timeLeft <= 0) clearInterval(stroopCountdown);
+    }, 1000);
     stroopTimer = setTimeout(function() {
         stroopActive = false;
+        clearInterval(stroopCountdown);
         var area = document.getElementById('stroopArea');
         var pct = stroopTotal > 0 ? Math.round((stroopScore / stroopTotal) * 100) : 0;
+        var rating = pct >= 80 ? 'Excelente! 🧠' : pct >= 60 ? 'Bom! Continue treinando.' : 'Seu cérebro precisa de treino — o NeuroForge ajuda.';
         area.innerHTML =
-            '<div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--cyan);margin-bottom:8px">' + stroopScore + '/' + stroopTotal + ' corretas (' + pct + '%)</div>' +
-            '<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Imagine treinar isso 3x por semana. Seu córtex cingulado anterior agradece.</p>' +
-            '<button class="stroop-start-btn" onclick="startStroopDemo()">Tentar Novamente</button>';
-    }, 5000);
+            '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cyan);margin-bottom:8px">' + stroopScore + '/' + stroopTotal + ' corretas (' + pct + '%)</div>' +
+            '<p style="font-size:15px;color:var(--gold);margin-bottom:8px;font-weight:600">' + rating + '</p>' +
+            '<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Treinar Stroop 3x por semana aumenta a resistência à fadiga mental em até 18% (André et al., 2019).</p>' +
+            '<button class="stroop-start-btn" onclick="startStroopDemo()">Tentar Novamente (15s)</button>';
+    }, 15000);
 }
 
 function showStroopRound() {
@@ -2003,7 +2024,7 @@ function showStroopRound() {
     shuffled.forEach(function(i) {
         html += '<button class="stroop-option" style="background:' + STROOP_COLORS[i].hex + '" onclick="answerStroopDemo(' + i + ',' + correctAnswer + ')">' + STROOP_COLORS[i].name + '</button>';
     });
-    html += '</div><div id="stroopFeedback" class="stroop-result"></div>';
+    html += '</div><div class="stroop-timer" style="margin-top:12px;font-family:var(--font-mono);font-size:13px;color:var(--text-dim)">15s | Acertos: 0/0</div>';
     area.innerHTML = html;
 }
 
@@ -2040,6 +2061,52 @@ function answerStroopDemo(chosen, correct) {
         lastScroll = st;
     }, { passive: true });
 })();
+
+/* -----------------------------------------------
+   FLASHCARD DEMO — Multiple rotating cards
+   ----------------------------------------------- */
+var demoCards = [
+    { front: 'Qual estrutura cerebral é a principal responsável pela consolidação da memória declarativa?', back: '<strong style="color:var(--cyan)">Hipocampo</strong> — consolida memórias declarativas do curto para o longo prazo via LTP.' },
+    { front: 'O que é o Erro de Predição de Recompensa (RPE)?', back: '<strong style="color:var(--cyan)">RPE = Recompensa Real - Recompensa Esperada.</strong> Quando RPE > 0, a VTA libera dopamina fásica, consolidando a sinapse.' },
+    { front: 'Por que estudar 90 minutos seguidos é o limite ideal?', back: '<strong style="color:var(--cyan)">Ciclo Ultradiano (BRAC).</strong> Após 90min, adenosina acumula no PFC, reduzindo eficiência em até 40%. NSDR restaura 65% da dopamina.' },
+    { front: 'Qual a diferença entre Active Recall e releitura?', back: '<strong style="color:var(--cyan)">Active Recall</strong> ativa hipocampo anterior + posterior 3x mais que releitura, reorganizando redes hipocampo-corticais (Wiklund-Hörnqvist et al., 2021).' },
+    { front: 'O que é NSDR (Non-Sleep Deep Rest)?', back: '<strong style="color:var(--cyan)">Protocolo de descanso profundo</strong> que induz ondas Alpha→Theta, ativando o sistema glinfático para limpar adenosina e restaurar dopamina estriatal.' }
+];
+var demoCardIdx = 0;
+var demoFlipped = false;
+
+function initDemoCards() {
+    demoCardIdx = 0;
+    demoFlipped = false;
+    updateDemoCard();
+}
+function updateDemoCard() {
+    var c = demoCards[demoCardIdx];
+    var front = document.getElementById('demoFrontText');
+    var back = document.getElementById('demoBackText');
+    var counter = document.getElementById('demoCardCounter');
+    var inner = document.getElementById('demoFlashcardInner');
+    if (front) front.innerHTML = c.front;
+    if (back) back.innerHTML = c.back;
+    if (counter) counter.textContent = (demoCardIdx + 1) + '/' + demoCards.length;
+    if (inner) inner.classList.remove('flipped');
+    demoFlipped = false;
+}
+function flipDemoCard() {
+    var inner = document.getElementById('demoFlashcardInner');
+    if (inner) { inner.classList.toggle('flipped'); demoFlipped = !demoFlipped; }
+}
+function nextDemoCard() {
+    demoCardIdx = (demoCardIdx + 1) % demoCards.length;
+    updateDemoCard();
+}
+function prevDemoCard() {
+    demoCardIdx = (demoCardIdx - 1 + demoCards.length) % demoCards.length;
+    updateDemoCard();
+}
+// Init on load
+if (document.getElementById('demoFrontText')) initDemoCards();
+else window.addEventListener('DOMContentLoaded', initDemoCards);
 
 /* -----------------------------------------------
    LANDING SIGNUP HANDLER
