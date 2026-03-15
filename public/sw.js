@@ -1,4 +1,4 @@
-const CACHE_NAME = 'neuroapp-v25';
+const CACHE_NAME = 'neuroapp-v27';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
@@ -12,6 +12,7 @@ const ASSETS_TO_CACHE = [
     '/gamification.js',
     '/survey.js',
     '/messages.js',
+    '/assessment.js',
     '/manifest.json'
 ];
 
