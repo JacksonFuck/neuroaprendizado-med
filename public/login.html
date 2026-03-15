@@ -478,7 +478,7 @@
 
         <div class="auth-tabs">
             <button class="auth-tab active" onclick="switchTab('login')" id="tab-login">Entrar</button>
-            <button class="auth-tab" onclick="switchTab('register')" id="tab-register">Cadastro (Convite)</button>
+            <button class="auth-tab" onclick="switchTab('register')" id="tab-register">Criar Conta</button>
             <button class="auth-tab" onclick="switchTab('forgot')" id="tab-forgot">Esqueci a Senha</button>
         </div>
 
@@ -488,17 +488,17 @@
             <button type="submit" class="submit-btn" id="loginBtn">Acessar Plataforma</button>
         </form>
 
-        <form id="registerForm" class="auth-form hidden" onsubmit="handleRegister(event)">
+        <form id="registerForm" class="auth-form hidden" onsubmit="handleFreeRegister(event)">
+            <p style="font-size:13px;color:#00f0ff;margin-bottom:12px;text-align:center">✨ Cadastro gratuito — sem token, sem cartão</p>
             <input type="text" id="regName" placeholder="Nome completo" required />
             <input type="email" id="regEmail" placeholder="E-mail" required />
-            <input type="password" id="regPassword" placeholder="Criar senha segura" minlength="6" required />
-            <input type="text" id="regToken" placeholder="Token de Convite" required />
+            <input type="password" id="regPassword" placeholder="Criar senha (mín. 8 caracteres)" minlength="8" required />
             <label class="lgpd-agree">
                 <input type="checkbox" id="regLgpd" required />
-                <span>Concordo explicitamente com a Política de Privacidade e Aceite de Dados sensíveis (LGPD).</span>
+                <span>Concordo com a Política de Privacidade (LGPD).</span>
             </label>
-            <button type="submit" class="submit-btn" style="background: linear-gradient(90deg, #e040fb, #00f0ff);">Criar
-                Conta</button>
+            <button type="submit" class="submit-btn" id="regBtn" style="background: linear-gradient(90deg, #00f0ff, #e040fb);">Criar Conta Grátis</button>
+            <div id="regMessage" class="auth-message"></div>
         </form>
 
         <form id="forgotForm" class="auth-form hidden" onsubmit="handleForgot(event)">
@@ -782,37 +782,48 @@
             }
         }
 
-        async function handleRegister(e) {
+        // Free registration (no token needed)
+        async function handleFreeRegister(e) {
             e.preventDefault();
-            const btn = e.target.querySelector('.submit-btn');
+            const btn = document.getElementById('regBtn');
+            const msg = document.getElementById('regMessage');
             btn.disabled = true;
-            btn.textContent = 'Registrando sinapses...';
+            btn.textContent = 'Criando sua conta...';
+            msg.className = 'auth-message';
+            msg.style.display = 'none';
 
             try {
-                const res = await fetch('/auth/register', {
+                const res = await fetch('/api/register-free', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        name: document.getElementById('regName').value,
-                        email: document.getElementById('regEmail').value,
+                        name: document.getElementById('regName').value.trim(),
+                        email: document.getElementById('regEmail').value.trim(),
                         password: document.getElementById('regPassword').value,
-                        invitation_token: document.getElementById('regToken').value,
                         accept_lgpd: document.getElementById('regLgpd').checked
                     })
                 });
                 const data = await res.json();
 
                 if (res.ok && data.success) {
-                    showMessage(data.message, 'success');
-                    e.target.reset();
+                    msg.textContent = '✅ Conta criada! Redirecionando...';
+                    msg.className = 'auth-message success';
+                    msg.style.display = 'block';
+                    setTimeout(() => { window.location.href = data.redirect || '/index.html'; }, 1500);
                 } else {
-                    showMessage(data.error || 'Erro no cadastro.', 'error');
+                    msg.textContent = data.error || 'Erro ao criar conta.';
+                    msg.className = 'auth-message error';
+                    msg.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'Criar Conta Grátis';
                 }
             } catch (err) {
-                showMessage('Erro de conexão.', 'error');
+                msg.textContent = 'Erro de conexão. Tente novamente.';
+                msg.className = 'auth-message error';
+                msg.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Criar Conta Grátis';
             }
-            btn.disabled = false;
-            btn.textContent = 'Criar Conta';
         }
 
         async function handleForgot(e) {
