@@ -60,3 +60,6 @@ check-*.js
 upgrade-*.js
 setup-*.js
 test-*.js
+
+# Scientific articles (binary PDFs, uploaded via SCP)
+articles/*.pdf

@@ -132,6 +132,7 @@ function switchTab(tabName) {
         document.getElementById('sidebar').classList.remove('open');
     }
     // Lazy load tabs
+    if (tabName === 'artigos' && typeof loadArticles === 'function') loadArticles();
     if (tabName === 'suggestions') loadUserSuggestions();
     if (tabName === 'planner' && typeof loadPlannerData === 'function') loadPlannerData();
     if (tabName === 'flashcards' && typeof loadFlashcardData === 'function') loadFlashcardData();
