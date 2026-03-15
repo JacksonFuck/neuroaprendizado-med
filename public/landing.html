@@ -1237,11 +1237,11 @@
     </div>
     <div class="stats-bar">
         <div class="stat-item">
-            <div class="stat-value" data-count="92">0%</div>
+            <div class="stat-value" data-count="92" data-suffix="%">0%</div>
             <div class="stat-label">Retenção</div>
         </div>
         <div class="stat-item">
-            <div class="stat-value" data-count="25" data-prefix="-">0%</div>
+            <div class="stat-value" data-count="25" data-prefix="-" data-suffix="%">0%</div>
             <div class="stat-label">Tempo de Estudo</div>
         </div>
         <div class="stat-item">
@@ -1562,16 +1562,16 @@
 
         <div class="science-stats">
             <div class="science-stat reveal">
-                <div class="big-number" data-count="92">0%</div>
+                <div class="big-number" data-count="92" data-suffix="%">0%</div>
                 <div class="stat-text">Retenção a longo prazo</div>
             </div>
             <div class="science-stat reveal reveal-delay-1">
-                <div class="big-number" data-count="24">+0%</div>
-                <div class="stat-text">Resistência a fadiga</div>
+                <div class="big-number" data-count="24" data-prefix="+" data-suffix="%">+0%</div>
+                <div class="stat-text">Resistência à fadiga</div>
             </div>
             <div class="science-stat reveal reveal-delay-2">
-                <div class="big-number" data-count="25">-0%</div>
-                <div class="stat-text">Revisoes necessarias</div>
+                <div class="big-number" data-count="25" data-prefix="-" data-suffix="%">-0%</div>
+                <div class="stat-text">Revisões necessárias</div>
             </div>
         </div>
         <p class="reveal" style="font-size:12px;color:var(--text-dim)">Todas as referências com DOI verificável. Consulte a documentação completa na plataforma.</p>
@@ -1893,7 +1893,7 @@
             var progress = Math.min((timestamp - startTime) / duration, 1);
             var eased = 1 - Math.pow(1 - progress, 3);
             var current = Math.round(start + (target - start) * eased);
-            el.textContent = prefix + current + suffix + (el.dataset.isSuffix ? '' : '%');
+            el.textContent = prefix + current + suffix;
             if (progress < 1) requestAnimationFrame(step);
         }
         requestAnimationFrame(step);
@@ -2014,7 +2014,7 @@ function showStroopRound() {
 
     var options = new Set();
     options.add(colorIdx);
-    while (options.size < 3) {
+    while (options.size < 5) {
         options.add(Math.floor(Math.random() * STROOP_COLORS.length));
     }
     var shuffled = Array.from(options).sort(function() { return Math.random() - 0.5; });
