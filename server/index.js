@@ -9,8 +9,16 @@ const compression = require('compression');
 const path = require('path');
 const pool = require('./config/db');
 
+const rateLimit = require('express-rate-limit');
+
 const app = express();
 const PORT = process.env.PORT || 3005;
+
+// Security: require strong SESSION_SECRET in production
+if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET === 'dev-secret-change-me') {
+    console.error('FATAL: SESSION_SECRET must be set to a strong random value');
+    if (process.env.NODE_ENV === 'production') process.exit(1);
+}
 
 // Trust nginx proxy for secure cookies
 app.set('trust proxy', 1);
@@ -31,6 +39,33 @@ app.use(helmet({
 }));
 app.use(compression());
 
+// Rate limiting — applied before routes to mitigate brute-force and abuse
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10,
+    message: { error: 'Muitas tentativas. Aguarde 15 minutos.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+const registerLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 5,
+    message: { error: 'Limite de cadastros atingido. Tente em 1 hora.' }
+});
+
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 200,
+    message: { error: 'Limite de requisicoes atingido.' }
+});
+
+app.use('/auth/login', authLimiter);
+app.use('/auth/forgot-password', authLimiter);
+app.use('/auth/register', registerLimiter);
+app.use('/api/register-free', registerLimiter);
+app.use('/api/', apiLimiter);
+
 // Stripe webhook needs raw body — must come before express.json()
 app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }));
 
@@ -44,7 +79,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax'

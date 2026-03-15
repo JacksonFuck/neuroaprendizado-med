@@ -12,7 +12,8 @@ router.get('/', ensureAuth, async (req, res) => {
         );
         res.json(rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Diary error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -26,7 +27,8 @@ router.get('/:id', ensureAuth, async (req, res) => {
         if (!rows.length) return res.status(404).json({ error: 'Entrada não encontrada' });
         res.json(rows[0]);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Diary error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -44,7 +46,8 @@ router.post('/', ensureAuth, async (req, res) => {
         );
         res.status(201).json(rows[0]);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Diary error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -60,7 +63,8 @@ router.put('/:id', ensureAuth, async (req, res) => {
         if (!rows.length) return res.status(404).json({ error: 'Entrada não encontrada' });
         res.json(rows[0]);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Diary error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -74,7 +78,8 @@ router.delete('/:id', ensureAuth, async (req, res) => {
         if (!rowCount) return res.status(404).json({ error: 'Entrada não encontrada' });
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Diary error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 

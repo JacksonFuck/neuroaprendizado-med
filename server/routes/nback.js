@@ -64,7 +64,8 @@ router.post('/', ensureAuth, async (req, res) => {
 
         res.status(201).json({ session: session[0], level_up: levelUp, new_level: newLevel, achievements_earned: earned });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('NBack error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -77,7 +78,8 @@ router.get('/sessions', ensureAuth, async (req, res) => {
         );
         res.json(rows);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('NBack error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
@@ -94,7 +96,8 @@ router.get('/progress', ensureAuth, async (req, res) => {
         );
         res.json(rows[0]);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('NBack error:', err);
+        res.status(500).json({ error: 'Erro interno do servidor' });
     }
 });
 
