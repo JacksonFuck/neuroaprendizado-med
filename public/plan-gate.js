@@ -41,7 +41,7 @@ function applyPlanRestrictions() {
     if (_userPlan === 'pro') return;
 
     // Add "PRO" badges to locked features in sidebar
-    const proTabs = ['ranking', 'artigos'];
+    const proTabs = ['ranking', 'artigos', 'prompts-ia', 'habitos', 'suplementacao', 'mitos', 'ciencia'];
     proTabs.forEach(tab => {
         const navItem = document.querySelector(`.nav-item[data-tab="${tab}"]`);
         if (navItem && !navItem.querySelector('.pro-badge')) {
@@ -87,8 +87,12 @@ function interceptProTools() {
         window._switchTabPatched = true;
         window.switchTab = function(tabName) {
             if (_userPlan !== 'pro') {
-                if (tabName === 'ranking') { showUpgradeModal('ranking'); return; }
-                if (tabName === 'artigos') { showUpgradeModal('articles'); return; }
+                const proOnlyTabs = {
+                    'ranking': 'ranking', 'artigos': 'articles', 'prompts-ia': 'prompts_ia',
+                    'habitos': 'habitos', 'suplementacao': 'suplementacao', 'mitos': 'mitos', 'ciencia': 'ciencia',
+                    'antiprocrastinacao': 'antiprocrastinacao'
+                };
+                if (proOnlyTabs[tabName]) { showUpgradeModal(proOnlyTabs[tabName]); return; }
             }
             originalSwitchTab(tabName);
         };
@@ -166,6 +170,12 @@ const PRO_FEATURE_NAMES = {
     ranking: 'Ranking entre Estudantes',
     export: 'Exportação de Dados (CSV)',
     articles: 'Biblioteca Científica (42+ artigos)',
+    prompts_ia: 'Prompts de Estudo com IA (12 técnicas)',
+    habitos: 'Hábitos de Vida para Performance',
+    suplementacao: 'Guia de Suplementação',
+    mitos: 'Fato vs Mito — Desmistificação',
+    ciencia: 'Base Científica Completa',
+    antiprocrastinacao: 'Anti-Procrastinação (10 prompts)',
     assessment: 'Avaliação Neurocognitiva',
     stroop: 'Teste Stroop — Resistência Cognitiva',
     nsdr: 'Descanso Profundo Guiado',
@@ -202,7 +212,7 @@ function showUpgradeModal(feature) {
                     <span>✅ Avaliação cognitiva</span>
                     <span>✅ Ranking e conquistas</span>
                     <span>✅ Planejador completo</span>
-                    <span>✅ Exportação de dados</span>
+                    <span>✅ 12 prompts de IA</span>
                 </div>
             </div>
 
