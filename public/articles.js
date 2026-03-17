@@ -32,10 +32,11 @@ function renderArticles(articles) {
     const cats = {
         'learning': { label: 'Aprendizado', color: '#00f0ff' },
         'dopamine': { label: 'Dopamina & Recompensa', color: '#e040fb' },
-        'attention': { label: 'Aten\u00E7\u00E3o & LC-NE', color: '#ffbe0b' },
-        'spacing': { label: 'Espa\u00E7amento', color: '#00e676' },
-        'nback': { label: 'N-Back & Working Memory', color: '#3a86ff' },
-        'breathing': { label: 'Respira\u00E7\u00E3o & NSDR', color: '#ff8c00' }
+        'attention': { label: 'Aten\u00E7\u00E3o & Foco', color: '#ffbe0b' },
+        'spacing': { label: 'Repeti\u00E7\u00E3o Espa\u00E7ada', color: '#00e676' },
+        'nback': { label: 'Mem\u00F3ria de Trabalho', color: '#3a86ff' },
+        'breathing': { label: 'Respira\u00E7\u00E3o & Descanso', color: '#ff8c00' },
+        'neuroprotection': { label: 'Neuroprote\u00E7\u00E3o', color: '#26c6da' }
     };
 
     // Filter buttons

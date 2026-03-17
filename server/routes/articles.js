@@ -1,3 +1,9 @@
+/**
+ * NeuroForge — Forje sinapses. Domine o conhecimento.
+ * Copyright (c) 2026 Jackson Erasmo Fuck. All rights reserved.
+ * INPI Registration: 512026001683-5
+ * Licensed under proprietary license. See LICENSE file.
+ */
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
@@ -30,7 +36,8 @@ const ARTICLES = [
     { file: 'WiklundHornqvist-2021-Retrieval-Practice-Hippocampus.pdf', title: 'Retrieval Practice Facilitates Learning by Strengthening Processing in Both Hippocampal Regions', authors: 'Wiklund-Hornqvist, C. et al.', year: 2021, journal: 'Brain and Behavior', category: 'learning' },
     { file: 'Xu-2024-Active-Recall-Academic-Achievement.pdf', title: 'Active Recall and Academic Achievement', authors: 'Xu, Y. et al.', year: 2024, journal: 'Behavioral Sciences', category: 'learning' },
     { file: 'Zaccaro-2018-Breath-Control.pdf', title: 'How Breath-Control Can Change Your Life: A Systematic Review', authors: 'Zaccaro, A. et al.', year: 2018, journal: 'Frontiers in Human Neuroscience', category: 'breathing' },
-    { file: 'Zhang-2025-Offline-Consolidation-EEG.pdf', title: 'Offline Consolidation Mechanisms of the Retrieval Practice Effect via EEG', authors: 'Zhang, J. et al.', year: 2025, journal: 'npj Science of Learning', category: 'learning' }
+    { file: 'Zhang-2025-Offline-Consolidation-EEG.pdf', title: 'Offline Consolidation Mechanisms of the Retrieval Practice Effect via EEG', authors: 'Zhang, J. et al.', year: 2025, journal: 'npj Science of Learning', category: 'learning' },
+    { file: 'Reboussin-2025-SPRINT-MIND-Blood-Pressure-Cognition.pdf', title: 'Long-Term Effect of Intensive vs Standard Blood Pressure Control on Mild Cognitive Impairment and Probable Dementia in SPRINT', authors: 'Reboussin, D.M.; Gaussoin, S.A.; Pajewski, N.M.; Jaeger, B.C.; Sachs, B.; Rapp, S.R.; Supiano, M.A.; Williamson, J.D. et al.', year: 2025, journal: 'Neurology', category: 'neuroprotection' }
 ];
 
 // GET /api/articles — List all articles (metadata only, available to all authenticated users)
