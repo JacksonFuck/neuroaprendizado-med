@@ -156,9 +156,9 @@ function renderIntroStep() {
             <div style="background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);border-radius:12px;padding:16px;text-align:left;max-width:360px;margin:0 auto 24px">
                 <p style="font-size:13px;color:#c5d0e6;line-height:1.6">
                     <strong style="color:#00f0ff">O que vamos medir:</strong><br>
-                    \u26A1 Tempo de rea\u00E7\u00E3o (PVT) \u2014 treino + avalia\u00E7\u00E3o (~2 min)<br>
-                    \u{1F522} Mem\u00F3ria de trabalho (N-Back) \u2014 treino + avalia\u00E7\u00E3o (~3 min)<br>
-                    \u{1F9E9} Controle inibit\u00F3rio (Stroop) \u2014 treino + avalia\u00E7\u00E3o (~1 min)<br>
+                    \u26A1 Tempo de rea\u00E7\u00E3o \u2014 treino + avalia\u00E7\u00E3o (~2 min)<br>
+                    \u{1F522} Mem\u00F3ria de trabalho \u2014 treino + avalia\u00E7\u00E3o (~3 min)<br>
+                    \u{1F9E9} Controle inibit\u00F3rio \u2014 treino + avalia\u00E7\u00E3o (~1 min)<br>
                     \u{1F4DD} Autopercep\u00E7\u00E3o \u2014 5 perguntas (~1 min)<br>
                     <br>
                     <strong style="color:#ffbe0b">Total: ~8 minutos</strong>
@@ -191,7 +191,7 @@ function renderPVTStep() {
     el.innerHTML = `
         <div style="text-align:center">
             <span class="assess-phase-badge ${badgeClass}">${badgeText}</span>
-            <h3 style="color:#fff;margin-bottom:8px">\u26A1 Teste de Tempo de Rea\u00E7\u00E3o (PVT)</h3>
+            <h3 style="color:#fff;margin-bottom:8px">\u26A1 Teste de Tempo de Rea\u00E7\u00E3o</h3>
             <p id="pvtAssessSubtitle" style="color:#94a3c0;font-size:14px;margin-bottom:20px">Quando o n\u00FAmero aparecer, clique o mais r\u00E1pido poss\u00EDvel. Treino: ${PVT_PRACTICE_COUNT} tentativas (n\u00E3o conta).</p>
             <div id="pvtAssessArea" class="pvt-area ${borderClass}" style="min-height:200px;cursor:pointer">
                 <div id="pvtAssessDisplay" class="pvt-display waiting" style="font-size:20px">Clique aqui para come\u00E7ar</div>
@@ -235,7 +235,7 @@ function pvtStartRealPhase() {
     el.innerHTML = `
         <div style="text-align:center">
             <span class="assess-phase-badge assess-phase-real">\uD83D\uDCCA AVALIA\u00C7\u00C3O</span>
-            <h3 style="color:#fff;margin-bottom:8px">\u26A1 Teste de Tempo de Rea\u00E7\u00E3o (PVT)</h3>
+            <h3 style="color:#fff;margin-bottom:8px">\u26A1 Teste de Tempo de Rea\u00E7\u00E3o</h3>
             <p id="pvtAssessSubtitle" style="color:#00f0ff;font-size:14px;margin-bottom:20px;font-weight:700">Esses resultados contam! ${PVT_REAL_COUNT} tentativas.</p>
             <div id="pvtAssessArea" class="pvt-area assess-phase-border-real" style="min-height:200px;cursor:pointer">
                 <div id="pvtAssessDisplay" class="pvt-display waiting" style="font-size:20px">Clique aqui para come\u00E7ar</div>
