@@ -1,8 +1,8 @@
-const CACHE_NAME = 'neuroapp-v32';
+const CACHE_NAME = 'neuroapp-v40';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
-    '/login.html',
+    '/login',
     '/app.css',
     '/app.js',
     '/neuro-tools.js',

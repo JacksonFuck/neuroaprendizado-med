@@ -219,6 +219,8 @@ const MAX_FOCUS_MINUTES = 90; // Aviso científico: após 90min sem pausa, sem g
 
 let timerInterval = null;
 let alarmInterval = null;  // loop do alarme
+let _audioCtx = null;      // Web Audio API context (fallback beep)
+let _audioUnlocked = false; // flag: usuário já interagiu (autoplay desbloqueado)
 let focusMinutes = DEFAULT_FOCUS;
 let breakMinutes = DEFAULT_BREAK;
 let timeLeft = DEFAULT_FOCUS * 60;
@@ -227,18 +229,93 @@ let isFocusMode = true;
 let focusAccumulator = 0;  // segundos de foco contínuo desde a última pausa
 let warned90min = false;   // evitar múltiplos avisos na mesma sessão
 let _focusElapsed = 0;     // segundos reais de foco na sessão atual
+let _isPaused = false;     // true se o timer foi pausado (para diferenciar de novo start)
 
-// ─── ALARME ───
+// ─── ALARME (com fallback Web Audio API) ───
+
+// Desbloqueia AudioContext no primeiro gesto do usuário (política de autoplay)
+function _ensureAudioUnlocked() {
+    if (_audioUnlocked) return;
+    _audioUnlocked = true;
+    try {
+        if (!_audioCtx) {
+            _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (_audioCtx.state === 'suspended') {
+            _audioCtx.resume().catch(() => {});
+        }
+    } catch (e) { /* browser sem Web Audio */ }
+    // Também desbloqueia o elemento <audio> com um play mudo
+    const alarm = document.getElementById('pomodoroAlarm');
+    if (alarm) {
+        alarm.volume = 0;
+        alarm.play().then(() => { alarm.pause(); alarm.currentTime = 0; }).catch(() => {}).finally(() => { alarm.volume = 1; });
+    }
+}
+// Registra em múltiplos eventos de gesto para maximizar chance de desbloqueio
+['click', 'touchstart', 'keydown', 'pointerdown'].forEach(evt => {
+    document.addEventListener(evt, _ensureAudioUnlocked, { once: true });
+});
+
+// Gera beep programático via Web Audio API (fallback se MP3 falhar)
+function _beepFallback() {
+    try {
+        if (!_audioCtx) {
+            _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        // resume() é async — precisamos agendar os beeps DEPOIS que o contexto estiver ativo
+        const ctx = _audioCtx;
+        const scheduleBeeps = () => {
+            // Padrão: 3 beeps curtos (800Hz, 200ms cada, 150ms de intervalo)
+            [0, 0.35, 0.7].forEach(delay => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = 800;
+                gain.gain.value = 0.5;
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                const t = ctx.currentTime + delay;
+                osc.start(t);
+                osc.stop(t + 0.2);
+            });
+        };
+        if (ctx.state === 'suspended') {
+            ctx.resume().then(scheduleBeeps).catch(() => {});
+        } else {
+            scheduleBeeps();
+        }
+    } catch (e) {
+        console.warn('[Pomodoro] _beepFallback failed:', e);
+    }
+}
+
+let _usingFallback = false; // true se MP3 falhou e estamos no beep
+
 function _playAlarmLoop() {
     const alarm = document.getElementById('pomodoroAlarm');
-    if (!alarm) return;
-    // Toca em loop até stopAlarm() ser chamado
-    alarm.currentTime = 0;
-    alarm.play().catch(() => { });
-    alarmInterval = setInterval(() => {
+
+    // Toca beep imediatamente (garante que algo soe mesmo se MP3 demorar)
+    _beepFallback();
+
+    // Tenta MP3 também
+    let mp3Works = false;
+    if (alarm && alarm.src) {
+        alarm.volume = 1;
         alarm.currentTime = 0;
-        alarm.play().catch(() => { });
-    }, 4000); // repete a cada 4s
+        const p = alarm.play();
+        if (p) p.then(() => { mp3Works = true; }).catch(() => {});
+    }
+
+    // Loop: tenta MP3 a cada 4s, sempre com beep de backup
+    alarmInterval = setInterval(() => {
+        _beepFallback();
+        if (alarm && alarm.src) {
+            alarm.currentTime = 0;
+            alarm.play().catch(() => {});
+        }
+    }, 3000);
+
     document.getElementById('stopAlarmBtn')?.classList.remove('hidden');
     document.getElementById('snoozeBtn')?.classList.remove('hidden');
 }
@@ -247,6 +324,7 @@ function stopAlarm() {
     clearInterval(alarmInterval); alarmInterval = null;
     const alarm = document.getElementById('pomodoroAlarm');
     if (alarm) { alarm.pause(); alarm.currentTime = 0; }
+    _usingFallback = false;
     document.getElementById('stopAlarmBtn')?.classList.add('hidden');
     document.getElementById('snoozeBtn')?.classList.add('hidden');
 }
@@ -296,14 +374,15 @@ function startTimer() {
     // Validação com clamp nos inputs
     let newFocus = parseInt(document.getElementById('focusInput').value) || DEFAULT_FOCUS;
     let newBreak = parseInt(document.getElementById('breakInput').value) || DEFAULT_BREAK;
-    newFocus = Math.max(5, Math.min(90, newFocus));
+    newFocus = Math.max(1, Math.min(90, newFocus));
     newBreak = Math.max(1, Math.min(30, newBreak));
 
-    // Se ainda não iniciou, sincroniza com os inputs
-    if (!timerInterval && timeLeft === focusMinutes * 60) {
+    // Se está retomando de pausa, mantém o timeLeft onde parou
+    // Se é um novo start, sincroniza com o input
+    if (!_isPaused) {
         timeLeft = isFocusMode ? newFocus * 60 : newBreak * 60;
     }
-
+    _isPaused = false;
     focusMinutes = newFocus;
     breakMinutes = newBreak;
 
@@ -354,6 +433,7 @@ function startTimer() {
 
 function pauseTimer() {
     clearInterval(timerInterval); timerInterval = null; isRunning = false;
+    _isPaused = true;
     document.getElementById('startBtn').textContent = '▶ Continuar';
 }
 
@@ -367,6 +447,7 @@ function resetTimer() {
     timeLeft = DEFAULT_FOCUS * 60;
     focusAccumulator = 0;
     warned90min = false;
+    _isPaused = false;
     // Restaura os inputs também
     const fi = document.getElementById('focusInput');
     const bi = document.getElementById('breakInput');
@@ -662,6 +743,28 @@ async function submitSuggestion(e) {
 
     btn.disabled = false;
     btn.textContent = 'Enviar Sugestão';
+}
+
+// ─── COPY PROMPT CARD ───
+function copyPromptCard(btn) {
+    const box = btn.closest('.prompt-card-box');
+    const text = box.querySelector('p').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copiado!';
+        btn.style.background = 'rgba(0, 230, 118, 0.2)';
+        btn.style.color = '#00e676';
+        setTimeout(() => { btn.textContent = 'Copiar'; btn.style.background = ''; btn.style.color = ''; }, 2000);
+    }).catch(() => {
+        // Fallback
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.textContent = 'Copiado!';
+        setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+    });
 }
 
 // ─── NEURO-ARCHITECT GREETING ───

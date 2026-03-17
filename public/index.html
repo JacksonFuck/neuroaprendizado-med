@@ -131,18 +131,30 @@
             <div class="nav-divider"></div>
             <button class="nav-item" data-tab="habitos" onclick="switchTab('habitos')">
                 <span class="nav-icon">🌙</span><span class="nav-label">Hábitos de Vida</span>
+                <span class="pro-badge">PRO</span>
             </button>
             <button class="nav-item" data-tab="suplementacao" onclick="switchTab('suplementacao')">
                 <span class="nav-icon">💊</span><span class="nav-label">Suplementação</span>
+                <span class="pro-badge">PRO</span>
             </button>
             <button class="nav-item" data-tab="mitos" onclick="switchTab('mitos')">
                 <span class="nav-icon">❓</span><span class="nav-label">Fato vs Mito</span>
+                <span class="pro-badge">PRO</span>
             </button>
             <button class="nav-item" data-tab="ciencia" onclick="switchTab('ciencia')">
                 <span class="nav-icon">🔬</span><span class="nav-label">Ciência</span>
+                <span class="pro-badge">PRO</span>
             </button>
             <button class="nav-item" data-tab="artigos" onclick="switchTab('artigos')">
                 <span class="nav-icon">📄</span><span class="nav-label">Artigos Científicos</span>
+                <span class="pro-badge">PRO</span>
+            </button>
+            <button class="nav-item" data-tab="prompts-ia" onclick="switchTab('prompts-ia')">
+                <span class="nav-icon">🤖</span><span class="nav-label">Prompts de Estudo</span>
+                <span class="pro-badge">PRO</span>
+            </button>
+            <button class="nav-item" data-tab="antiprocrastinacao" onclick="switchTab('antiprocrastinacao')">
+                <span class="nav-icon">🚀</span><span class="nav-label">Anti-Procrastinação</span>
                 <span class="pro-badge">PRO</span>
             </button>
             <div class="nav-divider"></div>
@@ -1150,7 +1162,7 @@
                 <div class="timer-config">
                     <div class="config-group">
                         <label>Foco (min)</label>
-                        <input type="number" id="focusInput" value="50" min="5" max="90">
+                        <input type="number" id="focusInput" value="50" min="1" max="90">
                     </div>
                     <div class="config-group">
                         <label>Pausa (min)</label>
@@ -2610,6 +2622,623 @@ pergunta 3 (Verdadeiro ou Falso?);resposta 3
             <div class="glass-card" style="margin-top:16px">
                 <h3 style="margin-bottom:12px">📊 Estatísticas</h3>
                 <div id="neurobicaStats"></div>
+            </div>
+        </section>
+
+        <!-- PROMPTS DE ESTUDO COM IA — PRO -->
+        <section id="tab-prompts-ia" class="tab-panel">
+            <div class="page-header">
+                <h1>🤖 Prompts de Estudo com IA</h1>
+                <p class="page-subtitle">12 prompts baseados em ciência da aprendizagem para turbinar seus estudos com inteligência artificial</p>
+            </div>
+
+            <div class="glass-card" style="margin-bottom:24px;border-left:3px solid var(--synapse-cyan)">
+                <h3 style="margin-bottom:8px">Como usar</h3>
+                <p style="color:var(--text-dim);font-size:14px;line-height:1.7">
+                    Copie o prompt, cole em qualquer IA generativa (funciona especialmente bem com o <strong style="color:var(--synapse-cyan)">Claude</strong>) e substitua <code style="background:rgba(0,240,255,0.08);padding:2px 6px;border-radius:4px;color:var(--synapse-gold)">[TOPIC]</code> pelo assunto que está estudando.
+                    Cada técnica tem fundamento em neurociência e pesquisa educacional. Os prompts são progressivos — comece pelo Feynman e avance conforme dominar cada abordagem.
+                </p>
+            </div>
+
+            <div class="prompts-grid">
+
+                <!-- 1. Feynman -->
+                <div class="prompt-card" style="--card-accent:#00f0ff">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🧠</span>
+                        <div>
+                            <h3 class="prompt-card-title">Técnica Feynman</h3>
+                            <span class="prompt-card-tag">Compreensão Profunda</span>
+                        </div>
+                        <span class="prompt-card-number">#1</span>
+                    </div>
+                    <p class="prompt-card-desc">Força você a explicar conceitos complexos em linguagem simples. Se não consegue explicar para uma criança de 12 anos, você ainda não entendeu de verdade.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Atue como meu tutor da Técnica Feynman. Quero aprender <strong>[TOPIC]</strong>. Quebre esse conceito complexo em termos simples que uma criança de 12 anos entenderia. Comece explicando o conceito central, depois identifique os componentes-chave, use analogias e exemplos do mundo real para ilustrar cada parte, e finalmente me peça para explicar de volta com minhas próprias palavras. Se eu tiver dificuldade em qualquer parte, quebre ainda mais com analogias mais simples.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> A Técnica Feynman ativa o <em>generation effect</em> — gerar explicações próprias cria traços de memória mais fortes do que simplesmente ler. Ao simplificar, seu cérebro precisa reorganizar a informação, fortalecendo conexões sinápticas no córtex pré-frontal e hipocampo.</p>
+                            <p><strong>Saída esperada:</strong> A IA vai explicar o conceito em 3-4 níveis de complexidade crescente, usando analogias do cotidiano. Depois vai te pedir para reexplicar. Quando você errar ou simplificar demais, ela vai corrigir gentilmente e oferecer uma analogia melhor.</p>
+                            <p class="prompt-ref">Feynman, R. (1985). Surely You're Joking, Mr. Feynman! &bull; Fiorella & Mayer (2016). Journal of Educational Psychology</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 2. Active Recall -->
+                <div class="prompt-card" style="--card-accent:#e040fb">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🔁</span>
+                        <div>
+                            <h3 class="prompt-card-title">Recuperação Ativa</h3>
+                            <span class="prompt-card-tag">Memória de Longo Prazo</span>
+                        </div>
+                        <span class="prompt-card-number">#2</span>
+                    </div>
+                    <p class="prompt-card-desc">Em vez de reler, a IA cria perguntas progressivas que forçam seu cérebro a recuperar informações — o exercício mais poderoso para fixar conhecimento.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Transforme-se no meu Coach de Recuperação Ativa para <strong>[TOPIC]</strong>. Em vez de apenas fornecer informações, crie um sistema progressivo de perguntas. Comece com perguntas básicas de recordação, depois avance para perguntas de aplicação, análise e finalmente síntese que conectem este tópico a outros conceitos que aprendi. Após cada resposta minha, dê feedback imediato e perguntas de acompanhamento que explorem mais fundo.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> O <em>testing effect</em> (Roediger & Karpicke, 2006) mostra que recuperar informações da memória é 50% mais eficaz que releitura. Cada tentativa de recordação fortalece as vias neurais através da potenciação de longo prazo (LTP) no hipocampo.</p>
+                            <p><strong>Saída esperada:</strong> A IA vai criar 4 níveis de perguntas (recordação → aplicação → análise → síntese), seguindo a Taxonomia de Bloom. Após cada resposta, você recebe feedback detalhado e a próxima pergunta mais desafiadora.</p>
+                            <p class="prompt-ref">Roediger & Karpicke (2006). Psychological Science &bull; Karpicke & Blunt (2011). Science</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 3. Método Socrático -->
+                <div class="prompt-card" style="--card-accent:#ffbe0b">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🏛️</span>
+                        <div>
+                            <h3 class="prompt-card-title">Método Socrático</h3>
+                            <span class="prompt-card-tag">Pensamento Crítico</span>
+                        </div>
+                        <span class="prompt-card-number">#3</span>
+                    </div>
+                    <p class="prompt-card-desc">A IA nunca dá respostas diretas — guia você a descobrir insights através de perguntas provocativas que desafiam suas suposições.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Assuma o papel de Facilitador do Método Socrático me ajudando a explorar <strong>[TOPIC]</strong>. Nunca me dê respostas diretas. Em vez disso, guie-me a descobrir insights através de perguntas cuidadosamente elaboradas. Comece perguntando o que eu acho que sei sobre o tópico, depois questione sistematicamente minhas suposições, peça evidências, explore contradições e me ajude a examinar as implicações das minhas crenças. Cada resposta deve conter 2-3 perguntas provocativas.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> O questionamento socrático ativa o córtex pré-frontal dorsolateral (responsável pelo raciocínio analítico) e a rede de modo padrão (criatividade e conexões). Ao ser forçado a justificar suas crenças, você identifica lacunas no conhecimento que a leitura passiva esconde.</p>
+                            <p><strong>Saída esperada:</strong> Uma conversa onde a IA faz 2-3 perguntas por turno, cada uma mais profunda. Você vai perceber que "sabia menos do que pensava" — e isso é exatamente o ponto. As lacunas reveladas se tornam os alvos de estudo mais valiosos.</p>
+                            <p class="prompt-ref">Paul & Elder (2007). The Art of Socratic Questioning &bull; Neber & Neuhaus (2013). Thinking Skills and Creativity</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 4. Prática Intercalada -->
+                <div class="prompt-card" style="--card-accent:#00e676">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🔀</span>
+                        <div>
+                            <h3 class="prompt-card-title">Prática Intercalada</h3>
+                            <span class="prompt-card-tag">Discriminação Conceitual</span>
+                        </div>
+                        <span class="prompt-card-number">#4</span>
+                    </div>
+                    <p class="prompt-card-desc">Mistura conceitos relacionados em vez de estudar um por vez. Parece mais difícil no momento, mas a retenção a longo prazo é muito superior.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Crie uma sessão de prática intercalada para eu dominar <strong>[TOPIC]</strong>. Em vez de focar em um conceito por vez, crie um cronograma misto que alterne entre diferentes conceitos relacionados. Forneça problemas, exercícios ou perguntas que alternem entre subtópicos a cada poucos minutos. Explique por que cada transição ajuda a reforçar o aprendizado e como os contrastes entre conceitos fortalecem minha compreensão geral.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> O interleaving força o cérebro a discriminar entre conceitos similares, fortalecendo a categorização no córtex temporal. Rohrer (2012) demonstrou que prática intercalada melhora a retenção em 43% comparada com prática em blocos.</p>
+                            <p><strong>Saída esperada:</strong> A IA vai criar uma sequência de 10-15 exercícios misturando subtópicos. Ex: se você estuda farmacologia, alternará entre mecanismos de ação, efeitos colaterais e interações — nunca 3 perguntas seguidas do mesmo tipo.</p>
+                            <p class="prompt-ref">Rohrer (2012). Educational Psychology Review &bull; Kornell & Bjork (2008). Psychological Science</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 5. Interrogação Elaborativa -->
+                <div class="prompt-card" style="--card-accent:#3a86ff">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🔍</span>
+                        <div>
+                            <h3 class="prompt-card-title">Interrogação Elaborativa</h3>
+                            <span class="prompt-card-tag">Conexões Causais</span>
+                        </div>
+                        <span class="prompt-card-number">#5</span>
+                    </div>
+                    <p class="prompt-card-desc">A IA pergunta "por quê?" e "como?" incessantemente até você construir conexões causais profundas entre fatos que antes eram isolados.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Sirva como meu Especialista em Interrogação Elaborativa para <strong>[TOPIC]</strong>. Seu papel é constantemente me perguntar "por quê?" e "como?" forçando-me a explicar o raciocínio por trás de fatos e conceitos. Quando eu afirmar algo, responda com perguntas como "Por que isso é verdade?", "Como isso se conecta a...?", "O que aconteceria se...?", e "Por que isso é importante?". Continue aprofundando até que eu tenha construído conexões causais robustas.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> A elaboração cria múltiplas rotas de acesso à memória. Dunlosky et al. (2013) classificaram a interrogação elaborativa como técnica de "utilidade moderada a alta". Cada "por quê?" respondido cria um novo gancho associativo no córtex, facilitando a recuperação futura.</p>
+                            <p><strong>Saída esperada:</strong> Uma sessão de drilling onde a IA vai perguntar 3-5 "por quês" em cadeia para cada afirmação sua. No final, você terá um mapa mental de causas e consequências que antes não existia.</p>
+                            <p class="prompt-ref">Dunlosky et al. (2013). Psychological Science in the Public Interest &bull; Woloshyn et al. (1994). Journal of Educational Psychology</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 6. Modelos Mentais -->
+                <div class="prompt-card" style="--card-accent:#ff6b6b">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🏗️</span>
+                        <div>
+                            <h3 class="prompt-card-title">Construtor de Modelos Mentais</h3>
+                            <span class="prompt-card-tag">Frameworks de Raciocínio</span>
+                        </div>
+                        <span class="prompt-card-number">#6</span>
+                    </div>
+                    <p class="prompt-card-desc">Constrói frameworks mentais robustos identificando princípios fundamentais, padrões e relações — o que separa experts de novatos.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Atue como meu Construtor de Modelos Mentais para <strong>[TOPIC]</strong>. Ajude-me a construir frameworks mentais robustos identificando os princípios fundamentais, padrões e relações. Comece pedindo que eu liste o que acho que são os modelos mentais centrais neste campo, depois construa sistematicamente cada um explorando seus componentes, limites e aplicações. Crie cenários onde eu devo aplicar esses modelos para resolver problemas, e me ajude a reconhecer quando e por quê cada modelo se aplica.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> Pesquisa de Chi et al. (1981) mostrou que experts organizam conhecimento em torno de princípios profundos, enquanto novatos focam em características superficiais. Construir modelos mentais reorganiza sua memória semântica para funcionar como a de um expert.</p>
+                            <p><strong>Saída esperada:</strong> A IA vai guiá-lo na construção de 3-5 modelos mentais para sua área, com diagramas conceituais e cenários de aplicação. Ao final, você terá frameworks reutilizáveis para analisar novos problemas.</p>
+                            <p class="prompt-ref">Chi et al. (1981). Cognitive Science &bull; Johnson-Laird (1983). Mental Models</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 7. Dupla Codificação -->
+                <div class="prompt-card" style="--card-accent:#26c6da">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🎨</span>
+                        <div>
+                            <h3 class="prompt-card-title">Dupla Codificação</h3>
+                            <span class="prompt-card-tag">Visual + Verbal</span>
+                        </div>
+                        <span class="prompt-card-number">#7</span>
+                    </div>
+                    <p class="prompt-card-desc">Converte conceitos abstratos em representações visuais e verbais simultaneamente — ativar dois canais cerebrais dobra a chance de lembrar.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Torne-se meu Assistente de Dupla Codificação para <strong>[TOPIC]</strong>. Ajude-me a engajar tanto meu processamento verbal quanto visual convertendo conceitos abstratos em múltiplas representações. Para cada conceito que estou aprendendo, forneça ou me guie a criar: diagramas visuais, representações espaciais, explicações verbais e atividades cinestésicas. Peça-me para alternar entre esses diferentes modos de representação e explique como cada um me ajuda a entender.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> A teoria da Dupla Codificação de Paivio (1986) demonstra que informações codificadas tanto verbal quanto visualmente têm até 2x mais chance de serem lembradas. Ativa simultaneamente o córtex visual (occipital) e áreas de linguagem (Broca/Wernicke).</p>
+                            <p><strong>Saída esperada:</strong> Para cada conceito, a IA vai sugerir: um diagrama (que você desenha), uma metáfora visual, uma explicação em texto e uma atividade prática. O resultado é 4 formas diferentes de acessar o mesmo conhecimento na memória.</p>
+                            <p class="prompt-ref">Paivio (1986). Mental Representations &bull; Mayer (2009). Multimedia Learning</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 8. Aprendizagem Generativa -->
+                <div class="prompt-card" style="--card-accent:#ff8c00">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">✍️</span>
+                        <div>
+                            <h3 class="prompt-card-title">Aprendizagem Generativa</h3>
+                            <span class="prompt-card-tag">Criação Ativa</span>
+                        </div>
+                        <span class="prompt-card-number">#8</span>
+                    </div>
+                    <p class="prompt-card-desc">Em vez de consumir passivamente, você gera conteúdo: resumos, exemplos, analogias, perguntas e previsões. Criação é a forma mais profunda de aprendizado.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Transforme-se no meu Facilitador de Aprendizagem Generativa para <strong>[TOPIC]</strong>. Em vez de consumo passivo, guie-me a gerar ativamente conteúdo sobre o que estou aprendendo. Peça-me para criar resumos, gerar exemplos, projetar analogias, formular perguntas e fazer previsões sobre o tópico. Após cada exercício generativo, dê feedback e me ajude a refinar meu entendimento. Desafie-me a ensinar conceitos para audiências imaginárias com diferentes backgrounds.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> O <em>generation effect</em> (Slamecka & Graf, 1978) mostra que informações geradas pelo próprio aprendiz são melhor retidas do que informações apenas lidas. O ato de criar ativa redes neurais mais amplas do que a recepção passiva.</p>
+                            <p><strong>Saída esperada:</strong> A IA vai pedir que você crie 5 tipos de conteúdo sobre o mesmo tema: resumo em 3 frases, exemplo original, analogia do cotidiano, pergunta de prova e previsão de aplicação. Feedback detalhado após cada produção.</p>
+                            <p class="prompt-ref">Slamecka & Graf (1978). Journal of Experimental Psychology &bull; Wittrock (1989). Educational Psychologist</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 9. Metacognição -->
+                <div class="prompt-card" style="--card-accent:#ab47bc">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🪞</span>
+                        <div>
+                            <h3 class="prompt-card-title">Coach Metacognitivo</h3>
+                            <span class="prompt-card-tag">Aprender a Aprender</span>
+                        </div>
+                        <span class="prompt-card-number">#9</span>
+                    </div>
+                    <p class="prompt-card-desc">Desenvolve consciência sobre seu próprio processo de aprendizado — a habilidade que separa estudantes medianos de estudantes excepcionais.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Sirva como meu Coach de Estratégias Metacognitivas enquanto aprendo <strong>[TOPIC]</strong>. Ajude-me a desenvolver consciência do meu próprio processo de aprendizado perguntando regularmente: Que estratégias estou usando? Quão bem estão funcionando? O que está me confundindo e por quê? Que conexões estou fazendo? Quão confiante estou no meu entendimento? Guie-me a planejar minha abordagem antes de começar, monitorar minha compreensão durante o processo e avaliar meu desempenho depois.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> Flavell (1979) introduziu metacognição como "pensar sobre o pensamento". Wang et al. (1990) mostraram que metacognição é o fator que mais influencia o desempenho acadêmico. Ativa o córtex pré-frontal medial, responsável pela automonitoração.</p>
+                            <p><strong>Saída esperada:</strong> Antes de cada sessão, a IA pede que você planeje sua abordagem. Durante, interrompe para perguntar "como está indo?". Após, faz uma revisão estruturada. Você desenvolve o hábito de autorregulação que transfere para qualquer disciplina.</p>
+                            <p class="prompt-ref">Flavell (1979). American Psychologist &bull; Wang et al. (1990). Review of Educational Research</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 10. Raciocínio Analógico -->
+                <div class="prompt-card" style="--card-accent:#66bb6a">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🔗</span>
+                        <div>
+                            <h3 class="prompt-card-title">Raciocínio Analógico</h3>
+                            <span class="prompt-card-tag">Ponte entre Conhecimentos</span>
+                        </div>
+                        <span class="prompt-card-number">#10</span>
+                    </div>
+                    <p class="prompt-card-desc">Conecta o novo ao familiar criando paralelos estruturais — o sistema elétrico do coração vira um circuito eletrônico, farmacologia vira uma guerra de estratégia.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Atue como meu Tutor de Raciocínio Analógico para <strong>[TOPIC]</strong>. Ajude-me a dominar este assunto constantemente traçando paralelos com coisas que eu já entendo bem. Comece identificando conceitos, sistemas ou experiências que me são familiares e que compartilham similaridades estruturais com o tópico. Crie um mapeamento sistemático entre o domínio familiar e o material novo, destacando tanto as semelhanças quanto as diferenças importantes.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> Gentner (1983) mostrou que analogias estruturais (não superficiais) são a ferramenta mais poderosa para transferência de conhecimento. O cérebro codifica novas informações mais facilmente quando pode ancorar em esquemas pré-existentes.</p>
+                            <p><strong>Saída esperada:</strong> A IA vai perguntar seus hobbies/interesses e criar analogias entre eles e o tópico de estudo. Ex: se você gosta de futebol e estuda farmacologia, cada fármaco vira um "jogador" com posição, função e interações táticas.</p>
+                            <p class="prompt-ref">Gentner (1983). Cognitive Science &bull; Holyoak & Thagard (1995). Mental Leaps</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 11. Dificuldades Desejáveis -->
+                <div class="prompt-card" style="--card-accent:#ef5350">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">💪</span>
+                        <div>
+                            <h3 class="prompt-card-title">Dificuldades Desejáveis</h3>
+                            <span class="prompt-card-tag">Esforço Produtivo</span>
+                        </div>
+                        <span class="prompt-card-number">#11</span>
+                    </div>
+                    <p class="prompt-card-desc">Introduz obstáculos intencionais que tornam o aprendizado mais difícil agora, mas muito mais durável depois. Desconforto cognitivo é sinal de crescimento.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Torne-se meu Criador de Dificuldades Desejáveis para aprender <strong>[TOPIC]</strong>. Projete experiências de aprendizado desafiadoras mas alcançáveis que inicialmente reduzam meu progresso, mas resultem em aprendizado mais forte e durável. Introduza obstáculos intencionais como: variar as condições de prática, espaçar as sessões, misturar a ordem dos conceitos, reduzir feedback imediato e exigir que eu recupere informações da memória em vez de simplesmente relê-las.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> Bjork & Bjork (2011) cunharam o termo "dificuldades desejáveis". O esforço adicional durante a codificação fortalece os traços de memória. É contraintuitivo: sentir dificuldade não significa que está aprendendo mal — significa que está aprendendo melhor.</p>
+                            <p><strong>Saída esperada:</strong> A IA vai criar exercícios progressivamente mais difíceis, remover dicas que antes estavam disponíveis, e pedir que você resolva problemas em contextos novos. Você vai errar mais no início, mas a retenção a longo prazo será muito superior.</p>
+                            <p class="prompt-ref">Bjork & Bjork (2011). Psychology and the Real World &bull; Soderstrom & Bjork (2015). Annual Review of Psychology</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 12. Transferência de Aprendizado -->
+                <div class="prompt-card" style="--card-accent:#ffd54f">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🌐</span>
+                        <div>
+                            <h3 class="prompt-card-title">Transferência de Aprendizado</h3>
+                            <span class="prompt-card-tag">Aplicação em Novos Contextos</span>
+                        </div>
+                        <span class="prompt-card-number">#12</span>
+                    </div>
+                    <p class="prompt-card-desc">O objetivo final: não apenas aprender, mas aplicar conhecimento em situações completamente novas. Identifica os princípios profundos que funcionam em qualquer contexto.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Funcione como meu Especialista em Transferência de Aprendizado para <strong>[TOPIC]</strong>. Ajude-me não apenas a aprender, mas a desenvolver a capacidade de aplicar este conhecimento em contextos novos e variados. Apresente-me problemas que exijam adaptar o que aprendi a situações inéditas. Guie-me a identificar as características estruturais profundas que permanecem constantes em diferentes aplicações, enquanto reconheço características superficiais que podem mudar.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> Barnett & Ceci (2002) distinguem transferência "próxima" (contextos similares) de "distante" (contextos muito diferentes). A maioria dos estudantes só consegue transferência próxima. Este prompt treina transferência distante, que é o que a medicina exige — cada paciente é um contexto novo.</p>
+                            <p><strong>Saída esperada:</strong> A IA vai apresentar 3-5 cenários clínicos ou problemas inéditos onde você precisa aplicar o conceito estudado de formas que nunca viu antes. Após cada tentativa, análise detalhada de quais princípios você transferiu corretamente e quais não.</p>
+                            <p class="prompt-ref">Barnett & Ceci (2002). Intelligence &bull; Perkins & Salomon (1992). International Encyclopedia of Education</p>
+                        </div>
+                    </details>
+                </div>
+
+            </div>
+
+            <!-- Rodapé educativo -->
+            <div class="glass-card" style="margin-top:24px;border-left:3px solid var(--synapse-gold)">
+                <h3 style="margin-bottom:8px">Ordem sugerida de uso</h3>
+                <p style="color:var(--text-dim);font-size:14px;line-height:1.8">
+                    <strong>Nível 1 — Fundamentos:</strong> Feynman (#1) + Recuperação Ativa (#2) + Interrogação Elaborativa (#5)<br>
+                    <strong>Nível 2 — Profundidade:</strong> Método Socrático (#3) + Modelos Mentais (#6) + Dupla Codificação (#7)<br>
+                    <strong>Nível 3 — Maestria:</strong> Prática Intercalada (#4) + Dificuldades Desejáveis (#11) + Transferência (#12)<br>
+                    <strong>Nível 4 — Meta-aprendizado:</strong> Metacognição (#9) + Raciocínio Analógico (#10) + Generativa (#8)
+                </p>
+            </div>
+        </section>
+
+        <!-- ANTI-PROCRASTINAÇÃO — PRO -->
+        <section id="tab-antiprocrastinacao" class="tab-panel">
+            <div class="page-header">
+                <h1>🚀 Anti-Procrastinação</h1>
+                <p class="page-subtitle">Procrastinação não é preguiça — é um sistema quebrado. Use IA para reconstruir seus hábitos, foco e impulso.</p>
+            </div>
+
+            <div class="glass-card" style="margin-bottom:24px;border-left:3px solid #ef5350">
+                <h3 style="margin-bottom:8px">O que a ciência diz</h3>
+                <p style="color:var(--text-dim);font-size:14px;line-height:1.7">
+                    Procrastinação é uma <strong style="color:#ef5350">falha de regulação emocional</strong>, não de gestão de tempo (Sirois & Pychyl, 2013).
+                    Seu cérebro prioriza o alívio imediato do desconforto em vez do benefício futuro — a amígdala vence o córtex pré-frontal.
+                    Estes 10 prompts atacam as <strong style="color:var(--synapse-cyan)">causas reais</strong>: medo, perfeccionismo, sobrecarga, falta de clareza e baixa energia.
+                    Copie o prompt, cole em uma IA (funciona especialmente bem com o <strong style="color:var(--synapse-cyan)">Claude</strong>) e substitua os campos entre colchetes.
+                </p>
+            </div>
+
+            <div class="prompts-grid">
+
+                <!-- 1. Diagnosticador -->
+                <div class="prompt-card" style="--card-accent:#ef5350">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🔍</span>
+                        <div>
+                            <h3 class="prompt-card-title">Diagnosticador de Procrastinação</h3>
+                            <span class="prompt-card-tag">Identificar a Causa Real</span>
+                        </div>
+                        <span class="prompt-card-number">#1</span>
+                    </div>
+                    <p class="prompt-card-desc">Antes de agir, entenda por que você está travado. Este prompt faz 7 perguntas cirúrgicas para identificar a raiz: medo, perfeccionismo, sobrecarga, tédio, falta de energia ou de deadline.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Atue como coach comportamental. Estou procrastinando em <strong>[TAREFA]</strong>. Me faça 7 perguntas objetivas para diagnosticar a causa real (medo, próximo passo indefinido, perfeccionismo, baixa energia, tédio, sobrecarga, ausência de prazo). Depois nomeie a causa-raiz em 1 frase, dê a melhor solução, sugira uma ação de 5 minutos para começar, e crie um plano simples de 30 minutos que gere impulso.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> Steel (2007) identificou que procrastinação tem múltiplas causas e que o tratamento errado piora o problema. Diagnosticar antes de agir evita a armadilha de "dicas de produtividade genéricas" que funcionam para um tipo mas não para outro.</p>
+                            <p><strong>Saída esperada:</strong> 7 perguntas rápidas → diagnóstico em 1 frase (ex: "Você está procrastinando por sobrecarga — são muitas subtarefas invisíveis") → plano personalizado de 30 min com a primeira ação de 5 min para quebrar a inércia.</p>
+                            <p class="prompt-ref">Steel (2007). Psychological Bulletin &bull; Sirois & Pychyl (2013). Social and Personality Psychology Compass</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 2. Starter de 5 Minutos -->
+                <div class="prompt-card" style="--card-accent:#00e676">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">⚡</span>
+                        <div>
+                            <h3 class="prompt-card-title">Starter de 5 Minutos</h3>
+                            <span class="prompt-card-tag">Quebrar a Inércia</span>
+                        </div>
+                        <span class="prompt-card-number">#2</span>
+                    </div>
+                    <p class="prompt-card-desc">O mais difícil é começar. Este prompt transforma qualquer tarefa em uma ação tão ridiculamente fácil que seu cérebro não consegue dizer "não".</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Transforme <strong>[TAREFA]</strong> em uma ação inicial de 5 minutos que seja estupidamente fácil. Sem planejamento, sem pesquisa — só movimento. Depois dê os próximos 3 micro-passos, defina o que "feito hoje" significa, e me dê uma frase curta para dizer a mim mesmo antes de começar.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> O <em>Efeito Zeigarnik</em> mostra que tarefas iniciadas criam tensão cognitiva que motiva a conclusão. Começar — mesmo de forma mínima — ativa o sistema dopaminérgico de recompensa. A regra dos 2 minutos de Allen (2001) explora esse princípio.</p>
+                            <p><strong>Saída esperada:</strong> Uma ação absurdamente simples (ex: "Abra o documento e escreva o título"), 3 próximos passos de 5-10 min cada, e uma frase motivacional curta personalizada para sua tarefa.</p>
+                            <p class="prompt-ref">Zeigarnik (1927). Psychologische Forschung &bull; Allen (2001). Getting Things Done</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 3. Quebrador de Clareza -->
+                <div class="prompt-card" style="--card-accent:#00f0ff">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🧩</span>
+                        <div>
+                            <h3 class="prompt-card-title">Quebrador de Complexidade</h3>
+                            <span class="prompt-card-tag">Micro-Passos Claros</span>
+                        </div>
+                        <span class="prompt-card-number">#3</span>
+                    </div>
+                    <p class="prompt-card-desc">Se a tarefa parece grande demais, seu cérebro entra em modo de fuga. Este prompt fragmenta tudo em passos de no máximo 15 minutos com critérios claros de conclusão.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Estou travado em <strong>[TAREFA]</strong>. Quebre em passos mínimos possíveis. Nenhum passo deve levar mais que 15 minutos. Para cada passo, diga exatamente o que fazer, quanto tempo leva, e como saber que está "feito". Depois escolha o melhor primeiro passo para gerar impulso e explique por quê.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> A sobrecarga cognitiva (<em>cognitive overload</em>) ativa a resposta de estresse da amígdala, causando evitação. Fragmentar tarefas reduz a carga na memória de trabalho e transforma "impossível" em "fácil" — cada mini-conclusão libera dopamina.</p>
+                            <p><strong>Saída esperada:</strong> Lista de 5-10 micro-tarefas com tempo estimado e critério de "feito" para cada. Ex: "Passo 3: Ler seção 2.1 do artigo (12 min). Feito = anotar 3 pontos-chave no caderno."</p>
+                            <p class="prompt-ref">Sweller (1988). Cognitive Science &bull; Baumeister & Tierney (2011). Willpower</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 4. Esmagador de Resistência -->
+                <div class="prompt-card" style="--card-accent:#e040fb">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🛡️</span>
+                        <div>
+                            <h3 class="prompt-card-title">Esmagador de Resistência</h3>
+                            <span class="prompt-card-tag">Desativar o Medo</span>
+                        </div>
+                        <span class="prompt-card-number">#4</span>
+                    </div>
+                    <p class="prompt-card-desc">Quando você sente aquela resistência antes de começar — aperto no peito, vontade de fazer outra coisa — este prompt desativa o alarme emocional sem truques de motivação.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Antes de começar <strong>[TAREFA]</strong>, estou sentindo <strong>[SENTIMENTO]</strong>. Me ajude a desativar a resistência sem truques motivacionais. Dê 3 reenquadramentos que reduzam a pressão, 3 frases curtas de "faça mesmo assim", um plano de 10 minutos para começar, e uma rotina rápida de reset para quando eu me distrair no meio da tarefa.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> A resistência pré-tarefa é a amígdala sinalizando "ameaça" (ao ego, à autoestima, ao conforto). Reenquadramento cognitivo (<em>cognitive reappraisal</em>) reduz a ativação da amígdala em até 50% (Gross, 2002). Não é sobre "se motivar" — é sobre reduzir o alarme emocional.</p>
+                            <p><strong>Saída esperada:</strong> 3 reenquadramentos (ex: "Não precisa ser perfeito, precisa existir"), 3 frases de auto-comando, plano de 10 min e protocolo de "voltei" para quando se distrair.</p>
+                            <p class="prompt-ref">Gross (2002). Review of General Psychology &bull; Pychyl (2013). Solving the Procrastination Puzzle</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 5. Engenheiro de Deadlines -->
+                <div class="prompt-card" style="--card-accent:#ffbe0b">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">📅</span>
+                        <div>
+                            <h3 class="prompt-card-title">Engenheiro de Deadlines</h3>
+                            <span class="prompt-card-tag">Pressão Saudável</span>
+                        </div>
+                        <span class="prompt-card-number">#5</span>
+                    </div>
+                    <p class="prompt-card-desc">Sem prazo, não há urgência. Este prompt cria um cronograma realista com marcos, metas diárias e regras para quando cortar escopo vs. estender prazo.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Crie um plano de deadline realista para <strong>[TAREFA]</strong>. Posso trabalhar <strong>[TEMPO POR DIA]</strong> por dia. Se eu não tiver um prazo, proponha um. Construa marcos, metas diárias e um plano de contingência. Inclua uma regra para decidir quando cortar escopo versus quando estender o prazo.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> A Lei de Parkinson ("o trabalho se expande para preencher o tempo disponível") e o desconto temporal (<em>temporal discounting</em>) explicam por que tarefas sem prazo são infinitamente adiadas. Deadlines artificiais ativam o sistema noradrenérgico, aumentando foco e urgência.</p>
+                            <p><strong>Saída esperada:</strong> Cronograma com 3-5 marcos, meta diária específica, buffer de 20% para imprevistos, e critério claro para decidir "corto escopo" vs. "peço mais tempo".</p>
+                            <p class="prompt-ref">Parkinson (1957). Parkinson's Law &bull; Steel & König (2006). Psychological Review</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 6. Bloqueador de Distrações -->
+                <div class="prompt-card" style="--card-accent:#3a86ff">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🔒</span>
+                        <div>
+                            <h3 class="prompt-card-title">Bloqueador de Distrações</h3>
+                            <span class="prompt-card-tag">Protocolo de Sessão</span>
+                        </div>
+                        <span class="prompt-card-number">#6</span>
+                    </div>
+                    <p class="prompt-card-desc">Cria um protocolo completo de sessão à prova de distrações: setup, regras, gatilho de foco e o que fazer no exato momento em que você escorregar.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Projete uma sessão de trabalho à prova de distrações para mim. A tarefa é <strong>[TAREFA]</strong>. Meu ambiente é <strong>[CASA/ESCRITÓRIO]</strong>. Minha maior distração é <strong>[CELULAR/ABAS/PESSOAS]</strong>. Crie um protocolo de 30-45 minutos com passos de preparação, regras, um gatilho de foco, e exatamente o que eu devo fazer no momento em que escorregar. Termine com uma instrução clara de "comece agora".</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> "Intenções de implementação" (Gollwitzer, 1999) — planejar antecipadamente "se X acontecer, farei Y" — aumentam a taxa de cumprimento de metas em 2-3x. Ter um protocolo pré-definido elimina decisões no momento (fadiga decisional).</p>
+                            <p><strong>Saída esperada:</strong> Checklist de preparação (5 itens), regras da sessão, frase-gatilho para começar, protocolo "se distrair → faça isso", e instrução final de início imediato.</p>
+                            <p class="prompt-ref">Gollwitzer (1999). American Psychologist &bull; Baumeister et al. (1998). Journal of Personality and Social Psychology</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 7. Parceiro de Accountability -->
+                <div class="prompt-card" style="--card-accent:#26c6da">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🤝</span>
+                        <div>
+                            <h3 class="prompt-card-title">Parceiro de Responsabilização</h3>
+                            <span class="prompt-card-tag">Accountability 7 Dias</span>
+                        </div>
+                        <span class="prompt-card-number">#7</span>
+                    </div>
+                    <p class="prompt-card-desc">Uma IA que cobra você diariamente por 7 dias: define meta, pede prova de conclusão, ajusta o plano e aumenta a dificuldade progressivamente.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Seja meu parceiro de responsabilização para <strong>[TAREFA]</strong> pelos próximos 7 dias. Crie um check-in diário onde você me pergunta: qual é minha meta para hoje, que prova vou mostrar quando terminar, e o que me bloqueou. Depois ajuste o plano de amanhã com base na minha resposta e aumente a dificuldade levemente ao longo da semana. Adicione uma regra de recompensa se eu completar 5 de 7 dias.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> A "pressão social" de accountability aumenta a probabilidade de execução de 65% para 95% (ASTD). Mesmo com uma IA, o efeito de "ter que reportar" ativa o córtex pré-frontal ventromedial (avaliação social) e cria compromisso psicológico.</p>
+                            <p><strong>Saída esperada:</strong> Template de check-in diário com 3 perguntas, plano adaptativo que muda conforme seu progresso, escala de dificuldade crescente, e sistema de recompensa para 5/7 dias cumpridos.</p>
+                            <p class="prompt-ref">Lally et al. (2010). European Journal of Social Psychology &bull; Schouwenburg (2004). Counseling the Procrastinator</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 8. Matador de Perfeccionismo -->
+                <div class="prompt-card" style="--card-accent:#ff6b6b">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🎯</span>
+                        <div>
+                            <h3 class="prompt-card-title">Matador de Perfeccionismo</h3>
+                            <span class="prompt-card-tag">Versão 1 Agora</span>
+                        </div>
+                        <span class="prompt-card-number">#8</span>
+                    </div>
+                    <p class="prompt-card-desc">O perfeccionismo é procrastinação disfarçada de qualidade. Este prompt força uma "Versão 1" — imperfeita mas existente — que você pode melhorar depois.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Estou adiando <strong>[TAREFA]</strong> porque quero que fique perfeita. Force uma abordagem "Versão 1". Defina o que "bom o suficiente" significa, me dê um plano de rascunho de 60 minutos, diga o que devo ignorar por enquanto, e dê um passo final que entregue algo hoje mesmo, nem que não esteja perfeito.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> Perfeccionismo procrastinatório está ligado a medo de avaliação negativa (Frost et al., 1990). A abordagem "Versão 1" reduz a ameaça ao ego porque explicita que não precisa ser final. Voltaire já dizia: "o perfeito é inimigo do bom".</p>
+                            <p><strong>Saída esperada:</strong> Definição clara de "bom o suficiente" (ex: "70% pronto e funcional"), plano de 60 min com foco em estrutura não em polimento, lista do que ignorar, e ação de entrega imediata.</p>
+                            <p class="prompt-ref">Frost et al. (1990). Cognitive Therapy and Research &bull; Flett & Hewitt (2002). Perfectionism: Theory, Research, and Treatment</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 9. Gerenciador de Energia -->
+                <div class="prompt-card" style="--card-accent:#ff8c00">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">🔋</span>
+                        <div>
+                            <h3 class="prompt-card-title">Gerenciador de Energia</h3>
+                            <span class="prompt-card-tag">Adaptar à Sua Energia</span>
+                        </div>
+                        <span class="prompt-card-number">#9</span>
+                    </div>
+                    <p class="prompt-card-desc">Energia baixa não é desculpa — é dado. Este prompt avalia seu estado atual e cria duas versões da tarefa: uma para dia bom e outra para dia péssimo.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Minha energia está baixa mas preciso fazer <strong>[TAREFA]</strong>. Me faça 5 perguntas rápidas sobre sono, estresse, horário e carga mental. Depois recomende o melhor bloco de tempo hoje e duas formas de executar: uma versão fácil para baixa energia e uma versão mais completa para energia normal. Termine com uma ação de 10 minutos que eu consiga fazer até no meu pior dia.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> Os ritmos ultradianos de atenção (90-120 min) e o cortisol circadiano determinam quando seu cérebro está pronto para trabalho cognitivo pesado (Huberman, 2021). Trabalhar contra esses ritmos é como nadar contra a correnteza. Adaptar a tarefa à energia disponível > forçar execução.</p>
+                            <p><strong>Saída esperada:</strong> Diagnóstico de energia em 5 perguntas, horário ideal sugerido, versão "dia ruim" (mínimo viável) e versão "dia bom" (completa), mais ação de segurança de 10 min.</p>
+                            <p class="prompt-ref">Huberman (2021). Huberman Lab Podcast &bull; Yerkes & Dodson (1908). Journal of Comparative Neurology and Psychology</p>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- 10. Sistema Semanal -->
+                <div class="prompt-card" style="--card-accent:#ab47bc">
+                    <div class="prompt-card-header">
+                        <span class="prompt-card-icon">📋</span>
+                        <div>
+                            <h3 class="prompt-card-title">Sistema Semanal de Reset</h3>
+                            <span class="prompt-card-tag">Prevenção de Longo Prazo</span>
+                        </div>
+                        <span class="prompt-card-number">#10</span>
+                    </div>
+                    <p class="prompt-card-desc">Os prompts anteriores combatem a procrastinação pontual. Este cria um sistema semanal que previne a procrastinação antes que ela comece — planejamento + execução + revisão.</p>
+                    <div class="prompt-card-box">
+                        <button class="prompt-copy-btn" onclick="copyPromptCard(this)">Copiar</button>
+                        <p>Construa um sistema semanal que previna a procrastinação a longo prazo. Mantenha simples e repetível. Defina uma rotina de planejamento semanal, como escolher minhas 3 prioridades, um bloco diário de execução com regras, uma revisão semanal curta, e um sistema de recompensa e consequência. Formate como uma rotina curta que eu possa seguir toda semana.</p>
+                    </div>
+                    <details class="prompt-card-details">
+                        <summary>Por que funciona + Saída esperada</summary>
+                        <div class="prompt-card-why">
+                            <p><strong>Base científica:</strong> Hábitos levam em média 66 dias para se automatizar (Lally et al., 2010). Um sistema semanal cria rotinas que eventualmente se tornam automáticas — transferindo o comportamento do córtex pré-frontal (esforço consciente) para os gânglios basais (automático). A revisão semanal é o componente mais crítico: sem feedback, não há ajuste.</p>
+                            <p><strong>Saída esperada:</strong> Rotina de planejamento (domingo, 15 min), método de priorização (3 prioridades/semana), template de bloco diário (45 min), checklist de revisão (sexta, 10 min), e sistema de recompensas tangíveis.</p>
+                            <p class="prompt-ref">Lally et al. (2010). European Journal of Social Psychology &bull; Clear (2018). Atomic Habits</p>
+                        </div>
+                    </details>
+                </div>
+
+            </div>
+
+            <!-- Rodapé -->
+            <div class="glass-card" style="margin-top:24px;border-left:3px solid var(--synapse-gold)">
+                <h3 style="margin-bottom:8px">Quando usar cada prompt</h3>
+                <p style="color:var(--text-dim);font-size:14px;line-height:1.8">
+                    <strong>"Não sei por que estou travado"</strong> → Diagnosticador (#1)<br>
+                    <strong>"Sei o que fazer mas não consigo começar"</strong> → Starter 5min (#2) ou Esmagador de Resistência (#4)<br>
+                    <strong>"A tarefa é grande demais"</strong> → Quebrador de Complexidade (#3)<br>
+                    <strong>"Quero que fique perfeito"</strong> → Matador de Perfeccionismo (#8)<br>
+                    <strong>"Estou cansado demais"</strong> → Gerenciador de Energia (#9)<br>
+                    <strong>"Me distraio o tempo todo"</strong> → Bloqueador de Distrações (#6)<br>
+                    <strong>"Quero parar de procrastinar de vez"</strong> → Sistema Semanal (#10)
+                </p>
             </div>
         </section>
 
