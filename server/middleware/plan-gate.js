@@ -1,23 +1,43 @@
+/**
+ * NeuroForge — Forje sinapses. Domine o conhecimento.
+ * Copyright (c) 2026 Jackson Erasmo Fuck. All rights reserved.
+ * INPI Registration: 512026001683-5
+ * Licensed under proprietary license. See LICENSE file.
+ */
 const PLAN_LIMITS = {
     free: {
-        flashcards_per_day: 3,
-        spaced_topics_max: 5,
+        flashcards_per_day: 5,
+        flashcard_decks_max: 1,
+        spaced_topics_max: 10,
         planner_subjects_max: 1,
         nback_max_level: 2,
-        tools_allowed: ['anchor'],
+        tools_allowed: ['anchor', 'noise'],
+        pomodoro_per_day: 2,
+        diary_entries_max: 3,
+        neurobica_deck: false,       // only daily card, no full deck
+        unified_review_per_day: 5,
         has_charts: false,
         has_ranking: false,
         has_export: false,
+        has_articles: false,
+        has_assessment: false,
     },
     pro: {
         flashcards_per_day: Infinity,
+        flashcard_decks_max: Infinity,
         spaced_topics_max: Infinity,
         planner_subjects_max: Infinity,
         nback_max_level: Infinity,
         tools_allowed: 'all',
+        pomodoro_per_day: Infinity,
+        diary_entries_max: Infinity,
+        neurobica_deck: true,
+        unified_review_per_day: Infinity,
         has_charts: true,
         has_ranking: true,
         has_export: true,
+        has_articles: true,
+        has_assessment: true,
     }
 };
 
