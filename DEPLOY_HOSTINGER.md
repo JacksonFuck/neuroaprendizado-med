@@ -53,12 +53,23 @@ Cole os dados reais do seu PostgreSQL de Produção e a nova porta:
 ```env
 PORT=3000
 NODE_ENV=production
+BASE_URL=https://neuroaprendizado.unipar.jacksonuti.cloud
 SESSION_SECRET=coloque_uma_senha_muito_forte_aqui
 DB_HOST=localhost
 DB_USER=postgres
 DB_PASSWORD=sua_senha_segura_do_banco
 DB_NAME=neuro_db
+
+# ── SMTP (email de ativação de conta) ──────────────────────────────────────
+# Hostinger E-mail (smtp.hostinger.com, port=465, secure=true)
+SMTP_HOST=smtp.hostinger.com
+SMTP_PORT=465
+SMTP_USER=jackson@jacksonuti.cloud
+SMTP_PASS=Ritmosinusal120/80
+SMTP_FROM_NAME=Neuroaprendizado Med
 ```
+
+> **Importante:** Se SMTP não for configurado, o link de ativação aparecerá nos logs do PM2 (`pm2 logs neuroaprendizado-api`). Você pode copiar e enviar o link manualmente ao usuário.
 
 ## Passo 4: Inicializar o Banco de Dados
 

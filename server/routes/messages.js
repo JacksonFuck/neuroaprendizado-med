@@ -1,3 +1,9 @@
+/**
+ * NeuroForge — Forje sinapses. Domine o conhecimento.
+ * Copyright (c) 2026 Jackson Erasmo Fuck. All rights reserved.
+ * INPI Registration: 512026001683-5
+ * Licensed under proprietary license. See LICENSE file.
+ */
 const express = require('express');
 const pool = require('../config/db');
 const { ensureAuth } = require('../middleware/auth');
@@ -99,6 +105,20 @@ router.get('/unread-count', ensureAuth, async (req, res) => {
     }
 });
 
+// PUT /api/messages/read-all — Mark all as read (MUST come before /:id/read)
+router.put('/read-all', ensureAuth, async (req, res) => {
+    try {
+        const { rowCount } = await pool.query(
+            'UPDATE user_messages SET read_at = NOW() WHERE user_id = $1 AND read_at IS NULL',
+            [req.user.id]
+        );
+        res.json({ success: true, marked: rowCount });
+    } catch (err) {
+        console.error('Mark all read error:', err);
+        res.status(500).json({ error: 'Erro ao marcar mensagens como lidas.' });
+    }
+});
+
 // PUT /api/messages/:id/read — Mark message as read
 router.put('/:id/read', ensureAuth, async (req, res) => {
     try {
@@ -113,20 +133,6 @@ router.put('/:id/read', ensureAuth, async (req, res) => {
     } catch (err) {
         console.error('Mark read error:', err);
         res.status(500).json({ error: 'Erro ao marcar mensagem como lida.' });
-    }
-});
-
-// PUT /api/messages/read-all — Mark all as read
-router.put('/read-all', ensureAuth, async (req, res) => {
-    try {
-        const { rowCount } = await pool.query(
-            'UPDATE user_messages SET read_at = NOW() WHERE user_id = $1 AND read_at IS NULL',
-            [req.user.id]
-        );
-        res.json({ success: true, marked: rowCount });
-    } catch (err) {
-        console.error('Mark all read error:', err);
-        res.status(500).json({ error: 'Erro ao marcar mensagens como lidas.' });
     }
 });
 

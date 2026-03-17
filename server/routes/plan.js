@@ -1,3 +1,9 @@
+/**
+ * NeuroForge — Forje sinapses. Domine o conhecimento.
+ * Copyright (c) 2026 Jackson Erasmo Fuck. All rights reserved.
+ * INPI Registration: 512026001683-5
+ * Licensed under proprietary license. See LICENSE file.
+ */
 const express = require('express');
 const { ensureAuth } = require('../middleware/auth');
 const { getUserPlan, getPlanLimits } = require('../middleware/plan-gate');
@@ -35,7 +41,8 @@ router.get('/', ensureAuth, async (req, res) => {
                 spaced_topics: parseInt(spacedCount.rows[0].c),
                 planner_subjects: parseInt(plannerCount.rows[0].c)
             },
-            expires_at: req.user.plan_expires_at
+            expires_at: req.user.plan_expires_at,
+            has_stripe: !!req.user.stripe_customer_id
         });
     } catch (err) {
         console.error('Plan fetch error:', err);

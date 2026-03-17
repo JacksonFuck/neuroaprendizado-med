@@ -1,4 +1,10 @@
 /**
+ * NeuroForge — Forje sinapses. Domine o conhecimento.
+ * Copyright (c) 2026 Jackson Erasmo Fuck. All rights reserved.
+ * INPI Registration: 512026001683-5
+ * Licensed under proprietary license. See LICENSE file.
+ */
+/**
  * FSRS-lite — Free Spaced Repetition Scheduler (simplified)
  * Based on FSRS-4.5 algorithm by Jarrett Ye
  *

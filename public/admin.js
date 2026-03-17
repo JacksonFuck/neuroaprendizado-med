@@ -28,7 +28,7 @@ function toggleSidebar() {
 async function fetchMetrics() {
     try {
         const authRes = await fetch('/auth/me');
-        if (!authRes.ok) { window.location.href = '/login.html'; return; }
+        if (!authRes.ok) { window.location.href = '/login'; return; }
 
         const adminRes = await fetch('/api/admin/metrics');
         if (!adminRes.ok) {

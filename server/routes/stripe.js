@@ -1,3 +1,9 @@
+/**
+ * NeuroForge — Forje sinapses. Domine o conhecimento.
+ * Copyright (c) 2026 Jackson Erasmo Fuck. All rights reserved.
+ * INPI Registration: 512026001683-5
+ * Licensed under proprietary license. See LICENSE file.
+ */
 const express = require('express');
 const pool = require('../config/db');
 const { ensureAuth } = require('../middleware/auth');
@@ -205,7 +211,15 @@ router.get('/portal', ensureAuth, async (req, res) => {
         });
         res.json({ url: portalSession.url });
     } catch (err) {
-        console.error('Portal error:', err);
+        console.error('Portal error:', err.message);
+        if (err.code === 'resource_missing') {
+            // Customer was created in test mode or deleted — clear invalid data
+            await pool.query(
+                'UPDATE users SET stripe_customer_id = NULL, stripe_subscription_id = NULL WHERE id = $1',
+                [req.user.id]
+            );
+            return res.status(400).json({ error: 'Seu plano Pro está ativo, mas não há assinatura Stripe vinculada. Contate o administrador.' });
+        }
         res.status(500).json({ error: 'Erro ao abrir portal de pagamentos.' });
     }
 });

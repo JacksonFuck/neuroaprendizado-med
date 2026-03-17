@@ -5,6 +5,71 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).
 
 > **OBRIGATORIO:** Todo desenvolvimento futuro DEVE registrar as alteracoes neste arquivo antes do deploy.
 
+## [3.0.0] -- 2026-03-17 -- Neurobica, Revisao Unificada, Modo Zen e Plano Pro
+
+### Adicionado
+- **Neurobica** -- 108 cards originais de ginastica cerebral em 6 categorias (Motor, Linguistica, Memoria, Sensorial, Atencao, Social)
+  - Rotacao diaria por dia da semana
+  - API completa: GET /daily, GET /cards, POST /complete, GET /stats
+  - Widget no dashboard com card do dia
+  - Secao educativa com referencias cientificas (Lawrence Katz, BDNF, neuroplasticidade)
+  - Star rating e animacao de XP
+- **Revisao Unificada** -- combina flashcards FSRS + topicos espacados em sessao unica
+  - Interleaving (mistura) dos itens para melhor retencao
+  - Roteamento automatico de ratings para API correta (/flashcards ou /spaced)
+  - Tela de resumo com precisao %, XP ganho e itens revisados
+- **Modo Zen** -- revisao fullscreen sem distracoes
+  - Card flip 3D com CSS perspective + rotateY(180deg)
+  - Atalhos de teclado: Space/Enter=virar, 1-4=avaliar, Esc=sair
+- **Tutorial de flashcards** -- 2 metodos (NotebookLM 7 passos + prompt de IA com caixa copiavel)
+- **Filtro de baralhos** -- checkboxes para selecionar quais baralhos incluir na revisao
+- **Accordion de baralhos** -- lista colapsavel com `<details>` para cards inline
+- **Limpeza de citacoes** -- auto-remove `[cite_start]`, `[cite_end]`, `[cite: N]` do import NotebookLM
+- **Artigo SPRINT MIND 2025** (Reboussin et al.) adicionado a biblioteca cientifica
+- **Categoria neuroprotection** na biblioteca de artigos
+- **Plano Free vs Pro** -- sistema completo de restricoes por plano com middleware plan-gate
+  - Free: 5 flashcards/dia, 1 baralho, 10 topicos, 2 pomodoros/dia, 3 entradas no diario
+  - Free: ferramentas limitadas a Ancora e Ruido de Foco
+  - Free: neurobica apenas card diario (sem baralho completo)
+  - Free: sem graficos, ranking, exportacao, artigos ou avaliacao
+- **Popup de upgrade Pro** -- modal com lista de beneficios, garantia de 7 dias e checkout Stripe
+- **Badges PRO** -- indicadores visuais nas abas Ranking e Artigos para usuarios Free
+- **Banner de upgrade** no dashboard para usuarios do plano gratuito
+- **Interceptacao de tabs Pro** -- ranking e artigos bloqueados para Free com redirecionamento ao modal
+- **Favicon animado** -- SVG redesenhado com 4 raios animados, pulse central e glow ring
+- **Tecnicas Fundamentais expandidas** de 4 para 8 (+ Elaboracao, Dupla Codificacao, Feynman, Pratica Deliberada)
+- **Protecao Legal** -- INPI 512026001683-5, LICENSE proprietaria, Termos de Uso, Politica de Privacidade
+- **Consentimento telefone/coaching** -- migracao 009 com campos phone e coaching consent
+
+### Corrigido
+- **7 bugs do Pomodoro**: race condition (clearInterval antes de novo), tempo real (focusElapsed), validacao de input (clamp 5-90/1-30), snooze (extends mode atual), SVG circle (pct 0-1), API response check, toast feedback
+- **NaN no grafico** "Precisao de Revisoes" -- fallback `|| 0` e ocultar quando total=0
+- **Neurobica nao carregava** -- observer corrigido de secNeurobica para tab-neurobica
+- **Campo c.category vs c.cat** -- 4 ocorrencias corrigidas na rota neurobica
+- **ON CONFLICT com cast** -- PostgreSQL nao suporta ::date em ON CONFLICT, substituido por check-then-insert
+- **DOIs quebrados**: Dresler (s41598-022-11636-4) e Birn (s41598-019-40273-7)
+- **VPS index.js corrompido** -- res.redirect(/app) sem aspas (causava crash PM2)
+- **Duplo %%** no contador da landing -- HTML tinha % estatico + JS adicionava suffix
+- **Contador double-fire** -- flag data-animated para evitar IntersectionObserver duplicado
+- **Labels SVG** "Sem/Com NeuroForge" reposicionados (x=270, y=42/y=72)
+- **Sidebar favicon diferente** -- unificado favicon-32.svg para favicon.svg
+- **Logo login** ampliado (80->110px container, 48->72px imagem)
+- **Contraste botao** "Assine Pro" melhorado
+
+### Alterado
+- **Traducao completa PT-BR** -- todas as siglas tecnicas em ingles convertidas para portugues autoexplicativo
+  - FSRS -> "repeticao inteligente", RPE -> "surpresa positiva", NSDR -> "descanso profundo"
+  - PVT -> "teste de reatividade", BET -> "treino de resistencia cognitiva"
+  - LC-NE -> "Centro de alerta", ACC -> "Controle atencional"
+- Landing page: nomes de features traduzidos (Flashcards Inteligentes, Ruido de Foco, etc.)
+- Ferramentas de foco: mensagens de feedback traduzidas
+- Avaliacao cognitiva: siglas removidas dos titulos de teste
+- Tecnicas com titulo PT-BR em destaque e EN em subtitulo menor
+- Contadores da landing: 23+ -> 42+ Estudos Cientificos, 9->10 Ferramentas
+- Card de pressao arterial atualizado com dados Reboussin 2025
+
+---
+
 ## [2.0.0] -- 2026-03-14 -- Evolucao para Nivel Profissional
 
 ### Adicionado

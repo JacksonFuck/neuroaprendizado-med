@@ -84,11 +84,41 @@ async function markAsRead(id, element) {
 }
 
 async function markAllAsRead() {
+    const btn = document.querySelector('[onclick="markAllAsRead()"]');
+    const originalText = btn ? btn.textContent : '';
+    if (btn) { btn.textContent = 'Marcando...'; btn.disabled = true; }
+
     try {
-        await fetch('/api/messages/read-all', { method: 'PUT' });
+        const res = await fetch('/api/messages/read-all', { method: 'PUT' });
+        if (!res.ok) throw new Error('Falha ao marcar');
+        const data = await res.json();
+
         document.querySelectorAll('.message-item.unread').forEach(el => el.classList.remove('unread'));
         loadUnreadCount();
-    } catch (e) { console.error('Mark all read error:', e); }
+
+        if (btn) {
+            btn.textContent = `✓ ${data.marked || 0} marcadas como lidas`;
+            btn.style.background = 'var(--synapse-green)';
+            btn.style.color = '#000';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.disabled = false;
+            }, 2000);
+        }
+    } catch (e) {
+        console.error('Mark all read error:', e);
+        if (btn) {
+            btn.textContent = '✗ Erro — tente novamente';
+            btn.style.background = 'var(--synapse-red)';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+                btn.disabled = false;
+            }, 2000);
+        }
+    }
 }
 
 // ─── HELPERS ───

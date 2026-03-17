@@ -1,3 +1,9 @@
+/**
+ * NeuroForge — Forje sinapses. Domine o conhecimento.
+ * Copyright (c) 2026 Jackson Erasmo Fuck. All rights reserved.
+ * INPI Registration: 512026001683-5
+ * Licensed under proprietary license. See LICENSE file.
+ */
 const XP_VALUES = {
     pomodoro_complete: 10,
     review_complete: 5,
