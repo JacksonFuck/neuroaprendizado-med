@@ -23,7 +23,7 @@ function startAnchorExercise() {
             timer.textContent = `${seconds}s — Mantenha o foco. Pisque o mínimo.`;
         } else {
             stopAnchorExercise();
-            timer.textContent = '✅ LC-NE ativado. Noradrenalina liberada. Comece a estudar.';
+            timer.textContent = '✅ Centro de alerta ativado. Atenção preparada. Comece a estudar.';
             timer.style.color = 'var(--synapse-green)';
             setTimeout(() => { timer.style.color = ''; }, 5000);
         }
@@ -232,7 +232,7 @@ function startNSDR() {
 
         if (remaining <= 0) {
             stopNSDR();
-            progress.textContent = '✅ NSDR completo. Dopamina restaurada. Adenosina limpa.';
+            progress.textContent = '✅ Descanso profundo completo. Energia mental restaurada. Resíduos cerebrais removidos.';
             progress.style.color = 'var(--synapse-green)';
             guide.textContent = '';
             setTimeout(() => { progress.style.color = ''; }, 5000);
@@ -336,19 +336,29 @@ function stopStroop() {
 }
 
 
-// ─── 6. DUAL N-BACK (with server persistence, auto-level, audio, keyboard, feedback) ───
+// ─── 6. N-BACK EVOLUTION — Neural Working Memory Training ───
+// Inspired by: N-Back Evolution app, WoumBoum (d-prime), Poc275 (adaptive),
+// MickaelBergem (progressive), al0cam (AbortController), SoakYourHead
 const NBACK_LETTERS = 'BCDFGHJKLMNPQRSTVWXYZ';
 let nbackInterval = null;
-let nbackN = 2;
-let nbackHistory = []; // {pos, letter}
+let nbackAbort = null; // AbortController to prevent mid-game bugs
+let nbackN = 1;
+let nbackMode = 'single'; // single | dual
+let nbackGameMode = 'training'; // training | standard | adaptive
+let nbackHistory = [];
 let nbackRound = 0;
-let nbackTotal = 20; // rounds (configurable)
+let nbackTotal = 20;
+let nbackStimulusTime = 3000; // ms — adjustable
+let nbackShowHints = true;
+let nbackSoundOn = true;
 let nbackScore = { posHit: 0, posMiss: 0, letHit: 0, letMiss: 0, posFalse: 0, letFalse: 0 };
 let nbackUserResponse = { pos: false, let: false };
+let nbackTutorialSeen = false;
+let nbackConsecutiveGood = 0; // for adaptive mode
 
-// --- Audio: Speech Synthesis for letters ---
-
+// --- Audio ---
 function speakLetter(letter) {
+    if (!nbackSoundOn) return;
     if ('speechSynthesis' in window) {
         speechSynthesis.cancel();
         const utt = new SpeechSynthesisUtterance(letter);
@@ -359,8 +369,7 @@ function speakLetter(letter) {
     }
 }
 
-// --- Visual feedback helpers ---
-
+// --- Visual feedback ---
 function flashNBackCell(cellIndex, feedbackClass) {
     const cells = document.querySelectorAll('.nback-cell');
     const cell = cells[cellIndex];
@@ -376,16 +385,153 @@ function showNBackFeedback(messages) {
     setTimeout(() => { el.innerHTML = ''; }, 1500);
 }
 
-// --- Server persistence helpers ---
+// --- D-prime calculation (WoumBoum-inspired) ---
+function calcDPrime(hits, misses, falseAlarms, correctRejects) {
+    const totalSignal = hits + misses;
+    const totalNoise = falseAlarms + correctRejects;
+    if (totalSignal === 0 || totalNoise === 0) return 0;
+    let hitRate = hits / totalSignal;
+    let faRate = falseAlarms / totalNoise;
+    // Clamp to avoid infinite z-scores
+    hitRate = Math.max(0.01, Math.min(0.99, hitRate));
+    faRate = Math.max(0.01, Math.min(0.99, faRate));
+    // Z-score approximation (Abramowitz & Stegun)
+    function zScore(p) {
+        const a1 = -1.0, a2 = 0.27061, a3 = 0.99229, a4 = 0.04481;
+        const t = Math.sqrt(-2 * Math.log(p < 0.5 ? p : 1 - p));
+        const z = t - (a2 + a3 * t) / (1 + a4 * t);
+        return p < 0.5 ? -z : z;
+    }
+    return Math.round((zScore(hitRate) - zScore(faRate)) * 100) / 100;
+}
 
+// --- Tutorial System ---
+function showNBackTutorial() {
+    const container = document.getElementById('nbackTutorialOverlay');
+    if (!container) return;
+    container.style.display = 'flex';
+    container.innerHTML = `
+    <div class="nback-tutorial-content">
+        <h3>Como funciona o N-Back?</h3>
+        <div class="nback-tutorial-steps">
+            <div class="nback-tutorial-step active" id="tutStep1">
+                <div class="nback-tutorial-icon">🧠</div>
+                <h4>O que é?</h4>
+                <p>Um <strong>treino de memória de trabalho</strong>. Você vai ver quadrados aparecendo numa grade 3×3 e ouvir letras.</p>
+                <p>Sua missão: lembrar o que apareceu <strong>N rodadas atrás</strong> e apertar o botão quando repetir.</p>
+            </div>
+            <div class="nback-tutorial-step" id="tutStep2">
+                <div class="nback-tutorial-icon">1️⃣</div>
+                <h4>Exemplo: 1-Back</h4>
+                <p>No modo <strong>1-Back</strong>, compare com a <strong>rodada anterior</strong> (a mais recente).</p>
+                <div class="nback-tutorial-demo">
+                    <div class="nback-tutorial-demo-row">
+                        <div class="nback-mini-grid"><div class="mini-cell"></div><div class="mini-cell active"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div></div>
+                        <span class="tutorial-arrow">→</span>
+                        <div class="nback-mini-grid"><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell active"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div></div>
+                        <span class="tutorial-arrow">→</span>
+                        <div class="nback-mini-grid"><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell match"></div><div class="mini-cell"></div><div class="mini-cell"></div><div class="mini-cell"></div></div>
+                    </div>
+                    <p class="tutorial-caption">Rodada 3: posição <strong>igual</strong> à rodada 2 → <strong>APERTE!</strong></p>
+                </div>
+            </div>
+            <div class="nback-tutorial-step" id="tutStep3">
+                <div class="nback-tutorial-icon">🎮</div>
+                <h4>Controles</h4>
+                <div class="nback-tutorial-controls">
+                    <div><span class="nback-instr-key">A</span> ou <span class="nback-instr-key">←</span> = Posição igual</div>
+                    <div><span class="nback-instr-key">L</span> ou <span class="nback-instr-key">→</span> = Letra/Som igual</div>
+                </div>
+                <p>Ou toque/clique nos botões na tela. No modo <strong>Single</strong>, só posição importa.</p>
+            </div>
+            <div class="nback-tutorial-step" id="tutStep4">
+                <div class="nback-tutorial-icon">🚀</div>
+                <h4>Progressão</h4>
+                <p>Comece no <strong>1-Back Single</strong> (só posição). Quando dominar, passe para <strong>Dual</strong> (posição + som). Depois aumente para <strong>2-Back</strong>, <strong>3-Back</strong>...</p>
+                <p>O modo <strong>Treino</strong> mostra dicas visuais. Sem pressão!</p>
+                <p style="color:var(--synapse-gold);font-weight:600;margin-top:12px">Dica: 5-10 minutos por dia já gera resultados em 2-4 semanas.</p>
+            </div>
+        </div>
+        <div class="nback-tutorial-nav">
+            <button class="btn-action" id="tutPrev" onclick="nbackTutorialNav(-1)" disabled>← Anterior</button>
+            <span id="tutDots" class="tutorial-dots">
+                <span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </span>
+            <button class="btn-action" id="tutNext" onclick="nbackTutorialNav(1)">Próximo →</button>
+        </div>
+    </div>`;
+    window._tutStep = 0;
+}
+
+function nbackTutorialNav(dir) {
+    const steps = document.querySelectorAll('.nback-tutorial-step');
+    const dots = document.querySelectorAll('.tutorial-dots .dot');
+    window._tutStep = Math.max(0, Math.min(steps.length - 1, (window._tutStep || 0) + dir));
+    steps.forEach((s, i) => s.classList.toggle('active', i === window._tutStep));
+    dots.forEach((d, i) => d.classList.toggle('active', i === window._tutStep));
+    document.getElementById('tutPrev').disabled = window._tutStep === 0;
+    const nextBtn = document.getElementById('tutNext');
+    if (window._tutStep === steps.length - 1) {
+        nextBtn.textContent = 'Entendi! Vamos jogar';
+        nextBtn.onclick = () => closeNBackTutorial();
+    } else {
+        nextBtn.textContent = 'Próximo →';
+        nextBtn.onclick = () => nbackTutorialNav(1);
+    }
+}
+
+function closeNBackTutorial() {
+    const overlay = document.getElementById('nbackTutorialOverlay');
+    if (overlay) overlay.style.display = 'none';
+    nbackTutorialSeen = true;
+    localStorage.setItem('nbackTutorialSeen', 'true');
+}
+
+// --- Settings Panel ---
+function toggleNBackSettings() {
+    const panel = document.getElementById('nbackSettingsPanel');
+    if (panel) panel.classList.toggle('open');
+}
+
+function applyNBackSettings() {
+    const modeEl = document.getElementById('nbackModeSelect');
+    const gameModeEl = document.getElementById('nbackGameModeSelect');
+    const roundsEl = document.getElementById('nbackRoundsSelect');
+    const stimEl = document.getElementById('nbackStimulusTimeSelect');
+    const soundEl = document.getElementById('nbackSoundToggle');
+    const hintsEl = document.getElementById('nbackHintsToggle');
+
+    if (modeEl) nbackMode = modeEl.value;
+    if (gameModeEl) nbackGameMode = gameModeEl.value;
+    if (roundsEl) nbackTotal = parseInt(roundsEl.value) || 20;
+    if (stimEl) nbackStimulusTime = parseInt(stimEl.value) || 3000;
+    if (soundEl) nbackSoundOn = soundEl.checked;
+    if (hintsEl) nbackShowHints = hintsEl.checked;
+
+    // Update UI based on mode
+    const letBtn = document.getElementById('nbackLetBtn');
+    if (letBtn) letBtn.style.display = nbackMode === 'single' ? 'none' : '';
+
+    updateNBackStartButton();
+    toggleNBackSettings();
+}
+
+function updateNBackStartButton() {
+    const btn = document.getElementById('nbackStartBtn');
+    if (!btn) return;
+    const modeLabel = nbackMode === 'single' ? 'Single' : 'Dual';
+    btn.textContent = `Iniciar ${nbackN}-Back ${modeLabel}`;
+}
+
+// --- Server persistence ---
 async function loadNBackProgress() {
     try {
         const res = await fetch('/api/nback/progress');
         if (!res.ok) return;
         const prog = await res.json();
-        nbackN = prog.current_level || 2;
-        renderNBackLevelSelector(prog.max_unlocked_level || 2);
-        document.getElementById('nbackStartBtn').textContent = `Iniciar ${nbackN}-Back`;
+        nbackN = prog.current_level || 1;
+        renderNBackLevelSelector(prog.max_unlocked_level || 1);
+        updateNBackStartButton();
         const levelDisplay = document.getElementById('nbackCurrentLevel');
         if (levelDisplay) {
             levelDisplay.querySelector('.nback-level-number').textContent = nbackN;
@@ -415,9 +561,7 @@ async function saveNBackSession() {
             })
         });
         const data = await res.json();
-        if (data.level_up) {
-            showNBackLevelUp(data.new_level);
-        }
+        if (data.level_up) showNBackLevelUp(data.new_level);
         if (data.achievements_earned?.length) {
             data.achievements_earned.forEach(a => {
                 if (typeof showXPPopup === 'function') showXPPopup(a.xp, a.name);
@@ -432,7 +576,7 @@ function renderNBackLevelSelector(maxLevel) {
     const sel = document.getElementById('nbackLevelSelect');
     if (!sel) return;
     sel.innerHTML = '';
-    for (let i = 2; i <= Math.max(maxLevel, 2); i++) {
+    for (let i = 1; i <= Math.max(maxLevel, 1); i++) {
         const opt = document.createElement('option');
         opt.value = i;
         opt.textContent = `${i}-Back`;
@@ -441,11 +585,9 @@ function renderNBackLevelSelector(maxLevel) {
     }
     sel.onchange = (e) => {
         nbackN = parseInt(e.target.value);
-        document.getElementById('nbackStartBtn').textContent = `Iniciar ${nbackN}-Back`;
+        updateNBackStartButton();
         const levelDisplay = document.getElementById('nbackCurrentLevel');
-        if (levelDisplay) {
-            levelDisplay.querySelector('.nback-level-number').textContent = nbackN;
-        }
+        if (levelDisplay) levelDisplay.querySelector('.nback-level-number').textContent = nbackN;
     };
 }
 
@@ -473,48 +615,55 @@ async function loadNBackHistory() {
     } catch (e) { console.error('NBack history error:', e); }
 }
 
-// --- Core N-Back game logic ---
-
+// --- Core Game Logic ---
 function startNBack() {
     if (nbackInterval) { stopNBack(); return; }
 
-    // Read configurable rounds
-    const roundsSelect = document.getElementById('nbackRoundsSelect');
-    if (roundsSelect) nbackTotal = parseInt(roundsSelect.value) || 20;
+    // Show tutorial on first time
+    if (!nbackTutorialSeen && !localStorage.getItem('nbackTutorialSeen')) {
+        showNBackTutorial();
+        return;
+    }
 
+    nbackAbort = new AbortController();
     nbackHistory = [];
     nbackRound = 0;
+    nbackConsecutiveGood = 0;
     nbackScore = { posHit: 0, posMiss: 0, letHit: 0, letMiss: 0, posFalse: 0, letFalse: 0 };
 
     document.getElementById('nbackStartBtn').textContent = '⏹ Parar';
     document.getElementById('nbackPosBtn').disabled = false;
-    document.getElementById('nbackLetBtn').disabled = false;
-    document.getElementById('nbackScore').textContent = `Rodada 0/${nbackTotal} | N=${nbackN}`;
+    const letBtn = document.getElementById('nbackLetBtn');
+    if (letBtn) letBtn.disabled = nbackMode === 'single';
+    if (letBtn) letBtn.style.display = nbackMode === 'single' ? 'none' : '';
+
+    document.getElementById('nbackScore').textContent = `Rodada 0/${nbackTotal} | ${nbackN}-Back ${nbackMode === 'single' ? 'Single' : 'Dual'}`;
 
     const feedbackEl = document.getElementById('nbackFeedback');
     if (feedbackEl) feedbackEl.innerHTML = '';
+
+    // Show progress bar
+    const progBar = document.getElementById('nbackProgressBar');
+    if (progBar) { progBar.style.display = 'block'; progBar.querySelector('.nback-prog-fill').style.width = '0%'; }
 
     showNBackRound();
 }
 
 function showNBackRound() {
-    if (nbackRound >= nbackTotal) {
-        finishNBack();
-        return;
-    }
+    if (nbackAbort?.signal.aborted) return;
+    if (nbackRound >= nbackTotal) { finishNBack(); return; }
 
     nbackUserResponse = { pos: false, let: false };
 
-    // Generate new stimulus
+    // Generate stimulus
     const pos = Math.floor(Math.random() * 9);
     const letter = NBACK_LETTERS[Math.floor(Math.random() * NBACK_LETTERS.length)];
 
-    // 30% chance of matching position or letter for playability
     let finalPos = pos;
     let finalLetter = letter;
     if (nbackRound >= nbackN) {
         if (Math.random() < 0.3) finalPos = nbackHistory[nbackRound - nbackN].pos;
-        if (Math.random() < 0.3) finalLetter = nbackHistory[nbackRound - nbackN].letter;
+        if (Math.random() < 0.3 && nbackMode === 'dual') finalLetter = nbackHistory[nbackRound - nbackN].letter;
     }
 
     nbackHistory.push({ pos: finalPos, letter: finalLetter });
@@ -522,27 +671,45 @@ function showNBackRound() {
 
     // Display
     const cells = document.querySelectorAll('.nback-cell');
-    cells.forEach(c => c.classList.remove('active', 'correct', 'wrong', 'missed'));
+    cells.forEach(c => { c.classList.remove('active', 'correct', 'wrong', 'missed', 'hint'); c.textContent = ''; });
     cells[finalPos]?.classList.add('active');
-    document.getElementById('nbackLetter').textContent = finalLetter;
-    document.getElementById('nbackScore').textContent = `Rodada ${nbackRound}/${nbackTotal} | N=${nbackN}`;
 
-    // Audio: speak the letter
-    speakLetter(finalLetter);
+    const letterEl = document.getElementById('nbackLetter');
+    if (nbackMode === 'dual') {
+        letterEl.textContent = finalLetter;
+        speakLetter(finalLetter);
+    } else {
+        letterEl.textContent = '';
+    }
 
-    // Reset buttons visual
+    document.getElementById('nbackScore').textContent = `Rodada ${nbackRound}/${nbackTotal} | ${nbackN}-Back ${nbackMode === 'single' ? 'Single' : 'Dual'}`;
+
+    // Progress bar
+    const progBar = document.getElementById('nbackProgressBar');
+    if (progBar) progBar.querySelector('.nback-prog-fill').style.width = `${(nbackRound / nbackTotal) * 100}%`;
+
+    // Training hints: highlight the N-back cell if it matches
+    if (nbackShowHints && nbackGameMode === 'training' && nbackRound > nbackN) {
+        const target = nbackHistory[nbackRound - 1 - nbackN];
+        const current = nbackHistory[nbackRound - 1];
+        if (target.pos === current.pos) {
+            cells[current.pos]?.classList.add('hint');
+        }
+    }
+
+    // Reset buttons
     document.getElementById('nbackPosBtn').classList.remove('btn-correct', 'btn-wrong');
-    document.getElementById('nbackLetBtn').classList.remove('btn-correct', 'btn-wrong');
+    const letBtnEl = document.getElementById('nbackLetBtn');
+    if (letBtnEl) letBtnEl.classList.remove('btn-correct', 'btn-wrong');
 
-    // After display time, score and move to next
+    // Score after stimulus display time
     nbackInterval = setTimeout(() => {
+        if (nbackAbort?.signal.aborted) return;
         const feedbackMessages = [];
 
-        // Score this round
         if (nbackRound > nbackN) {
             const target = nbackHistory[nbackRound - 1 - nbackN];
             const current = nbackHistory[nbackRound - 1];
-
             const posMatch = target.pos === current.pos;
             const letMatch = target.letter === current.letter;
 
@@ -557,30 +724,30 @@ function showNBackRound() {
             } else if (!posMatch && nbackUserResponse.pos) {
                 nbackScore.posFalse++;
                 flashNBackCell(current.pos, 'wrong');
-                feedbackMessages.push('<span style="color:#ff8c00">⚠ Posição falsa</span>');
+                feedbackMessages.push('<span style="color:#ff8c00">⚠ Alarme falso</span>');
             }
 
-            if (letMatch && nbackUserResponse.let) {
-                nbackScore.letHit++;
-                feedbackMessages.push('<span style="color:var(--synapse-green)">✓ Letra</span>');
-            } else if (letMatch && !nbackUserResponse.let) {
-                nbackScore.letMiss++;
-                feedbackMessages.push('<span style="color:var(--synapse-red)">✗ Letra perdida</span>');
-            } else if (!letMatch && nbackUserResponse.let) {
-                nbackScore.letFalse++;
-                feedbackMessages.push('<span style="color:#ff8c00">⚠ Letra falsa</span>');
+            if (nbackMode === 'dual') {
+                if (letMatch && nbackUserResponse.let) {
+                    nbackScore.letHit++;
+                    feedbackMessages.push('<span style="color:var(--synapse-green)">✓ Letra</span>');
+                } else if (letMatch && !nbackUserResponse.let) {
+                    nbackScore.letMiss++;
+                    feedbackMessages.push('<span style="color:var(--synapse-red)">✗ Letra perdida</span>');
+                } else if (!letMatch && nbackUserResponse.let) {
+                    nbackScore.letFalse++;
+                    feedbackMessages.push('<span style="color:#ff8c00">⚠ Letra falsa</span>');
+                }
             }
         }
 
-        if (feedbackMessages.length > 0) {
-            showNBackFeedback(feedbackMessages);
-        }
+        if (feedbackMessages.length > 0) showNBackFeedback(feedbackMessages);
 
-        cells.forEach(c => c.classList.remove('active'));
-        document.getElementById('nbackLetter').textContent = '';
+        cells.forEach(c => c.classList.remove('active', 'hint'));
+        letterEl.textContent = '';
 
-        setTimeout(() => showNBackRound(), 500); // brief pause between rounds
-    }, 2500); // stimulus display time
+        setTimeout(() => showNBackRound(), 500);
+    }, nbackStimulusTime);
 }
 
 function nbackMatch(type) {
@@ -588,7 +755,7 @@ function nbackMatch(type) {
     if (type === 'position') {
         nbackUserResponse.pos = true;
         document.getElementById('nbackPosBtn').classList.add('btn-correct');
-    } else {
+    } else if (nbackMode === 'dual') {
         nbackUserResponse.let = true;
         document.getElementById('nbackLetBtn').classList.add('btn-correct');
     }
@@ -596,23 +763,58 @@ function nbackMatch(type) {
 
 function finishNBack() {
     const hits = nbackScore.posHit + nbackScore.letHit;
-    const possible = nbackScore.posHit + nbackScore.posMiss + nbackScore.letHit + nbackScore.letMiss;
+    const misses = nbackScore.posMiss + nbackScore.letMiss;
+    const falseAlarms = nbackScore.posFalse + nbackScore.letFalse;
+    const possible = hits + misses;
     const pct = possible > 0 ? Math.round((hits / possible) * 100) : 0;
 
-    document.getElementById('nbackScore').textContent =
-        `Resultado: ${hits}/${possible} acertos (${pct}%) — Pos: ${nbackScore.posHit}✓ ${nbackScore.posMiss}✗ | Let: ${nbackScore.letHit}✓ ${nbackScore.letMiss}✗`;
+    // Calculate d-prime
+    const totalTrials = nbackTotal - nbackN; // scoreable rounds
+    const correctRejects = totalTrials * (nbackMode === 'dual' ? 2 : 1) - hits - misses - falseAlarms;
+    const dPrime = calcDPrime(hits, misses, falseAlarms, Math.max(0, correctRejects));
 
+    // Build result display
+    let resultHTML = `<div class="nback-result">`;
+    resultHTML += `<div class="nback-result-main">${pct}% de acurácia</div>`;
+    resultHTML += `<div class="nback-result-detail">`;
+    resultHTML += `Posição: ${nbackScore.posHit}✓ ${nbackScore.posMiss}✗ ${nbackScore.posFalse}⚠`;
+    if (nbackMode === 'dual') {
+        resultHTML += ` | Letra: ${nbackScore.letHit}✓ ${nbackScore.letMiss}✗ ${nbackScore.letFalse}⚠`;
+    }
+    resultHTML += `</div>`;
+    resultHTML += `<div class="nback-result-dprime">d' = ${dPrime} — `;
+    if (dPrime >= 3) resultHTML += `<span style="color:var(--synapse-green)">Excelente sensibilidade!</span>`;
+    else if (dPrime >= 2) resultHTML += `<span style="color:var(--synapse-green)">Boa sensibilidade</span>`;
+    else if (dPrime >= 1) resultHTML += `<span style="color:var(--synapse-gold)">Sensibilidade moderada</span>`;
+    else resultHTML += `<span style="color:var(--synapse-red)">Continue treinando!</span>`;
+    resultHTML += `</div>`;
+
+    // Adaptive mode: auto-level feedback
+    if (nbackGameMode === 'adaptive') {
+        if (pct >= 80 && dPrime >= 2) {
+            resultHTML += `<div class="nback-result-adapt" style="color:var(--synapse-green)">⬆ Próxima sessão: nível aumenta!</div>`;
+        } else if (pct <= 50) {
+            resultHTML += `<div class="nback-result-adapt" style="color:var(--synapse-red)">⬇ Próxima sessão: nível diminui</div>`;
+        } else {
+            resultHTML += `<div class="nback-result-adapt" style="color:var(--synapse-gold)">→ Mantenha o nível atual</div>`;
+        }
+    }
+    resultHTML += `</div>`;
+
+    document.getElementById('nbackScore').innerHTML = resultHTML;
     stopNBack();
-    saveNBackSession();
+    if (nbackGameMode !== 'training') saveNBackSession();
 }
 
 function stopNBack() {
     clearTimeout(nbackInterval);
     nbackInterval = null;
-    document.getElementById('nbackStartBtn').textContent = `Iniciar ${nbackN}-Back`;
+    if (nbackAbort) { nbackAbort.abort(); nbackAbort = null; }
+    updateNBackStartButton();
     document.getElementById('nbackPosBtn').disabled = true;
-    document.getElementById('nbackLetBtn').disabled = true;
-    document.querySelectorAll('.nback-cell').forEach(c => c.classList.remove('active', 'correct', 'wrong', 'missed'));
+    const letBtn = document.getElementById('nbackLetBtn');
+    if (letBtn) letBtn.disabled = true;
+    document.querySelectorAll('.nback-cell').forEach(c => c.classList.remove('active', 'correct', 'wrong', 'missed', 'hint'));
     document.getElementById('nbackLetter').textContent = '';
 }
 
@@ -968,12 +1170,12 @@ function updateFatigueMonitor() {
         fill.style.background = 'var(--synapse-red)';
         status.textContent = `🟠 Alerta — ${mins} min hoje`;
         status.style.color = '#ff8c00';
-        rec.textContent = 'Fadiga significativa. NSDR de 15min recomendado para clearance glinfático.';
+        rec.textContent = 'Fadiga significativa. Descanso profundo de 15min recomendado para limpeza cerebral.';
     } else {
         fill.style.background = 'var(--synapse-red)';
         status.textContent = `🔴 Fadiga Crítica — ${mins} min hoje`;
         status.style.color = 'var(--synapse-red)';
-        rec.textContent = 'ACC sobrecarregado. Pare agora. NSDR obrigatório + sono de qualidade esta noite.';
+        rec.textContent = 'Controle atencional sobrecarregado. Pare agora. Descanso profundo obrigatório + sono de qualidade esta noite.';
     }
 }
 
@@ -984,6 +1186,7 @@ if (_originalSwitchTab) {
         _originalSwitchTab(tabName);
         if (tabName === 'neurotools') {
             updateFatigueMonitor();
+            initNBackUI();
             loadNBackProgress();
             loadNBackHistory();
         }
@@ -1006,9 +1209,17 @@ function handleNBackKeyboard(e) {
         e.preventDefault();
         nbackMatch('position');
     }
-    if (e.key === 'l' || e.key === 'L' || e.key === 'ArrowRight') {
+    if ((e.key === 'l' || e.key === 'L' || e.key === 'ArrowRight') && nbackMode === 'dual') {
         e.preventDefault();
         nbackMatch('letter');
     }
 }
 document.addEventListener('keydown', handleNBackKeyboard);
+
+// Initialize N-Back on tab switch
+function initNBackUI() {
+    nbackTutorialSeen = !!localStorage.getItem('nbackTutorialSeen');
+    const letBtn = document.getElementById('nbackLetBtn');
+    if (letBtn) letBtn.style.display = nbackMode === 'single' ? 'none' : '';
+    updateNBackStartButton();
+}
