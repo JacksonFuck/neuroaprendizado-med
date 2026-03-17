@@ -145,8 +145,27 @@ passport.deserializeUser(async (id, done) => {
 const { attachPlan } = require('./middleware/plan-gate');
 app.use(attachPlan);
 
-// Static files (index: false prevents auto-serving index.html on /, so our route handles it)
-app.use(express.static(path.join(__dirname, '..', 'public'), { index: false }));
+// Serve sw.js with no-cache headers so the browser always checks for updates
+app.get('/sw.js', (req, res) => {
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.sendFile(path.join(__dirname, '..', 'public', 'sw.js'));
+});
+
+// Static files — disable ETag and set no-cache for HTML/JS/CSS during development
+app.use(express.static(path.join(__dirname, '..', 'public'), {
+    index: false,
+    etag: false,
+    lastModified: false,
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html') || filePath.endsWith('.js') || filePath.endsWith('.css')) {
+            res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.set('Pragma', 'no-cache');
+            res.set('Expires', '0');
+        }
+    }
+}));
 
 // API routes
 app.use('/auth', require('./routes/auth'));
@@ -172,12 +191,20 @@ app.use('/api/assessment', require('./routes/assessment'));
 app.use('/api/articles', require('./routes/articles'));
 app.use('/api/neurobica', require('./routes/neurobica'));
 
+// Helper: send HTML file with no-cache headers
+function sendHtmlNoCache(res, filePath) {
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.sendFile(filePath);
+}
+
 // Landing page — root serves landing for visitors, redirects logged users to /app
 app.get('/', (req, res) => {
     if (req.isAuthenticated && req.isAuthenticated()) {
         return res.redirect('/app');
     }
-    res.sendFile(path.join(__dirname, '..', 'public', 'landing.html'));
+    sendHtmlNoCache(res, path.join(__dirname, '..', 'public', 'landing.html'));
 });
 
 // Login page — dedicated route
@@ -185,12 +212,12 @@ app.get('/login', (req, res) => {
     if (req.isAuthenticated && req.isAuthenticated()) {
         return res.redirect('/app');
     }
-    res.sendFile(path.join(__dirname, '..', 'public', 'login.html'));
+    sendHtmlNoCache(res, path.join(__dirname, '..', 'public', 'login.html'));
 });
 
 // App dashboard — requires authentication
 app.get('/app', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+    sendHtmlNoCache(res, path.join(__dirname, '..', 'public', 'index.html'));
 });
 
 // SPA fallback — serve index.html (dashboard) for non-API routes
@@ -198,7 +225,7 @@ app.get('*', (req, res) => {
     if (req.path.startsWith('/api/') || req.path.startsWith('/auth/')) {
         return res.status(404).json({ error: 'Rota não encontrada' });
     }
-    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+    sendHtmlNoCache(res, path.join(__dirname, '..', 'public', 'index.html'));
 });
 
 // Global error handler
