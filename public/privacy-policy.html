@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Politica de Privacidade — NeuroForge</title>
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+    <meta name="theme-color" content="#00f0ff">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .page-wrapper {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: #00f0ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover {
+            opacity: 0.75;
+        }
+
+        .back-link svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Header */
+        .policy-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+        }
+
+        .policy-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .policy-header h1 span {
+            color: #00f0ff;
+        }
+
+        .policy-header .subtitle {
+            color: #888;
+            font-size: 0.95rem;
+        }
+
+        .effective-date {
+            display: inline-block;
+            margin-top: 1rem;
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 6px;
+            padding: 0.35rem 1rem;
+            font-size: 0.85rem;
+            color: #00f0ff;
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #00f0ff;
+            margin-bottom: 1rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+        }
+
+        .section h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #ccc;
+            margin: 1.2rem 0 0.6rem;
+        }
+
+        .section p {
+            margin-bottom: 0.8rem;
+            color: #c0c0c0;
+        }
+
+        .section ul,
+        .section ol {
+            padding-left: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .section li {
+            margin-bottom: 0.4rem;
+            color: #c0c0c0;
+        }
+
+        .section li strong {
+            color: #e0e0e0;
+        }
+
+        /* Data table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.65rem 0.8rem;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .data-table th {
+            background: rgba(0, 240, 255, 0.06);
+            color: #00f0ff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .data-table td {
+            color: #c0c0c0;
+        }
+
+        .data-table tr:nth-child(even) td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Rights list */
+        .rights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .right-card {
+            background: rgba(0, 240, 255, 0.04);
+            border: 1px solid rgba(0, 240, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+        }
+
+        .right-card strong {
+            display: block;
+            color: #00f0ff;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .right-card span {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        /* Contact box */
+        .contact-box {
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .contact-box p {
+            margin-bottom: 0.4rem;
+            color: #c0c0c0;
+        }
+
+        .contact-box a {
+            color: #00f0ff;
+            text-decoration: none;
+        }
+
+        .contact-box a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .policy-footer {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            color: #555;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .page-wrapper {
+                padding: 1.2rem 1rem 3rem;
+            }
+
+            .policy-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .rights-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .data-table {
+                font-size: 0.8rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+
+        <!-- Back link -->
+        <a href="/" class="back-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            Voltar ao NeuroForge
+        </a>
+
+        <!-- Header -->
+        <header class="policy-header">
+            <h1><span>Neuro</span>Forge &mdash; Politica de Privacidade</h1>
+            <p class="subtitle">Lei Geral de Protecao de Dados Pessoais (LGPD &mdash; Lei 13.709/2018)</p>
+            <span class="effective-date">Vigencia: 16 de marco de 2026</span>
+        </header>
+
+        <!-- 1. Controlador -->
+        <section class="section">
+            <h2>1. Identificacao do Controlador</h2>
+            <p>O controlador dos dados pessoais tratados pelo <strong>NeuroForge</strong> e:</p>
+            <div class="contact-box">
+                <p><strong>Jackson Erasmo Fuck</strong></p>
+                <p>Professor de Medicina</p>
+                <p>Umuarama &mdash; Parana, Brasil</p>
+                <p>E-mail: <a href="mailto:jacksontorax@gmail.com">jacksontorax@gmail.com</a></p>
+            </div>
+            <p style="margin-top: 0.8rem;">O NeuroForge e uma plataforma web (SaaS) de aprendizado baseada em neurociencia,
+                desenvolvida em Node.js com banco de dados PostgreSQL, hospedada em VPS na Hostinger.</p>
+        </section>
+
+        <!-- 2. Dados coletados -->
+        <section class="section">
+            <h2>2. Dados Pessoais Coletados</h2>
+            <p>Coletamos as seguintes categorias de dados pessoais:</p>
+
+            <h3>2.1 Dados de conta (via Google OAuth 2.0)</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Dado</th>
+                        <th>Origem</th>
+                        <th>Obrigatoriedade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Nome completo</td>
+                        <td>Conta Google</td>
+                        <td>Obrigatorio</td>
+                    </tr>
+                    <tr>
+                        <td>E-mail</td>
+                        <td>Conta Google</td>
+                        <td>Obrigatorio</td>
+                    </tr>
+                    <tr>
+                        <td>URL do avatar</td>
+                        <td>Conta Google</td>
+                        <td>Opcional</td>
+                    </tr>
+                    <tr>
+                        <td>Google ID</td>
+                        <td>Conta Google</td>
+                        <td>Obrigatorio (identificador interno)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.2 Dados de estudo</h3>
+            <ul>
+                <li>Topicos de flashcards criados ou selecionados</li>
+                <li>Avaliacoes de repeticao espacada (algoritmo FSRS)</li>
+                <li>Registro de sessoes de estudo (data, duracao, desempenho)</li>
+                <li>Sequencia de dias consecutivos de estudo (streaks)</li>
+            </ul>
+
+            <h3>2.3 Dados de treinamento cognitivo</h3>
+            <ul>
+                <li>Pontuacoes do exercicio N-Back (memoria de trabalho)</li>
+                <li>Resultados do teste Stroop (controle inibitorio)</li>
+                <li>Tempos de reacao do PVT &mdash; Psychomotor Vigilance Task</li>
+                <li>Niveis de fadiga autorrelatados</li>
+            </ul>
+
+            <h3>2.4 Dados de temporizador e Pomodoro</h3>
+            <ul>
+                <li>Duracao das sessoes de foco</li>
+                <li>Duracao e frequencia das pausas</li>
+            </ul>
+
+            <h3>2.5 Dados de gamificacao</h3>
+            <ul>
+                <li>Pontos de experiencia (XP)</li>
+                <li>Nivel do usuario</li>
+                <li>Conquistas desbloqueadas</li>
+            </ul>
+
+            <h3>2.6 Respostas de questionarios</h3>
+            <ul>
+                <li>Preferencias de aprendizagem</li>
+                <li>Rastreamento de humor e disposicao</li>
+            </ul>
+
+            <h3>2.7 Cookies e armazenamento local</h3>
+            <ul>
+                <li><strong>Cookie de sessao:</strong> gerenciado via <code>express-session</code> com armazenamento em PostgreSQL (<code>connect-pg-simple</code>)</li>
+                <li><strong>localStorage:</strong> flag de consentimento de cookies e preferencias de interface</li>
+            </ul>
+
+            <h3>2.8 Telefone para acompanhamento do Coach Personalizado</h3>
+            <ul>
+                <li><strong>Numero de telefone:</strong> fornecido voluntariamente pelo usuario no perfil, em formato internacional (+55XXXXXXXXXXX)</li>
+                <li><strong>Consentimento especifico:</strong> coletado separadamente via checkbox explicito ("Aceito receber mensagens de acompanhamento do Coach NeuroForge via WhatsApp/SMS")</li>
+            </ul>
+            <p style="margin-top: 0.75rem; padding: 1rem; background: rgba(0,240,255,0.05); border-left: 3px solid rgba(0,240,255,0.3); border-radius: 4px;">
+                <strong>Importante:</strong> O fornecimento do telefone e <strong>opcional</strong>. Este dado sera utilizado exclusivamente para que o Coach Personalizado do NeuroForge envie mensagens de incentivo ao estudo, lembretes de revisao espacada, alertas de streak e orientacoes personalizadas de aprendizagem. Voce pode revogar este consentimento a qualquer momento nas configuracoes do seu perfil, conforme Art. 8, &sect;5 da LGPD.
+            </p>
+        </section>
+
+        <!-- 3. Finalidade -->
+        <section class="section">
+            <h2>3. Finalidade do Tratamento</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Categoria de dados</th>
+                        <th>Finalidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Dados de conta</td>
+                        <td>Autenticacao, identificacao e personalizacao do perfil</td>
+                    </tr>
+                    <tr>
+                        <td>Dados de estudo</td>
+                        <td>Implementar repeticao espacada (FSRS), gerar metricas de progresso e adaptar o plano de estudos</td>
+                    </tr>
+                    <tr>
+                        <td>Dados de treinamento cognitivo</td>
+                        <td>Medir desempenho cognitivo, detectar fadiga e ajustar intensidade dos exercicios</td>
+                    </tr>
+                    <tr>
+                        <td>Dados de temporizador</td>
+                        <td>Registrar sessoes de foco e oferecer intervalos baseados em ciclos ultradianos</td>
+                    </tr>
+                    <tr>
+                        <td>Dados de gamificacao</td>
+                        <td>Engajamento via recompensas dopaminergicas, progressao de nivel e conquistas</td>
+                    </tr>
+                    <tr>
+                        <td>Respostas de questionarios</td>
+                        <td>Personalizar a experiencia de aprendizado conforme perfil e estado emocional</td>
+                    </tr>
+                    <tr>
+                        <td>Cookies de sessao</td>
+                        <td>Manter a autenticacao ativa e garantir seguranca da sessao</td>
+                    </tr>
+                    <tr>
+                        <td>localStorage</td>
+                        <td>Armazenar preferencias de interface e registro de consentimento de cookies</td>
+                    </tr>
+                    <tr>
+                        <td>Telefone (opcional)</td>
+                        <td>Acompanhamento pelo Coach Personalizado: mensagens de incentivo, lembretes de revisao FSRS, alertas de streak e orientacoes de aprendizagem via WhatsApp/SMS</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 4. Base legal -->
+        <section class="section">
+            <h2>4. Base Legal (Art. 7, LGPD)</h2>
+            <p>O tratamento dos seus dados pessoais fundamenta-se nas seguintes bases legais:</p>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Base legal</th>
+                        <th>Aplicacao</th>
+                        <th>Fundamento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Consentimento</strong></td>
+                        <td>Criacao de conta via Google OAuth; coleta de dados de questionarios</td>
+                        <td>Art. 7, I</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Execucao contratual</strong></td>
+                        <td>Fornecimento das funcionalidades de estudo, flashcards, treinamento cognitivo, gamificacao e temporizador</td>
+                        <td>Art. 7, V</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Legitimo interesse</strong></td>
+                        <td>Analise agregada e anonimizada de uso para melhoria da plataforma</td>
+                        <td>Art. 7, IX</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Consentimento especifico</strong></td>
+                        <td>Coleta de telefone e envio de mensagens pelo Coach Personalizado (incentivos, lembretes de revisao, alertas de streak)</td>
+                        <td>Art. 7, I c/c Art. 8</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 5. Compartilhamento -->
+        <section class="section">
+            <h2>5. Compartilhamento de Dados</h2>
+            <p>O NeuroForge <strong>nao vende, aluga ou comercializa</strong> seus dados pessoais. Compartilhamos dados apenas com os seguintes parceiros, estritamente para viabilizar o funcionamento do servico:</p>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Parceiro</th>
+                        <th>Dados compartilhados</th>
+                        <th>Finalidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Google</strong> (OAuth 2.0)</td>
+                        <td>Fluxo de autenticacao (token de acesso)</td>
+                        <td>Login e verificacao de identidade</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Stripe</strong></td>
+                        <td>E-mail do usuario (para criar o customer)</td>
+                        <td>Processamento de pagamentos e assinaturas</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p><strong>Importante sobre pagamentos:</strong> o NeuroForge <strong>nao armazena</strong> dados de cartao de credito.
+                Todos os dados financeiros sao tratados diretamente pelo Stripe, que possui certificacao PCI DSS Level 1.</p>
+        </section>
+
+        <!-- 6. Armazenamento e seguranca -->
+        <section class="section">
+            <h2>6. Armazenamento e Seguranca</h2>
+            <p>Adotamos medidas tecnicas e organizacionais para proteger seus dados pessoais:</p>
+            <ul>
+                <li><strong>Banco de dados:</strong> PostgreSQL com sessoes gerenciadas por <code>connect-pg-simple</code></li>
+                <li><strong>Transporte:</strong> Todas as comunicacoes sao protegidas por <strong>HTTPS/TLS</strong></li>
+                <li><strong>Cabecalhos de seguranca:</strong> Implementados via <code>helmet.js</code> (Content-Security-Policy, X-Frame-Options, HSTS, entre outros)</li>
+                <li><strong>Senhas:</strong> Quando aplicavel, hash com <code>bcryptjs</code> (nunca armazenadas em texto plano)</li>
+                <li><strong>Sessoes:</strong> Cookies HTTP-only com atributo <code>secure</code> em producao</li>
+                <li><strong>Infraestrutura:</strong> VPS dedicada na Hostinger com acesso restrito</li>
+            </ul>
+        </section>
+
+        <!-- 7. Retencao -->
+        <section class="section">
+            <h2>7. Retencao de Dados</h2>
+            <ul>
+                <li><strong>Enquanto a conta estiver ativa:</strong> Todos os dados sao mantidos para funcionamento do servico.</li>
+                <li><strong>Apos solicitacao de exclusao:</strong> Os dados pessoais serao eliminados em ate <strong>30 dias corridos</strong>, exceto quando houver obrigacao legal de retencao.</li>
+                <li><strong>Dados anonimizados:</strong> Dados estatisticos agregados e anonimizados podem ser mantidos por tempo indeterminado para fins de pesquisa e melhoria do servico, conforme Art. 12 da LGPD.</li>
+            </ul>
+        </section>
+
+        <!-- 8. Direitos do titular -->
+        <section class="section">
+            <h2>8. Direitos do Titular (Art. 18, LGPD)</h2>
+            <p>Voce, como titular dos dados, tem os seguintes direitos:</p>
+            <div class="rights-grid">
+                <div class="right-card">
+                    <strong>Confirmacao</strong>
+                    <span>Confirmar a existencia de tratamento dos seus dados</span>
+                </div>
+                <div class="right-card">
+                    <strong>Acesso</strong>
+                    <span>Acessar todos os dados pessoais que tratamos sobre voce</span>
+                </div>
+                <div class="right-card">
+                    <strong>Correcao</strong>
+                    <span>Solicitar a correcao de dados incompletos, inexatos ou desatualizados</span>
+                </div>
+                <div class="right-card">
+                    <strong>Anonimizacao</strong>
+                    <span>Solicitar anonimizacao, bloqueio ou eliminacao de dados desnecessarios</span>
+                </div>
+                <div class="right-card">
+                    <strong>Portabilidade</strong>
+                    <span>Solicitar a portabilidade dos seus dados a outro fornecedor</span>
+                </div>
+                <div class="right-card">
+                    <strong>Eliminacao</strong>
+                    <span>Solicitar a eliminacao dos dados tratados com base no consentimento</span>
+                </div>
+                <div class="right-card">
+                    <strong>Informacao</strong>
+                    <span>Saber com quais entidades seus dados foram compartilhados</span>
+                </div>
+                <div class="right-card">
+                    <strong>Revogacao</strong>
+                    <span>Revogar o consentimento a qualquer momento</span>
+                </div>
+            </div>
+            <p style="margin-top: 1rem;">Para exercer qualquer direito, entre em contato pelo e-mail
+                <a href="mailto:jacksontorax@gmail.com" style="color: #00f0ff;">jacksontorax@gmail.com</a>.
+                Responderemos em ate <strong>15 dias uteis</strong>.
+            </p>
+        </section>
+
+        <!-- 9. Cookies -->
+        <section class="section">
+            <h2>9. Cookies e Tecnologias de Armazenamento</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Tecnologia</th>
+                        <th>Tipo</th>
+                        <th>Finalidade</th>
+                        <th>Duracao</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cookie de sessao (<code>connect.sid</code>)</td>
+                        <td>Essencial</td>
+                        <td>Manter autenticacao e sessao do usuario</td>
+                        <td>Ate o logout ou expiracao da sessao</td>
+                    </tr>
+                    <tr>
+                        <td>localStorage &mdash; consentimento</td>
+                        <td>Essencial</td>
+                        <td>Registrar sua escolha sobre cookies</td>
+                        <td>Persistente</td>
+                    </tr>
+                    <tr>
+                        <td>localStorage &mdash; preferencias de UI</td>
+                        <td>Funcional</td>
+                        <td>Salvar preferencias de interface (tema, layout)</td>
+                        <td>Persistente</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>O NeuroForge <strong>nao utiliza</strong> cookies de rastreamento, cookies de terceiros para publicidade, nem pixels de rastreamento.</p>
+        </section>
+
+        <!-- 10. Transferencia internacional -->
+        <section class="section">
+            <h2>10. Transferencia Internacional de Dados</h2>
+            <p>Ao utilizar o NeuroForge, alguns dados podem ser processados por empresas sediadas nos Estados Unidos:</p>
+            <ul>
+                <li><strong>Google LLC</strong> &mdash; Autenticacao via OAuth 2.0. O Google adere ao EU-US Data Privacy Framework e mantem clausulas contratuais padrao para transferencias internacionais.</li>
+                <li><strong>Stripe, Inc.</strong> &mdash; Processamento de pagamentos. O Stripe cumpre as normas PCI DSS Level 1 e adota clausulas contratuais padrao conforme legislacao aplicavel.</li>
+            </ul>
+            <p>Essas transferencias sao realizadas com base no <strong>Art. 33, II, alinha "a"</strong> da LGPD, que permite transferencias quando o pais ou organismo internacional proporcionar grau adequado de protecao, ou quando o controlador oferecer garantias suficientes por meio de clausulas contratuais especificas.</p>
+        </section>
+
+        <!-- 11. Alteracoes -->
+        <section class="section">
+            <h2>11. Alteracoes nesta Politica</h2>
+            <p>Esta Politica de Privacidade pode ser atualizada periodicamente para refletir mudancas nas nossas praticas ou na legislacao aplicavel.</p>
+            <ul>
+                <li>Alteracoes significativas serao comunicadas por e-mail ou notificacao dentro da plataforma.</li>
+                <li>A data de vigencia no topo desta pagina sera atualizada a cada revisao.</li>
+                <li>O uso continuado do NeuroForge apos a publicacao de alteracoes constitui aceitacao da politica revisada.</li>
+            </ul>
+        </section>
+
+        <!-- 12. Contato -->
+        <section class="section">
+            <h2>12. Contato do Controlador</h2>
+            <p>Para duvidas, solicitacoes ou exercicio de direitos relacionados a esta politica:</p>
+            <div class="contact-box">
+                <p><strong>Jackson Erasmo Fuck</strong> &mdash; Controlador de Dados</p>
+                <p>E-mail: <a href="mailto:jacksontorax@gmail.com">jacksontorax@gmail.com</a></p>
+                <p>Localizacao: Umuarama &mdash; PR, Brasil</p>
+            </div>
+        </section>
+
+        <!-- 13. ANPD -->
+        <section class="section">
+            <h2>13. Autoridade Nacional de Protecao de Dados (ANPD)</h2>
+            <p>Caso entenda que o tratamento dos seus dados pessoais viola a legislacao de protecao de dados, voce tem o direito de apresentar reclamacao a Autoridade Nacional de Protecao de Dados (ANPD):</p>
+            <div class="contact-box">
+                <p><strong>ANPD &mdash; Autoridade Nacional de Protecao de Dados</strong></p>
+                <p>Site: <a href="https://www.gov.br/anpd" target="_blank" rel="noopener noreferrer">www.gov.br/anpd</a></p>
+                <p>Canal de atendimento: <a href="https://www.gov.br/anpd/pt-br/canais_atendimento" target="_blank" rel="noopener noreferrer">gov.br/anpd/canais_atendimento</a></p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="policy-footer">
+            <p>NeuroForge &mdash; Engenharia Neural para Alta Performance Cognitiva</p>
+            <p style="margin-top: 0.3rem;">&copy; 2024&ndash;2026 Jackson Erasmo Fuck. Todos os direitos reservados.</p>
+        </footer>
+
+    </div>
+</body>
+
+</html>

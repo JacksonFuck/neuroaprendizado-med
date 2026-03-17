@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         const res = await fetch('/auth/me');
         if (!res.ok) {
-            window.location.href = '/login.html';
+            window.location.href = '/login';
             return;
         }
         currentUser = await res.json();
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Load plan info for feature gating
         if (typeof loadUserPlan === 'function') loadUserPlan();
     } catch {
-        window.location.href = '/login.html';
+        window.location.href = '/login';
         return;
     }
     document.getElementById('loadingScreen').classList.add('hidden');
@@ -137,6 +137,7 @@ function switchTab(tabName) {
     if (tabName === 'planner' && typeof loadPlannerData === 'function') loadPlannerData();
     if (tabName === 'flashcards' && typeof loadFlashcardData === 'function') loadFlashcardData();
     if (tabName === 'messages') { if (typeof loadMessages === 'function') loadMessages(); if (typeof loadGoals === 'function') loadGoals(); }
+    if (tabName === 'neurobica' && typeof Neurobica !== 'undefined') Neurobica.init();
 }
 
 function toggleSidebar() {
@@ -149,7 +150,7 @@ function toggleExpand(el) {
 
 async function logout() {
     await fetch('/auth/logout', { method: 'POST' });
-    window.location.href = '/login.html';
+    window.location.href = '/login';
 }
 
 // ─── DASHBOARD ───
@@ -225,6 +226,7 @@ let isRunning = false;
 let isFocusMode = true;
 let focusAccumulator = 0;  // segundos de foco contínuo desde a última pausa
 let warned90min = false;   // evitar múltiplos avisos na mesma sessão
+let _focusElapsed = 0;     // segundos reais de foco na sessão atual
 
 // ─── ALARME ───
 function _playAlarmLoop() {
@@ -252,9 +254,16 @@ function stopAlarm() {
 // ─── SNOOZE: para o alarme e adiciona 10min ao timer atual ───
 function snoozeTimer() {
     stopAlarm();
-    timeLeft += 10 * 60;
+    // FIX: reverte o toggle de modo que aconteceu quando o timer zerou,
+    // para que o snooze estenda o modo original (foco continua sendo foco)
+    if (timeLeft === (isFocusMode ? focusMinutes * 60 : breakMinutes * 60)) {
+        isFocusMode = !isFocusMode; // desfaz o toggle
+        timeLeft = 10 * 60; // 10 minutos extras no modo original
+        document.getElementById('timerModeDisplay').textContent = isFocusMode ? 'FOCO' : 'PAUSA';
+    } else {
+        timeLeft += 10 * 60;
+    }
     updateTimerDisplay();
-    // Reinicia o timer se não estiver rodando
     if (!isRunning) startTimer();
 }
 
@@ -283,8 +292,12 @@ function close90Warning() {
 // ─── START / PAUSE / RESET ───
 function startTimer() {
     if (isRunning) return;
-    const newFocus = parseInt(document.getElementById('focusInput').value) || DEFAULT_FOCUS;
-    const newBreak = parseInt(document.getElementById('breakInput').value) || DEFAULT_BREAK;
+
+    // Validação com clamp nos inputs
+    let newFocus = parseInt(document.getElementById('focusInput').value) || DEFAULT_FOCUS;
+    let newBreak = parseInt(document.getElementById('breakInput').value) || DEFAULT_BREAK;
+    newFocus = Math.max(5, Math.min(90, newFocus));
+    newBreak = Math.max(1, Math.min(30, newBreak));
 
     // Se ainda não iniciou, sincroniza com os inputs
     if (!timerInterval && timeLeft === focusMinutes * 60) {
@@ -293,6 +306,9 @@ function startTimer() {
 
     focusMinutes = newFocus;
     breakMinutes = newBreak;
+
+    // FIX: sempre limpar interval anterior antes de criar novo (previne race condition)
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
 
     isRunning = true;
     document.getElementById('startBtn').textContent = '▶ Rodando...';
@@ -303,6 +319,7 @@ function startTimer() {
         // Acumula tempo de foco contínuo e verifica limite de 90min
         if (isFocusMode) {
             focusAccumulator++;
+            _focusElapsed++;
             if (!warned90min && focusAccumulator >= MAX_FOCUS_MINUTES * 60) {
                 _show90MinWarning();
             }
@@ -315,12 +332,16 @@ function startTimer() {
             _playAlarmLoop();
 
             if (isFocusMode) {
-                logPomodoroSession(focusMinutes);
+                // FIX: loga tempo real de foco, não o configurado
+                const realMinutes = Math.max(1, Math.round(_focusElapsed / 60));
+                logPomodoroSession(realMinutes);
+                _focusElapsed = 0;
                 notify('Sessão concluída! 🎉', 'Hora do intervalo. Clique Silenciar para parar o alarme.');
-                focusAccumulator = 0; // zera ao entrar em pausa
+                focusAccumulator = 0;
             } else {
                 notify('Pausa encerrada! 🧠', 'Hora de focar. Clique Silenciar para parar o alarme.');
-                warned90min = false; // nova sessão de foco começa zerada
+                warned90min = false;
+                _focusElapsed = 0;
             }
             isFocusMode = !isFocusMode;
             timeLeft = isFocusMode ? focusMinutes * 60 : breakMinutes * 60;
@@ -362,7 +383,7 @@ function updateTimerDisplay() {
     const s = timeLeft % 60;
     document.getElementById('timerDisplay').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     const totalSec = isFocusMode ? focusMinutes * 60 : breakMinutes * 60;
-    const pct = timeLeft / totalSec;
+    const pct = Math.max(0, Math.min(1, timeLeft / totalSec));
     const circ = 565.5;
     const circle = document.getElementById('timerCircle');
     if (circle) circle.style.strokeDashoffset = circ * (1 - pct);
@@ -370,12 +391,17 @@ function updateTimerDisplay() {
 
 async function logPomodoroSession(mins) {
     try {
-        await fetch('/api/pomodoro', {
+        const res = await fetch('/api/pomodoro', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ focus_minutes: mins })
         });
-        loadStats();
-        loadPomodoroLog();
+        if (res.ok) {
+            loadStats();
+            loadPomodoroLog();
+            if (typeof showToast === 'function') showToast(`+${mins}min de foco registrado!`, 'success');
+        } else {
+            console.error('Pomodoro log failed:', res.status);
+        }
     } catch (e) { console.error('Pomodoro log error:', e); }
 }
 

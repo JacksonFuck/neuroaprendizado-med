@@ -297,8 +297,15 @@ async function renderReviewAccuracyChart() {
   const data = await fetchJSON('/api/charts/review-accuracy');
   if (!data) return;
 
-  const total = data.again + data.hard + data.good + data.easy;
-  if (total === 0) return;
+  const total = (data.again || 0) + (data.hard || 0) + (data.good || 0) + (data.easy || 0);
+  if (!total || isNaN(total)) {
+    const canvas = document.getElementById('chartReviewAccuracy');
+    if (canvas) {
+      const parent = canvas.parentElement;
+      if (parent) parent.style.display = 'none';
+    }
+    return;
+  }
 
   destroyChart('reviewAccuracy');
   const ctx = getCtx('chartReviewAccuracy');

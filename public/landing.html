@@ -78,7 +78,7 @@
             align-items: center;
             gap: 10px;
         }
-        .header-logo img { width: 32px; height: 32px; }
+        .header-logo img { width: 40px; height: 40px; }
         .header-logo span {
             font-family: var(--font-display);
             font-weight: 700;
@@ -202,8 +202,8 @@
             max-width: 800px;
         }
         .hero-logo {
-            width: 80px;
-            height: 80px;
+            width: 120px;
+            height: 120px;
             margin: 0 auto 24px;
             border-radius: 20px;
             background: linear-gradient(135deg, rgba(0, 240, 255, 0.12), rgba(224, 64, 251, 0.12));
@@ -214,12 +214,12 @@
             animation: logoPulse 4s ease-in-out infinite;
         }
         @keyframes logoPulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(0, 240, 255, 0.1); }
-            50% { box-shadow: 0 0 60px rgba(0, 240, 255, 0.25), 0 0 100px rgba(224, 64, 251, 0.1); }
+            0%, 100% { box-shadow: 0 0 30px rgba(0, 240, 255, 0.2), 0 0 60px rgba(224, 64, 251, 0.05); }
+            50% { box-shadow: 0 0 50px rgba(0, 240, 255, 0.4), 0 0 100px rgba(224, 64, 251, 0.2), 0 0 150px rgba(0, 240, 255, 0.1); }
         }
         .hero-logo img {
-            width: 48px;
-            height: 48px;
+            width: 72px;
+            height: 72px;
             filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.4));
         }
         .hero-title {
@@ -1196,7 +1196,7 @@
      ============================================ -->
 <!-- Urgency Banner -->
 <div class="urgency-banner" id="urgencyBanner">
-    <span>🧠 <strong>7 dias grátis</strong> para testar o NeuroForge Pro — Flashcards ilimitados, 9 ferramentas neurais, gráficos</span>
+    <span>🧠 <strong>7 dias grátis</strong> para testar o NeuroForge Pro — Flashcards ilimitados, 10 ferramentas neurais, gráficos</span>
     <a href="#comecar" class="urgency-cta" onclick="scrollToSignup(true);return false;">Assine Agora →</a>
 </div>
 
@@ -1212,7 +1212,7 @@
         <a href="#demo">Demo</a>
         <a href="#ciencia">Ciência</a>
         <a href="#precos">Preços</a>
-        <a href="/login.html" class="header-cta" style="margin-right:8px">Entrar</a>
+        <a href="/login" class="header-cta" style="margin-right:8px">Entrar</a>
         <a href="#comecar" class="header-cta-pro" onclick="scrollToSignup(true);return false;">Assine Pro ⚡</a>
     </nav>
     <button class="mobile-menu-btn" onclick="document.getElementById('headerNav').classList.toggle('open')" aria-label="Menu">&#9776;</button>
@@ -1231,25 +1231,25 @@
         <p class="hero-slogan">Forje sinapses. Domine o conhecimento.</p>
         <p class="hero-subtitle">A primeira plataforma de estudos construída sobre engenharia de dopamina, não gamificação barata.</p>
         <div class="hero-ctas">
-            <a href="/login.html" class="btn-primary">Começar Agora &mdash; Grátis</a>
+            <a href="/login" class="btn-primary">Começar Agora &mdash; Grátis</a>
             <a href="#demo" class="btn-ghost">Ver Demonstração &darr;</a>
         </div>
     </div>
     <div class="stats-bar">
         <div class="stat-item">
-            <div class="stat-value" data-count="92" data-suffix="%">0%</div>
+            <div class="stat-value" data-count="92" data-suffix="%">0</div>
             <div class="stat-label">Retenção</div>
         </div>
         <div class="stat-item">
-            <div class="stat-value" data-count="25" data-prefix="-" data-suffix="%">0%</div>
+            <div class="stat-value" data-count="25" data-prefix="-" data-suffix="%">0</div>
             <div class="stat-label">Tempo de Estudo</div>
         </div>
         <div class="stat-item">
-            <div class="stat-value" data-count="9">0</div>
+            <div class="stat-value" data-count="10">0</div>
             <div class="stat-label">Ferramentas Neurais</div>
         </div>
         <div class="stat-item">
-            <div class="stat-value" data-count="23" data-suffix="+">0</div>
+            <div class="stat-value" data-count="42" data-suffix="+">0</div>
             <div class="stat-label">Estudos Científicos</div>
         </div>
     </div>
@@ -1357,7 +1357,7 @@
     <div class="section-inner">
         <div class="section-tag reveal">ARSENAL</div>
         <h2 class="section-title reveal">Ferramentas de elite</h2>
-        <p class="section-desc reveal">9 ferramentas baseadas em protocolos neurocientíficos publicados. Nenhuma gamificação barata. Nenhum badge vazio.</p>
+        <p class="section-desc reveal">10 ferramentas baseadas em protocolos neurocientíficos publicados. Nenhuma gamificação barata. Nenhum badge vazio.</p>
         <div class="section-divider reveal"></div>
         <div class="features-grid">
             <div class="feature-card reveal">
@@ -1405,6 +1405,11 @@
                 <div class="feature-name">Dashboard Analytics</div>
                 <p class="feature-desc">5 gráficos + heatmap de estudo + exportação CSV. Dados reais sobre seu cérebro, não likes.</p>
             </div>
+            <div class="feature-card reveal reveal-delay-3">
+                <div class="feature-icon">&#129513;</div>
+                <div class="feature-name">Neuróbica</div>
+                <p class="feature-desc">108 desafios de ginástica cerebral com base neurocientífica. Um desafio novo por dia que ativa circuitos neurais pouco utilizados — BDNF, neuroplasticidade e reserva cognitiva.</p>
+            </div>
         </div>
     </div>
 </section>
@@ -1424,8 +1429,9 @@
                 <h3>Mini Teste Stroop</h3>
                 <p class="demo-subtitle">Clique na COR em que a palavra está escrita, não na palavra em si.</p>
                 <div class="demo-area" id="stroopArea">
-                    <button class="stroop-start-btn" onclick="startStroopDemo()">Iniciar Teste (15 segundos)</button>
+                    <button class="stroop-start-btn" onclick="startStroopDemo()">Iniciar Teste (5 rodadas)</button>
                 </div>
+                <div id="stroopFeedback" class="stroop-result" style="min-height:24px;text-align:center;font-weight:600;font-size:14px;margin-top:4px"></div>
             </div>
             <!-- Flashcard Demo -->
             <div class="demo-card reveal reveal-delay-1">
@@ -1562,15 +1568,15 @@
 
         <div class="science-stats">
             <div class="science-stat reveal">
-                <div class="big-number" data-count="92" data-suffix="%">0%</div>
+                <div class="big-number" data-count="92" data-suffix="%">0</div>
                 <div class="stat-text">Retenção a longo prazo</div>
             </div>
             <div class="science-stat reveal reveal-delay-1">
-                <div class="big-number" data-count="24" data-prefix="+" data-suffix="%">+0%</div>
+                <div class="big-number" data-count="24" data-prefix="+" data-suffix="%">0</div>
                 <div class="stat-text">Resistência à fadiga</div>
             </div>
             <div class="science-stat reveal reveal-delay-2">
-                <div class="big-number" data-count="25" data-prefix="-" data-suffix="%">-0%</div>
+                <div class="big-number" data-count="25" data-prefix="-" data-suffix="%">0</div>
                 <div class="stat-text">Revisões necessárias</div>
             </div>
         </div>
@@ -1639,7 +1645,7 @@
                 <div class="pricing-period">por mês</div>
                 <ul class="pricing-features">
                     <li>Tudo ilimitado</li>
-                    <li>9 ferramentas neurais</li>
+                    <li>10 ferramentas neurais</li>
                     <li>Dashboard completo + heatmap</li>
                     <li>Rankings + exportação CSV</li>
                     <li>Prioridade em novas features</li>
@@ -1900,17 +1906,19 @@
     }
 
     /* Stats bar counters */
+    var statsAnimated = false;
     var statObserver = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && !statsAnimated) {
+                statsAnimated = true;
                 var els = entry.target.querySelectorAll('.stat-value[data-count]');
                 els.forEach(function(el) {
+                    if (el.dataset.animated) return;
+                    el.dataset.animated = '1';
                     var count = parseInt(el.dataset.count);
                     var prefix = el.dataset.prefix || '';
                     var suffix = el.dataset.suffix || '';
-                    var hasPercent = el.textContent.includes('%');
-                    el.dataset.isSuffix = hasPercent ? '' : 'true';
-                    animateCounter(el, count, prefix, suffix + (hasPercent ? '%' : ''), 1800);
+                    animateCounter(el, count, prefix, suffix, 1800);
                 });
                 statObserver.unobserve(entry.target);
             }
@@ -1944,10 +1952,12 @@
             if (entry.isIntersecting) {
                 var bigs = entry.target.querySelectorAll('.big-number[data-count]');
                 bigs.forEach(function(el) {
+                    if (el.dataset.animated) return;
+                    el.dataset.animated = '1';
                     var count = parseInt(el.dataset.count);
-                    var text = el.textContent;
-                    var prefix = text.startsWith('+') ? '+' : (text.startsWith('-') ? '-' : '');
-                    animateCounter(el, count, prefix, '%', 2000);
+                    var prefix = el.dataset.prefix || '';
+                    var suffix = el.dataset.suffix || '';
+                    animateCounter(el, count, prefix, suffix, 2000);
                 });
                 scienceObs.unobserve(entry.target);
             }
@@ -1969,37 +1979,16 @@ var STROOP_COLORS = [
 ];
 var stroopScore = 0;
 var stroopTotal = 0;
-var stroopTimer = null;
+var stroopMaxRounds = 5;
 var stroopActive = false;
 
-var stroopCountdown = null;
 function startStroopDemo() {
     stroopScore = 0;
     stroopTotal = 0;
     stroopActive = true;
-    var timeLeft = 15;
+    var fb = document.getElementById('stroopFeedback');
+    if (fb) { fb.textContent = ''; fb.className = 'stroop-result'; }
     showStroopRound();
-    // Live countdown
-    clearInterval(stroopCountdown);
-    stroopCountdown = setInterval(function() {
-        timeLeft--;
-        var area = document.getElementById('stroopArea');
-        var counter = area ? area.querySelector('.stroop-timer') : null;
-        if (counter) counter.textContent = timeLeft + 's | Acertos: ' + stroopScore + '/' + stroopTotal;
-        if (timeLeft <= 0) clearInterval(stroopCountdown);
-    }, 1000);
-    stroopTimer = setTimeout(function() {
-        stroopActive = false;
-        clearInterval(stroopCountdown);
-        var area = document.getElementById('stroopArea');
-        var pct = stroopTotal > 0 ? Math.round((stroopScore / stroopTotal) * 100) : 0;
-        var rating = pct >= 80 ? 'Excelente! 🧠' : pct >= 60 ? 'Bom! Continue treinando.' : 'Seu cérebro precisa de treino — o NeuroForge ajuda.';
-        area.innerHTML =
-            '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cyan);margin-bottom:8px">' + stroopScore + '/' + stroopTotal + ' corretas (' + pct + '%)</div>' +
-            '<p style="font-size:15px;color:var(--gold);margin-bottom:8px;font-weight:600">' + rating + '</p>' +
-            '<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Treinar Stroop 3x por semana aumenta a resistência à fadiga mental em até 18% (André et al., 2019).</p>' +
-            '<button class="stroop-start-btn" onclick="startStroopDemo()">Tentar Novamente (15s)</button>';
-    }, 15000);
 }
 
 function showStroopRound() {
@@ -2014,7 +2003,7 @@ function showStroopRound() {
 
     var options = new Set();
     options.add(colorIdx);
-    while (options.size < 5) {
+    while (options.size < 4) {
         options.add(Math.floor(Math.random() * STROOP_COLORS.length));
     }
     var shuffled = Array.from(options).sort(function() { return Math.random() - 0.5; });
@@ -2024,8 +2013,22 @@ function showStroopRound() {
     shuffled.forEach(function(i) {
         html += '<button class="stroop-option" style="background:' + STROOP_COLORS[i].hex + '" onclick="answerStroopDemo(' + i + ',' + correctAnswer + ')">' + STROOP_COLORS[i].name + '</button>';
     });
-    html += '</div><div class="stroop-timer" style="margin-top:12px;font-family:var(--font-mono);font-size:13px;color:var(--text-dim)">15s | Acertos: 0/0</div>';
+    html += '</div><div class="stroop-timer" style="margin-top:12px;font-family:var(--font-mono);font-size:13px;color:var(--text-dim)">Rodada ' + (stroopTotal + 1) + ' de ' + stroopMaxRounds + ' | Acertos: ' + stroopScore + '</div>';
     area.innerHTML = html;
+}
+
+function showStroopResult() {
+    stroopActive = false;
+    var area = document.getElementById('stroopArea');
+    var fb = document.getElementById('stroopFeedback');
+    if (fb) { fb.textContent = ''; fb.className = 'stroop-result'; }
+    var pct = Math.round((stroopScore / stroopMaxRounds) * 100);
+    var rating = pct >= 80 ? 'Excelente! Seu controle inibitório está afiado. 🧠' : pct >= 60 ? 'Bom! Continue treinando para melhorar.' : 'Seu cérebro precisa de treino — o NeuroForge ajuda.';
+    area.innerHTML =
+        '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cyan);margin-bottom:8px">' + stroopScore + '/' + stroopMaxRounds + ' corretas (' + pct + '%)</div>' +
+        '<p style="font-size:15px;color:var(--gold);margin-bottom:8px;font-weight:600">' + rating + '</p>' +
+        '<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Treinar Stroop 3x por semana aumenta a resistência à fadiga mental em até 18% (André et al., 2019).</p>' +
+        '<button class="stroop-start-btn" onclick="startStroopDemo()">Tentar Novamente (5 rodadas)</button>';
 }
 
 function answerStroopDemo(chosen, correct) {
@@ -2034,15 +2037,18 @@ function answerStroopDemo(chosen, correct) {
     var fb = document.getElementById('stroopFeedback');
     if (chosen === correct) {
         stroopScore++;
-        fb.className = 'stroop-result correct';
-        fb.textContent = 'Correto!';
+        if (fb) { fb.className = 'stroop-result correct'; fb.textContent = 'Correto! ✓'; fb.style.color = 'var(--green)'; }
     } else {
-        fb.className = 'stroop-result wrong';
-        fb.textContent = 'Errado!';
+        if (fb) { fb.className = 'stroop-result wrong'; fb.textContent = 'Errado! ✗'; fb.style.color = '#ff3366'; }
     }
-    setTimeout(function() {
-        if (stroopActive) showStroopRound();
-    }, 400);
+    if (stroopTotal >= stroopMaxRounds) {
+        setTimeout(showStroopResult, 600);
+    } else {
+        setTimeout(function() {
+            if (fb) fb.textContent = '';
+            if (stroopActive) showStroopRound();
+        }, 500);
+    }
 }
 
 /* -----------------------------------------------
@@ -2161,7 +2167,7 @@ async function handleLandingSignup(e) {
             }
             msg.style.color = '#00e676';
             msg.textContent = '✅ Conta criada com sucesso! Redirecionando...';
-            setTimeout(function() { window.location.href = data.redirect || '/login.html'; }, 1500);
+            setTimeout(function() { window.location.href = data.redirect || '/login'; }, 1500);
         } else {
             msg.style.color = '#ff3366';
             msg.textContent = data.error || 'Erro ao criar conta.';

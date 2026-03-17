@@ -1,3 +1,9 @@
+/**
+ * NeuroForge — Forje sinapses. Domine o conhecimento.
+ * Copyright (c) 2026 Jackson Erasmo Fuck. All rights reserved.
+ * INPI Registration: 512026001683-5
+ * Licensed under proprietary license. See LICENSE file.
+ */
 const pool = require('./db');
 
 const schema = `
@@ -256,6 +262,11 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS plan_expires_at TIMESTAMP;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_customer_id VARCHAR(255);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_subscription_id VARCHAR(255);
 
+-- Phone & personalized coaching consent (LGPD Art. 8 — granular consent)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_consent BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_consent_at TIMESTAMP;
+
 CREATE TABLE IF NOT EXISTS user_messages (
   id SERIAL PRIMARY KEY,
   user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -304,6 +315,32 @@ CREATE INDEX IF NOT EXISTS idx_assessments_type ON assessments(user_id, assessme
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS next_assessment_due DATE;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS assessments_completed INT DEFAULT 0;
+
+-- Phase 7: Neurobica (Brain Gymnastics)
+CREATE TABLE IF NOT EXISTS neurobica_progress (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  card_id INT NOT NULL,
+  completed_at TIMESTAMP DEFAULT NOW(),
+  rating INT DEFAULT 3 CHECK (rating BETWEEN 1 AND 5),
+  notes TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_neurobica_user ON neurobica_progress(user_id);
+CREATE INDEX IF NOT EXISTS idx_neurobica_card ON neurobica_progress(user_id, card_id);
+
+CREATE TABLE IF NOT EXISTS neurobica_daily (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  card_id INT NOT NULL,
+  assigned_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  completed BOOLEAN DEFAULT FALSE,
+  completed_at TIMESTAMP,
+  UNIQUE(user_id, assigned_date)
+);
+CREATE INDEX IF NOT EXISTS idx_neurobica_daily_user ON neurobica_daily(user_id, assigned_date);
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS neurobica_streak INT DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS neurobica_total INT DEFAULT 0;
 `;
 
 async function initDB() {

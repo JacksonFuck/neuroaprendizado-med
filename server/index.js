@@ -1,3 +1,9 @@
+/**
+ * NeuroForge — Forje sinapses. Domine o conhecimento.
+ * Copyright (c) 2026 Jackson Erasmo Fuck. All rights reserved.
+ * INPI Registration: 512026001683-5
+ * Licensed under proprietary license. See LICENSE file.
+ */
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
@@ -139,8 +145,8 @@ passport.deserializeUser(async (id, done) => {
 const { attachPlan } = require('./middleware/plan-gate');
 app.use(attachPlan);
 
-// Static files
-app.use(express.static(path.join(__dirname, '..', 'public')));
+// Static files (index: false prevents auto-serving index.html on /, so our route handles it)
+app.use(express.static(path.join(__dirname, '..', 'public'), { index: false }));
 
 // API routes
 app.use('/auth', require('./routes/auth'));
@@ -156,6 +162,7 @@ app.use('/api/gamification', require('./routes/gamification'));
 app.use('/api/charts', require('./routes/charts'));
 app.use('/api/export', require('./routes/export'));
 app.use('/api/flashcards', require('./routes/flashcards'));
+app.use('/api/unified-review', require('./routes/unified-review'));
 app.use('/api/survey', require('./routes/survey'));
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/register-free', require('./routes/register-free'));
@@ -163,8 +170,30 @@ app.use('/api/plan', require('./routes/plan'));
 app.use('/api/stripe', require('./routes/stripe'));
 app.use('/api/assessment', require('./routes/assessment'));
 app.use('/api/articles', require('./routes/articles'));
+app.use('/api/neurobica', require('./routes/neurobica'));
 
-// SPA fallback — serve index.html for non-API routes
+// Landing page — root serves landing for visitors, redirects logged users to /app
+app.get('/', (req, res) => {
+    if (req.isAuthenticated && req.isAuthenticated()) {
+        return res.redirect('/app');
+    }
+    res.sendFile(path.join(__dirname, '..', 'public', 'landing.html'));
+});
+
+// Login page — dedicated route
+app.get('/login', (req, res) => {
+    if (req.isAuthenticated && req.isAuthenticated()) {
+        return res.redirect('/app');
+    }
+    res.sendFile(path.join(__dirname, '..', 'public', 'login.html'));
+});
+
+// App dashboard — requires authentication
+app.get('/app', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+});
+
+// SPA fallback — serve index.html (dashboard) for non-API routes
 app.get('*', (req, res) => {
     if (req.path.startsWith('/api/') || req.path.startsWith('/auth/')) {
         return res.status(404).json({ error: 'Rota não encontrada' });

@@ -1,3 +1,9 @@
+/**
+ * NeuroForge — Forje sinapses. Domine o conhecimento.
+ * Copyright (c) 2026 Jackson Erasmo Fuck. All rights reserved.
+ * INPI Registration: 512026001683-5
+ * Licensed under proprietary license. See LICENSE file.
+ */
 const express = require('express');
 const pool = require('../config/db');
 const { ensureAuth } = require('../middleware/auth');
@@ -363,7 +369,13 @@ router.post('/:deckId/import', ensureAuth, async (req, res) => {
                 continue;
             }
             // Join remaining parts as "back" in case separator appears in the answer
-            cards.push({ front: parts[0].trim(), back: parts.slice(1).join(';').trim() });
+            let front = parts[0].trim();
+            let back = parts.slice(1).join(';').trim();
+            // Clean citation markers from NotebookLM and other AI tools
+            front = front.replace(/\[cite_start\]/gi, '').replace(/\[cite_end\]/gi, '').replace(/\[cite:\s*\d+\]/gi, '').replace(/\[\d+\]/g, '').trim();
+            back = back.replace(/\[cite_start\]/gi, '').replace(/\[cite_end\]/gi, '').replace(/\[cite:\s*\d+\]/gi, '').replace(/\[\d+\]/g, '').trim();
+            if (!front || !back) { errors.push(`Linha ${i + 1}: vazio apos limpeza`); continue; }
+            cards.push({ front, back });
         }
 
         if (!cards.length) {

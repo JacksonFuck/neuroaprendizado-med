@@ -1,3 +1,9 @@
+<!--
+  NeuroForge — Forje sinapses. Domine o conhecimento.
+  Copyright (c) 2026 Jackson Erasmo Fuck. All rights reserved.
+  INPI Registration: 512026001683-5
+  Licensed under proprietary license. See LICENSE file.
+-->
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -72,7 +78,7 @@
     <!-- Sidebar -->
     <nav id="sidebar" class="sidebar">
         <div class="sidebar-header">
-            <img src="/icons/favicon-32.svg" alt="NeuroForge" class="sidebar-logo-img" width="32" height="32">
+            <img src="/icons/favicon.svg" alt="NeuroForge" class="sidebar-logo-img">
             <span class="sidebar-title">NeuroForge</span>
             <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
         </div>
@@ -105,6 +111,9 @@
             </button>
             <button class="nav-item" data-tab="neurotools" onclick="switchTab('neurotools')">
                 <span class="nav-icon">🧪</span><span class="nav-label">Ferramentas de Foco</span>
+            </button>
+            <button class="nav-item" data-tab="neurobica" onclick="switchTab('neurobica')">
+                <span class="nav-icon">🧩</span><span class="nav-label">Neuróbica</span>
             </button>
             <button class="nav-item" data-tab="planner" onclick="switchTab('planner')">
                 <span class="nav-icon">📚</span><span class="nav-label">Planejador</span>
@@ -146,6 +155,9 @@
             </div>
         </div>
         <div class="sidebar-footer">
+            <button id="manageSubscriptionBtn" class="manage-subscription-btn" style="display:none">
+                <span class="nav-icon">⚡</span> Minha Assinatura
+            </button>
             <button class="logout-btn" onclick="logout()">Sair</button>
         </div>
     </nav>
@@ -681,6 +693,42 @@
                     </div>
                 </div>
             </div>
+            <!-- Revisão Unificada — Dashboard Widget -->
+            <div class="glass-card unified-review-widget" id="unifiedReviewWidget">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+                    <div>
+                        <h3>🧠 Revisão Unificada</h3>
+                        <p id="unifiedReviewCount" style="color:var(--text-dim);font-size:13px;margin-top:4px">Carregando pendências...</p>
+                    </div>
+                    <button class="btn-action" onclick="startUnifiedReview()">Iniciar Revisão</button>
+                </div>
+            </div>
+
+            <!-- Unified Review Session (fullscreen Zen Mode) -->
+            <div id="zenModeOverlay" class="zen-overlay" style="display:none">
+                <div class="zen-container">
+                    <div class="zen-header">
+                        <span id="zenProgress" class="zen-progress">1/0</span>
+                        <span id="zenCategory" class="zen-category"></span>
+                        <button class="zen-close-btn" onclick="exitZenMode()" title="Sair (Esc)">&#10005;</button>
+                    </div>
+                    <div class="zen-card" id="zenCard" onclick="flipZenCard()">
+                        <div class="zen-card-inner" id="zenCardInner">
+                            <div class="zen-front" id="zenFront"></div>
+                            <div class="zen-back" id="zenBack"></div>
+                        </div>
+                    </div>
+                    <button class="btn-action zen-show-btn" id="zenShowBtn" onclick="flipZenCard()">Mostrar Resposta</button>
+                    <div class="zen-rating" id="zenRating" style="display:none">
+                        <button class="btn-rating-lg btn-again-lg" onclick="rateZenCard(1)"><span>&#10060;</span><span class="rating-label">Não lembrei</span></button>
+                        <button class="btn-rating-lg btn-hard-lg" onclick="rateZenCard(2)"><span>&#128547;</span><span class="rating-label">Difícil</span></button>
+                        <button class="btn-rating-lg btn-good-lg" onclick="rateZenCard(3)"><span>&#9989;</span><span class="rating-label">Lembrei</span></button>
+                        <button class="btn-rating-lg btn-easy-lg" onclick="rateZenCard(4)"><span>&#128640;</span><span class="rating-label">Fácil</span></button>
+                    </div>
+                    <div id="zenSummary" style="display:none"></div>
+                </div>
+            </div>
+
             <div class="glass-card neuro-tip">
                 <h3>💡 Dica Neurobiológica</h3>
                 <p><strong>Esforço alto + sucesso = Pico de dopamina maior.</strong> O sistema colinérgico modula a
@@ -691,6 +739,19 @@
                     <a href="https://www.nature.com/articles/s41467-025-61099-0" target="_blank" class="ref-link">Westbrook et al., 2025</a>
                 </span>
             </div>
+
+            <!-- Neuróbica do Dia — Widget no Dashboard -->
+            <div class="glass-card nb-dashboard-widget" id="nbDashboardWidget" style="cursor:pointer" onclick="switchTab('neurobica')">
+                <div class="nb-dash-header">
+                    <h3>🧩 Neuróbica do Dia</h3>
+                    <span class="nb-dash-streak" id="nbDashStreak"></span>
+                </div>
+                <div id="nbDashCard" class="nb-dash-card-area">
+                    <p class="nb-dash-loading" style="color:var(--text-dim);font-size:13px">Carregando desafio...</p>
+                </div>
+                <p class="nb-dash-cta">Clique para abrir a Neuróbica →</p>
+            </div>
+
             <div class="dashboard-charts">
                 <div class="glass-card chart-card">
                     <h3>📊 Minutos Focados por Semana</h3>
@@ -1106,13 +1167,21 @@
             <!-- Review Session (hidden by default) -->
             <div id="flashcardReview" class="glass-card" style="display:none;margin-bottom:24px"></div>
 
-            <!-- Start Review Button -->
-            <div class="glass-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
-                <div>
-                    <h3>🧠 Revisão do Dia</h3>
-                    <p style="color:var(--text-dim);font-size:13px;margin-top:4px">Revise todos os cards pendentes usando o algoritmo FSRS</p>
+            <!-- Start Review Button + Deck Filter -->
+            <div class="glass-card">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+                    <div>
+                        <h3>🧠 Revisão do Dia</h3>
+                        <p style="color:var(--text-dim);font-size:13px;margin-top:4px">Revise os cards pendentes usando o algoritmo FSRS</p>
+                    </div>
+                    <button class="btn-action" onclick="startFilteredReview()">Iniciar Revisão</button>
                 </div>
-                <button class="btn-action" onclick="startReviewSession()">Iniciar Revisão</button>
+                <div id="reviewDeckFilter" style="margin-top:12px">
+                    <p style="color:var(--text-dim);font-size:12px;margin-bottom:8px">Selecione quais baralhos incluir na revisão:</p>
+                    <div id="reviewDeckCheckboxes" style="display:flex;flex-wrap:wrap;gap:8px">
+                        <label style="color:var(--text-dim);font-size:13px"><input type="checkbox" checked class="review-deck-all" onchange="toggleAllReviewDecks(this)"> Todos</label>
+                    </div>
+                </div>
             </div>
 
             <!-- Deck Creation -->
@@ -1161,6 +1230,149 @@
                     <textarea id="importText" rows="8" class="input textarea import-textarea" placeholder="Cole seus cards aqui (um por linha):&#10;&#10;Separadores aceitos: ; (ponto-e-vírgula), TAB, | (pipe)&#10;&#10;Exemplo:&#10;Qual a função do hipocampo?;Codificação e consolidação de memórias&#10;O que é LTP?;Potenciação de longo prazo&#10;O que é BDNF?;Fator neurotrófico derivado do cérebro"></textarea>
                     <button class="btn-action" onclick="importCards()">Importar Cards</button>
                 </div>
+            </div>
+
+            <!-- Tutorial: Gerar Flashcards com NotebookLM -->
+            <div class="glass-card fc-tutorial" style="margin-top:24px">
+                <details class="nb-edu-details" id="fcTutorialDetails">
+                    <summary class="nb-edu-summary">📖 Tutorial: Crie centenas de flashcards em minutos com IA</summary>
+                    <div class="nb-edu-content" style="margin-top:16px">
+
+                        <!-- Vantagem NeuroForge -->
+                        <div class="fc-advantage-banner">
+                            <div class="fc-advantage-icon">⚡</div>
+                            <div>
+                                <strong>Por que usar os flashcards dentro do NeuroForge?</strong>
+                                <p>Diferente de apps genéricos, aqui seus flashcards funcionam com o <strong>algoritmo FSRS</strong> — o mesmo usado em pesquisas de neurociência cognitiva. Cada card tem seu próprio modelo de memória que se adapta ao <em>seu</em> padrão de esquecimento. Além disso, cada revisão gera <strong>XP</strong>, alimenta seus <strong>gráficos de retenção</strong> e contribui para <strong>conquistas</strong>. Tudo integrado numa única plataforma de neuroaprendizado.</p>
+                            </div>
+                        </div>
+
+                        <!-- Método 1: NotebookLM -->
+                        <div class="nb-edu-block">
+                            <h4>🧪 Método 1 — Google NotebookLM (Recomendado)</h4>
+                            <p style="color:var(--text-dim);font-size:14px;margin-bottom:12px">O <strong>NotebookLM</strong> é uma ferramenta gratuita do Google que analisa seus materiais e gera flashcards automaticamente. É o método mais rápido para criar dezenas de cards de alta qualidade.</p>
+
+                            <div class="fc-tutorial-steps">
+                                <div class="fc-step">
+                                    <div class="fc-step-number">1</div>
+                                    <div class="fc-step-content">
+                                        <h5>Alimente o NotebookLM com seu material</h5>
+                                        <p>Acesse <a href="https://notebooklm.google.com" target="_blank" rel="noopener" style="color:var(--synapse-cyan)">notebooklm.google.com</a> e crie um novo notebook. Faça upload de todos os seus materiais: <strong>PDFs de aula, artigos, slides, anotações</strong> — quanto mais fontes, melhor a qualidade dos cards. O NotebookLM aceita até 50 fontes por notebook.</p>
+                                    </div>
+                                </div>
+
+                                <div class="fc-step">
+                                    <div class="fc-step-number">2</div>
+                                    <div class="fc-step-content">
+                                        <h5>Gere os flashcards no Estúdio</h5>
+                                        <p>No painel direito, clique em <strong>"Estúdio"</strong> e depois no botão <strong>"Cartões..."</strong> (com o ícone de cartões didáticos). O NotebookLM vai analisar todas as suas fontes e gerar automaticamente dezenas de flashcards com perguntas e respostas baseadas no conteúdo.</p>
+                                    </div>
+                                </div>
+
+                                <div class="fc-step">
+                                    <div class="fc-step-number">3</div>
+                                    <div class="fc-step-content">
+                                        <h5>Visualize e baixe o conjunto</h5>
+                                        <p>Os flashcards serão exibidos em formato de cartão interativo. Clique no <strong>menu ⋮</strong> (três pontos) no canto superior direito do card e selecione <strong>"Baixar conjunto"</strong>. O arquivo será salvo como CSV na sua pasta de downloads.</p>
+                                    </div>
+                                </div>
+
+                                <div class="fc-step">
+                                    <div class="fc-step-number">4</div>
+                                    <div class="fc-step-content">
+                                        <h5>Abra o arquivo CSV</h5>
+                                        <p>Localize o arquivo <code style="color:var(--synapse-cyan)">flashcards.csv</code> na pasta de downloads. <strong>Clique com o botão direito</strong> → <strong>"Abrir com"</strong> → <strong>"Bloco de notas"</strong> (ou qualquer editor de texto). Você verá o conteúdo no formato <code style="color:var(--synapse-cyan)">pergunta,resposta</code> — uma linha por card.</p>
+                                    </div>
+                                </div>
+
+                                <div class="fc-step">
+                                    <div class="fc-step-number">5</div>
+                                    <div class="fc-step-content">
+                                        <h5>Selecione e copie todo o conteúdo</h5>
+                                        <p>No editor de texto, pressione <strong>Ctrl+A</strong> (selecionar tudo) e depois <strong>Ctrl+C</strong> (copiar). Todo o conteúdo dos flashcards estará na área de transferência.</p>
+                                    </div>
+                                </div>
+
+                                <div class="fc-step">
+                                    <div class="fc-step-number">6</div>
+                                    <div class="fc-step-content">
+                                        <h5>Crie um baralho no NeuroForge</h5>
+                                        <p>Na seção <strong>"➕ Novo Baralho"</strong> acima, digite o nome do baralho (ex: <em>Neurociência</em>), a categoria (ex: <em>Neuroaprendizado</em>) e escolha uma cor. Clique em <strong>"Criar Baralho"</strong>.</p>
+                                    </div>
+                                </div>
+
+                                <div class="fc-step">
+                                    <div class="fc-step-number">7</div>
+                                    <div class="fc-step-content">
+                                        <h5>Cole e importe os cards</h5>
+                                        <p>Na seção <strong>"📥 Importar Cards (CSV)"</strong> acima, selecione o baralho que acabou de criar, clique na área de texto e pressione <strong>Ctrl+V</strong> (colar). Clique em <strong>"Importar Cards"</strong>. Pronto — seus flashcards já estão no sistema com algoritmo FSRS ativo!</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="fc-tip-box">
+                                <strong>💡 Dica:</strong> Alguns cards podem gerar avisos de "separador não encontrado" — isso é normal para linhas que contenham apenas texto sem pergunta/resposta. Os cards válidos são importados mesmo assim.
+                            </div>
+                        </div>
+
+                        <!-- Método 2: Prompt direto -->
+                        <div class="nb-edu-block">
+                            <h4>🤖 Método 2 — Prompt direto no ChatGPT, Claude ou Gemini</h4>
+                            <p style="color:var(--text-dim);font-size:13px;margin-bottom:8px">Se preferir usar um chatbot de IA diretamente, copie o prompt abaixo, cole na conversa e envie junto com seu material (PDF, imagem ou texto).</p>
+                            <div class="fc-prompt-box" id="fcPromptBox">
+                                <pre class="fc-prompt-text" id="fcPromptText"># ROLE: ARQUITETO DE FLASHCARDS TITAN (OCR &amp; CSV EXPERT)
+
+## 1. OBJETIVO
+Sua missão é converter documentos (PDF, imagens ou texto) em flashcards pedagógicos de alta qualidade, entregues em formato CSV compatível com NeuroForge/Anki/Quizlet, garantindo limpeza absoluta dos dados.
+
+## 2. FLUXO OBRIGATÓRIO (STOP-GATE)
+Ao receber o arquivo, PARE e peça ao usuário:
+1. **Quantidade total de flashcards.**
+2. **Distribuição de dificuldade:** (Ex: 10 fáceis, 5 médios, 5 difíceis).
+   - *Fácil:* Fatos isolados, definições curtas.
+   - *Médio:* Relação causa-efeito, processos.
+   - *Difícil:* Aplicação de conceitos, integração de temas.
+
+**NÃO PROCESSE O ARQUIVO SEM ESTAS DEFINIÇÕES.**
+
+## 3. REGRAS DE OURO (L1 - INVIOLÁVEIS)
+- **LIMPEZA DE CITAÇÃO:** É terminantemente PROIBIDO incluir marcadores de citação, referências de sistema ou metadados. O output deve ser texto puro.
+- **INTEGRIDADE DO CSV:** Use apenas ponto e vírgula (;) como separador.
+- **SINTAXE:** Se o conteúdo original possuir ponto e vírgula, substitua por vírgula simples no flashcard.
+- **IDIOMA:** Português-BR.
+- **FORMATOS:** Varie entre Perguntas Diretas, Omissão de Palavras (_____) e Verdadeiro/Falso.
+
+## 4. ESPECIFICAÇÕES DO OUTPUT
+A saída deve ser um **único bloco de código** contendo o CSV:
+
+pergunta 1;resposta 1
+pergunta 2;resposta 2
+pergunta 3 (Verdadeiro ou Falso?);resposta 3
+
+## 5. CAPACIDADES DE OCR &amp; FILTRAGEM
+- Ignore cabeçalhos, rodapés e números de página dos arquivos originais.
+- Foque em conceitos-chave, termos técnicos e dados relevantes.
+- Se o texto for insuficiente para a quantidade pedida, gere o máximo possível e avise.
+
+**ESTADO:** Aguardando arquivo e configuração de quantidades.</pre>
+                                <button class="btn-action fc-copy-btn" onclick="copyFCPrompt()" id="fcCopyBtn">📋 Copiar Prompt</button>
+                            </div>
+                        </div>
+
+                        <!-- Dicas finais -->
+                        <div class="nb-edu-block" style="border-bottom:none;padding-bottom:0;margin-bottom:0">
+                            <h4>💡 Dicas para maximizar seus resultados</h4>
+                            <ul style="color:var(--text-dim);font-size:13px;line-height:1.8;padding-left:20px">
+                                <li><strong>Mais fontes = melhor:</strong> No NotebookLM, adicione PDFs, slides E anotações juntas — a IA cruza informações entre fontes</li>
+                                <li><strong>Organize por matéria:</strong> Crie um baralho separado para cada disciplina (Cardiologia, Neurologia, etc.)</li>
+                                <li><strong>Revise diariamente:</strong> O algoritmo FSRS calcula o momento ideal para cada card — não pule revisões</li>
+                                <li><strong>Fotos de caderno funcionam:</strong> Tire foto das suas anotações e envie como imagem para a IA — ela faz OCR automaticamente</li>
+                                <li><strong>Quantidade ideal:</strong> 20-30 cards por matéria como ponto de partida. Adicione mais conforme avança no conteúdo</li>
+                                <li><strong>Use o filtro de baralhos:</strong> Na revisão do dia, selecione apenas os baralhos da prova que está estudando</li>
+                            </ul>
+                        </div>
+                    </div>
+                </details>
             </div>
         </section>
 
@@ -1308,34 +1520,89 @@
                 </div>
             </div>
 
-            <!-- Dual N-Back -->
+            <!-- N-Back Evolution -->
             <div class="glass-card neuro-tool-card">
                 <h3 class="tool-toggle" onclick="toggleExpand(this.parentElement)">
-                    <span>🔢 Dual N-Back — Memória de Trabalho</span>
+                    <span>🧠 N-Back Evolution — Memória de Trabalho</span>
                     <span class="toggle-arrow">▸</span>
                 </h3>
                 <div class="tool-body">
                     <p class="tool-science">Padrão-ouro científico para expandir a <strong>memória de trabalho</strong>.
-                        Identifique quando a posição OU a letra se repete N rodadas atrás.
-                        Fortalece <strong>dlPFC</strong> e anti-correlação FPN-DMN.</p>
-                    <div class="nback-instructions">
-                        <h4>Como Jogar</h4>
-                        <div class="nback-instruction-grid">
-                            <div class="nback-instr-item">
-                                <span class="nback-instr-key">A</span> ou <span class="nback-instr-key">&larr;</span>
-                                <span>Posicao igual a N rodadas atras</span>
+                        Compare o estímulo atual com o que apareceu N rodadas atrás.
+                        Fortalece <strong>dlPFC</strong> e a anti-correlação FPN-DMN (suprime mind-wandering).
+                        <a href="#" onclick="showNBackTutorial();return false" style="color:var(--synapse-cyan)">Como funciona?</a></p>
+
+                    <!-- Tutorial Overlay -->
+                    <div id="nbackTutorialOverlay" class="nback-tutorial-overlay" style="display:none"></div>
+
+                    <!-- Mode & Level Header -->
+                    <div class="nback-header-bar">
+                        <div class="nback-current-level" id="nbackCurrentLevel">
+                            <span class="nback-level-number">1</span>
+                            <span class="nback-level-label">-Back</span>
+                        </div>
+                        <div class="nback-mode-badge" id="nbackModeBadge">Single · Treino</div>
+                        <button class="nback-settings-btn" onclick="toggleNBackSettings()" title="Configurações">⚙</button>
+                    </div>
+
+                    <!-- Settings Panel (collapsed) -->
+                    <div id="nbackSettingsPanel" class="nback-settings-panel">
+                        <h4>Configurações</h4>
+                        <div class="nback-settings-grid">
+                            <div class="nback-setting">
+                                <label>Tipo</label>
+                                <select id="nbackModeSelect" class="input">
+                                    <option value="single" selected>Single (só posição)</option>
+                                    <option value="dual">Dual (posição + letra)</option>
+                                </select>
                             </div>
-                            <div class="nback-instr-item">
-                                <span class="nback-instr-key">L</span> ou <span class="nback-instr-key">&rarr;</span>
-                                <span>Letra igual a N rodadas atras</span>
+                            <div class="nback-setting">
+                                <label>Modo de Jogo</label>
+                                <select id="nbackGameModeSelect" class="input">
+                                    <option value="training" selected>Treino (com dicas)</option>
+                                    <option value="standard">Standard (sem dicas)</option>
+                                    <option value="adaptive">Adaptativo (auto-nível)</option>
+                                </select>
+                            </div>
+                            <div class="nback-setting">
+                                <label>Nível</label>
+                                <select id="nbackLevelSelect" class="input">
+                                    <option value="1" selected>1-Back</option>
+                                </select>
+                            </div>
+                            <div class="nback-setting">
+                                <label>Rodadas</label>
+                                <select id="nbackRoundsSelect" class="input">
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                    <option value="20" selected>20</option>
+                                    <option value="25">25</option>
+                                    <option value="30">30</option>
+                                </select>
+                            </div>
+                            <div class="nback-setting">
+                                <label>Tempo do estímulo</label>
+                                <select id="nbackStimulusTimeSelect" class="input">
+                                    <option value="4000">4.0s (fácil)</option>
+                                    <option value="3000" selected>3.0s (normal)</option>
+                                    <option value="2500">2.5s (rápido)</option>
+                                    <option value="2000">2.0s (difícil)</option>
+                                </select>
+                            </div>
+                            <div class="nback-setting nback-toggle-row">
+                                <label><input type="checkbox" id="nbackSoundToggle" checked> Som ativado</label>
+                                <label><input type="checkbox" id="nbackHintsToggle" checked> Mostrar dicas</label>
                             </div>
                         </div>
-                        <p class="nback-instr-tip">No modo 2-Back: compare com o que apareceu <strong>2 rodadas antes</strong>. Se a posicao OU a letra for igual, pressione a tecla correspondente. Acerte &gt;80% em 3 sessoes para subir de nivel!</p>
+                        <button class="btn-action" onclick="applyNBackSettings()" style="margin-top:8px;width:100%">Aplicar</button>
                     </div>
-                    <div class="nback-current-level" id="nbackCurrentLevel">
-                        <span class="nback-level-number">2</span>
-                        <span class="nback-level-label">-Back</span>
+
+                    <!-- Progress Bar -->
+                    <div id="nbackProgressBar" class="nback-progress-bar" style="display:none">
+                        <div class="nback-prog-fill"></div>
                     </div>
+
+                    <!-- Game Grid -->
                     <div class="nback-container">
                         <div id="nbackGrid" class="nback-game">
                             <div class="nback-cell" data-pos="0"></div>
@@ -1350,30 +1617,21 @@
                         </div>
                         <div id="nbackLetter" class="nback-letter"></div>
                     </div>
+
+                    <!-- Action Buttons -->
                     <div class="nback-buttons">
                         <button class="btn-action btn-nback" id="nbackPosBtn" onclick="nbackMatch('position')" disabled>
                             <span class="nback-shortcut">(A)</span> Posição Igual
                         </button>
-                        <button class="btn-action btn-nback" id="nbackLetBtn" onclick="nbackMatch('letter')" disabled>
+                        <button class="btn-action btn-nback" id="nbackLetBtn" onclick="nbackMatch('letter')" disabled style="display:none">
                             <span class="nback-shortcut">(L)</span> Letra Igual
                         </button>
                     </div>
+
                     <div id="nbackScore" class="tool-timer"></div>
                     <div id="nbackFeedback" class="nback-feedback"></div>
-                    <div class="nback-level-selector">
-                        <label>Nível: </label>
-                        <select id="nbackLevelSelect" class="input" style="max-width:120px">
-                            <option value="2">2-Back</option>
-                        </select>
-                        <label style="margin-left:12px">Rodadas: </label>
-                        <select id="nbackRoundsSelect" class="input" style="max-width:100px">
-                            <option value="15">15</option>
-                            <option value="20" selected>20</option>
-                            <option value="25">25</option>
-                            <option value="30">30</option>
-                        </select>
-                    </div>
-                    <button class="btn-action" id="nbackStartBtn" onclick="startNBack()">Iniciar 2-Back</button>
+
+                    <button class="btn-action" id="nbackStartBtn" onclick="startNBack()">Iniciar 1-Back Single</button>
                     <div id="nbackHistory" class="nback-history" style="margin-top:16px"></div>
                 </div>
             </div>
@@ -2077,6 +2335,182 @@
             </div>
         </section>
 
+        <!-- NEURÓBICA — Ginástica Cerebral -->
+        <section id="tab-neurobica" class="tab-panel" data-section="secNeurobica">
+            <div class="page-header">
+                <h1>🧩 Neuróbica — Ginástica Cerebral</h1>
+                <p class="page-subtitle">108 desafios originais que ativam circuitos neurais pouco utilizados — com base neurocientífica.</p>
+            </div>
+
+            <!-- Seção Educativa -->
+            <div class="glass-card nb-edu-section" style="margin-bottom:16px">
+                <details class="nb-edu-details" open>
+                    <summary class="nb-edu-summary">🔬 O que é Neuróbica? — Fundamentos e Evidências</summary>
+
+                    <div class="nb-edu-content">
+                        <div class="nb-edu-block">
+                            <h4>🧠 O que é Neuróbica?</h4>
+                            <p>Neuróbica é um método de <strong>ginástica cerebral</strong> criado pelo neurocientista <strong>Lawrence C. Katz, Ph.D.</strong> (Duke University), que consiste em exercícios cognitivos que quebram a rotina do cérebro. O princípio central é usar os <strong>cinco sentidos de formas novas e inesperadas</strong>, forçando o cérebro a criar novas conexões sinápticas ao invés de depender de circuitos automatizados.</p>
+                            <p class="nb-edu-ref">📖 Katz LC, Rubin M (1999). <em>Keep Your Brain Alive: 83 Neurobic Exercises</em>. Workman Publishing. Traduzido para 24 idiomas.</p>
+                        </div>
+
+                        <div class="nb-edu-block">
+                            <h4>⚡ Como funciona no cérebro?</h4>
+                            <p>Quando você realiza uma atividade <strong>nova ou inesperada</strong>, o <strong>Locus Coeruleus</strong> (LC) — centro de alerta do tronco encefálico — dispara e libera <strong>noradrenalina</strong> e <strong>dopamina</strong> no hipocampo. Essa cascata química potencializa a atenção, a codificação de memórias e a liberação de <strong>BDNF</strong> (Fator Neurotrófico Derivado do Cérebro), a proteína-chave da neuroplasticidade.</p>
+                            <div class="nb-edu-pathway">
+                                <span>Estímulo novo</span> → <span>Locus Coeruleus</span> → <span>Noradrenalina + Dopamina</span> → <span>Atenção amplificada</span> → <span>BDNF</span> → <span>Neuroplasticidade</span>
+                            </div>
+                            <p class="nb-edu-ref">📄 <a href="https://doi.org/10.1038/nature19325" target="_blank" rel="noopener">Takeuchi T et al. (2016). Locus coeruleus and dopaminergic consolidation of everyday memory. <em>Nature</em>, 537, 357-362.</a></p>
+                            <p class="nb-edu-ref">📄 <a href="https://doi.org/10.1017/S0140525X15000667" target="_blank" rel="noopener">Mather M et al. (2016). Norepinephrine ignites local hotspots of neuronal excitation. <em>Behavioral and Brain Sciences</em>, 39, e200.</a></p>
+                        </div>
+
+                        <div class="nb-edu-block">
+                            <h4>🎯 Benefícios comprovados</h4>
+                            <div class="nb-benefits-grid">
+                                <div class="nb-benefit">
+                                    <span class="nb-benefit-icon">🧬</span>
+                                    <div>
+                                        <strong>Neuroplasticidade mensurável</strong>
+                                        <p>Treino com mão não-dominante produz reorganização cortical visível em fMRI em semanas, com 77% de retenção após 6 meses.</p>
+                                        <p class="nb-edu-ref"><a href="https://doi.org/10.1016/j.neuroimage.2012.05.065" target="_blank" rel="noopener">Hamzei F et al. (2012). <em>NeuroImage</em>, 62(3), 1562-1570.</a></p>
+                                    </div>
+                                </div>
+                                <div class="nb-benefit">
+                                    <span class="nb-benefit-icon">🏋️</span>
+                                    <div>
+                                        <strong>Aumento do volume hipocampal</strong>
+                                        <p>Treino de memória episódica produz aumento relativo do hipocampo, com melhorias mantidas por <strong>3+ anos</strong>.</p>
+                                        <p class="nb-edu-ref"><a href="https://doi.org/10.1038/s41598-022-11636-4" target="_blank" rel="noopener">Dresler M et al. (2022). <em>Scientific Reports</em>, 12, 7877.</a></p>
+                                    </div>
+                                </div>
+                                <div class="nb-benefit">
+                                    <span class="nb-benefit-icon">🛡️</span>
+                                    <div>
+                                        <strong>46% menos risco de demência</strong>
+                                        <p>Meta-análise demonstrou que estimulação cognitiva variada constrói <strong>reserva cognitiva</strong>, reduzindo significativamente o risco de demência.</p>
+                                        <p class="nb-edu-ref"><a href="https://doi.org/10.1017/S0033291705006264" target="_blank" rel="noopener">Valenzuela MJ, Sachdev P (2006). <em>Psychological Medicine</em>, 36(4), 441-454.</a></p>
+                                    </div>
+                                </div>
+                                <div class="nb-benefit">
+                                    <span class="nb-benefit-icon">⚡</span>
+                                    <div>
+                                        <strong>Plasticidade cross-modal em dias</strong>
+                                        <p>Exercícios com privação sensorial (olhos vendados) produzem recrutamento do córtex occipital para processamento tátil em apenas <strong>2-5 dias</strong>.</p>
+                                        <p class="nb-edu-ref"><a href="https://doi.org/10.1038/nrn2758" target="_blank" rel="noopener">Merabet LB, Pascual-Leone A (2010). <em>Nature Reviews Neuroscience</em>, 11(1), 44-52.</a></p>
+                                    </div>
+                                </div>
+                                <div class="nb-benefit">
+                                    <span class="nb-benefit-icon">💊</span>
+                                    <div>
+                                        <strong>BDNF e neurogênese</strong>
+                                        <p>Exercícios cognitivos e físicos aumentam a expressão de BDNF, promovendo neurogênese hipocampal e fortalecimento sináptico.</p>
+                                        <p class="nb-edu-ref"><a href="https://doi.org/10.7554/eLife.15092" target="_blank" rel="noopener">Sleiman SF et al. (2016). <em>eLife</em>, 5, e15092.</a></p>
+                                        <p class="nb-edu-ref"><a href="https://doi.org/10.3389/fncel.2019.00363" target="_blank" rel="noopener">Miranda M et al. (2019). <em>Frontiers in Cellular Neuroscience</em>, 13, 363.</a></p>
+                                    </div>
+                                </div>
+                                <div class="nb-benefit">
+                                    <span class="nb-benefit-icon">🗣️</span>
+                                    <div>
+                                        <strong>Funções executivas aprimoradas</strong>
+                                        <p>Tarefas de fluência verbal são o padrão-ouro clínico para avaliar o córtex pré-frontal — praticar regularmente fortalece memória de trabalho e raciocínio.</p>
+                                        <p class="nb-edu-ref"><a href="https://doi.org/10.1038/s41598-019-40273-7" target="_blank" rel="noopener">Birn RM et al. (2019). <em>Scientific Reports</em>, 9, 4684.</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="nb-edu-block">
+                            <h4>📚 As 6 categorias do NeuroForge</h4>
+                            <p>Cada categoria ativa <strong>sistemas neurais distintos</strong>, garantindo estimulação completa quando alternadas:</p>
+                            <div class="nb-cat-table">
+                                <div class="nb-cat-row" style="--rc:#00f0ff">
+                                    <span class="nb-cat-icon">🤲</span>
+                                    <div>
+                                        <strong style="color:#00f0ff">Inversão Motora</strong>
+                                        <p>Córtex motor contralateral + Cerebelo — Acetilcolina + Dopamina</p>
+                                    </div>
+                                </div>
+                                <div class="nb-cat-row" style="--rc:#e040fb">
+                                    <span class="nb-cat-icon">🗣️</span>
+                                    <div>
+                                        <strong style="color:#e040fb">Fluência Linguística</strong>
+                                        <p>Área de Broca + Wernicke + DLPFC — Acetilcolina + Noradrenalina</p>
+                                    </div>
+                                </div>
+                                <div class="nb-cat-row" style="--rc:#ffbe0b">
+                                    <span class="nb-cat-icon">🧠</span>
+                                    <div>
+                                        <strong style="color:#ffbe0b">Memória Episódica</strong>
+                                        <p>Hipocampo + Córtex pré-frontal medial — Acetilcolina + BDNF</p>
+                                    </div>
+                                </div>
+                                <div class="nb-cat-row" style="--rc:#00e676">
+                                    <span class="nb-cat-icon">👁️</span>
+                                    <div>
+                                        <strong style="color:#00e676">Percepção Sensorial</strong>
+                                        <p>Córtex somatossensorial + Ínsula + Parietal — Acetilcolina + Serotonina</p>
+                                    </div>
+                                </div>
+                                <div class="nb-cat-row" style="--rc:#448aff">
+                                    <span class="nb-cat-icon">🔍</span>
+                                    <div>
+                                        <strong style="color:#448aff">Atenção & Observação</strong>
+                                        <p>Rede atencional dorsal + Locus Coeruleus — Noradrenalina + Acetilcolina</p>
+                                    </div>
+                                </div>
+                                <div class="nb-cat-row" style="--rc:#ea80fc">
+                                    <span class="nb-cat-icon">🤝</span>
+                                    <div>
+                                        <strong style="color:#ea80fc">Cognição Social</strong>
+                                        <p>Córtex pré-frontal medial + Neurônios-espelho — Ocitocina + Dopamina</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="nb-edu-block nb-edu-refs-block">
+                            <h4>📑 Referências científicas principais</h4>
+                            <ol class="nb-edu-refs-list">
+                                <li><a href="https://doi.org/10.1126/science.274.5290.1133" target="_blank" rel="noopener">Katz LC, Shatz CJ (1996). Synaptic activity and the construction of cortical circuits. <em>Science</em>, 274(5290), 1133-1138.</a></li>
+                                <li><a href="https://doi.org/10.1038/nature19325" target="_blank" rel="noopener">Takeuchi T et al. (2016). Locus coeruleus and dopaminergic consolidation of everyday memory. <em>Nature</em>, 537, 357-362.</a></li>
+                                <li><a href="https://doi.org/10.3389/fncel.2019.00363" target="_blank" rel="noopener">Miranda M et al. (2019). Brain-derived neurotrophic factor: a key molecule for memory. <em>Frontiers in Cellular Neuroscience</em>, 13, 363.</a></li>
+                                <li><a href="https://doi.org/10.7554/eLife.15092" target="_blank" rel="noopener">Sleiman SF et al. (2016). Exercise promotes BDNF through beta-hydroxybutyrate. <em>eLife</em>, 5, e15092.</a></li>
+                                <li><a href="https://doi.org/10.1017/S0033291705006264" target="_blank" rel="noopener">Valenzuela MJ, Sachdev P (2006). Brain reserve and dementia: a systematic review. <em>Psychological Medicine</em>, 36(4), 441-454.</a></li>
+                                <li><a href="https://doi.org/10.1016/S1474-4422(12)70191-6" target="_blank" rel="noopener">Stern Y (2012). Cognitive reserve in ageing and Alzheimer's disease. <em>The Lancet Neurology</em>, 11(11), 1006-1012.</a></li>
+                                <li><a href="https://doi.org/10.1038/nrn2758" target="_blank" rel="noopener">Merabet LB, Pascual-Leone A (2010). Neural reorganization following sensory loss. <em>Nature Reviews Neuroscience</em>, 11(1), 44-52.</a></li>
+                                <li><a href="https://doi.org/10.1016/j.neuroimage.2012.05.065" target="_blank" rel="noopener">Hamzei F et al. (2012). Non-dominant hand training and praxis network connectivity. <em>NeuroImage</em>, 62(3), 1562-1570.</a></li>
+                                <li><a href="https://doi.org/10.1038/s41598-022-11636-4" target="_blank" rel="noopener">Dresler M et al. (2022). Cognitive and hippocampal changes after memory training. <em>Scientific Reports</em>, 12, 7877.</a></li>
+                                <li><a href="https://doi.org/10.1038/s41598-019-40273-7" target="_blank" rel="noopener">Birn RM et al. (2019). Prefrontal cortex roles in verbal and figural fluency. <em>Scientific Reports</em>, 9, 4684.</a></li>
+                                <li><a href="https://doi.org/10.1038/nrn3475" target="_blank" rel="noopener">Sara SJ (2009). The locus coeruleus and noradrenergic modulation of cognition. <em>Nature Reviews Neuroscience</em>, 10, 211-223.</a></li>
+                                <li><a href="https://doi.org/10.1016/j.neuron.2016.09.006" target="_blank" rel="noopener">Ballinger EC et al. (2016). Basal forebrain cholinergic circuits and cognition. <em>Neuron</em>, 91(6), 1199-1218.</a></li>
+                            </ol>
+                        </div>
+                    </div>
+                </details>
+            </div>
+
+            <div class="glass-card">
+                <div id="neurobicaViewTabs" class="tab-bar" style="margin-bottom:16px">
+                    <button class="tab active" data-nview="daily">Desafio do Dia</button>
+                    <button class="tab" data-nview="deck">Todos os Desafios</button>
+                </div>
+
+                <div id="neurobicaDailyView">
+                    <div class="empty-state">
+                        <div class="icon">🧩</div>
+                        <p>Carregando desafio do dia...</p>
+                    </div>
+                </div>
+
+                <div id="neurobicaDeckView" style="display:none"></div>
+            </div>
+
+            <div class="glass-card" style="margin-top:16px">
+                <h3 style="margin-bottom:12px">📊 Estatísticas</h3>
+                <div id="neurobicaStats"></div>
+            </div>
+        </section>
+
         <!-- SUGESTÕES -->
         <section id="tab-suggestions" class="tab-panel">
             <div class="page-header">
@@ -2116,6 +2550,8 @@
     <script src="plan-gate.js"></script>
     <script src="assessment.js"></script>
     <script src="articles.js"></script>
+    <script src="neurobica.js"></script>
+    <script src="unified-review.js"></script>
     <script src="survey.js"></script>
     <script src="messages.js"></script>
     <script>
@@ -2225,6 +2661,18 @@
         animate();
     })();
     </script>
+
+    <!-- Legal Footer -->
+    <footer style="text-align:center; padding:1.5rem 1rem; font-size:0.75rem; color:rgba(255,255,255,0.35); border-top:1px solid rgba(255,255,255,0.06); margin-top:2rem;">
+        <p>&copy; 2026 Jackson Erasmo Fuck. Todos os direitos reservados. INPI 512026001683-5</p>
+        <p style="margin-top:0.5rem;">
+            <a href="/terms-of-use.html" style="color:rgba(0,240,255,0.5); text-decoration:none; margin:0 0.75rem;">Termos de Uso</a>
+            <a href="/privacy-policy.html" style="color:rgba(0,240,255,0.5); text-decoration:none; margin:0 0.75rem;">Pol&iacute;tica de Privacidade</a>
+        </p>
+        <p style="margin-top:0.3rem; font-size:0.65rem; color:rgba(255,255,255,0.2);">
+            NeuroForge&trade; &mdash; Forje sinapses. Domine o conhecimento.
+        </p>
+    </footer>
 </body>
 
 </html>

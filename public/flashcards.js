@@ -301,37 +301,70 @@ function renderDecks(decks) {
         var cardCount = d.card_count || 0;
         var dueCount = d.due_count || 0;
         var borderColor = d.color || 'var(--synapse-cyan)';
-        return '<div class="deck-card" style="border-left-color:' + borderColor + '" onclick="loadCards(' + d.id + ')">'
-            + '<div class="deck-card-header">'
+        return '<details class="deck-accordion" style="--deck-color:' + borderColor + '">'
+            + '<summary class="deck-accordion-header">'
+            + '<div class="deck-accordion-info">'
+            + '<span class="deck-accordion-dot" style="background:' + borderColor + '"></span>'
             + '<h4>' + escapeHtml(d.name) + '</h4>'
-            + '<button class="btn-delete" onclick="event.stopPropagation();deleteDeck(' + d.id + ')" title="Remover baralho">&#10005;</button>'
-            + '</div>'
-            + '<div class="deck-stats">'
-            + '<span class="deck-stat">' + cardCount + ' cards</span>'
+            + '<span class="deck-accordion-meta">' + cardCount + ' cards</span>'
             + (dueCount > 0 ? '<span class="deck-stat deck-stat-due">' + dueCount + ' pendentes</span>' : '<span class="deck-stat deck-stat-ok">Em dia</span>')
-            + '</div>'
             + '<span class="deck-category">' + escapeHtml(d.category || 'Geral') + '</span>'
+            + '</div>'
+            + '<button class="btn-delete" onclick="event.stopPropagation();event.preventDefault();deleteDeck(' + d.id + ')" title="Remover baralho">&#10005;</button>'
+            + '</summary>'
+            + '<div class="deck-accordion-body" id="deckBody_' + d.id + '">'
+            + '<p style="color:var(--text-dim);font-size:13px;text-align:center;padding:12px 0">Clique para carregar cards...</p>'
+            + '</div>'
+            + '</details>';
+    }).join('');
+
+    // Lazy-load cards when deck is opened
+    el.querySelectorAll('.deck-accordion').forEach(function (det, i) {
+        det.addEventListener('toggle', function () {
+            if (det.open) {
+                var deckId = decks[i].id;
+                loadCardsInline(deckId);
+            }
+        });
+    });
+}
+
+async function loadCardsInline(deckId) {
+    var body = document.getElementById('deckBody_' + deckId);
+    if (!body) return;
+    body.innerHTML = '<p style="color:var(--synapse-cyan);font-size:13px;text-align:center;padding:8px 0">Carregando...</p>';
+
+    try {
+        var res = await fetch('/api/flashcards/' + deckId + '/cards');
+        if (!res.ok) throw new Error('Failed');
+        var cards = await res.json();
+        renderCardsInline(cards, deckId, body);
+    } catch (err) {
+        body.innerHTML = '<p class="empty-state">Erro ao carregar cards</p>';
+    }
+}
+
+function renderCardsInline(cards, deckId, container) {
+    if (!cards || cards.length === 0) {
+        container.innerHTML = '<p class="empty-state" style="padding:12px 0">Nenhum card neste baralho.</p>';
+        return;
+    }
+
+    container.innerHTML = cards.map(function (c, i) {
+        return '<div class="fc-card-row">'
+            + '<span class="fc-card-num">' + (i + 1) + '</span>'
+            + '<div class="fc-card-front-inline">' + escapeHtml(c.front) + '</div>'
+            + '<div class="fc-card-back-inline">' + escapeHtml(c.back) + '</div>'
+            + '<button class="btn-delete btn-delete-sm" onclick="deleteCard(' + c.id + ',' + deckId + ')" title="Remover">&#10005;</button>'
             + '</div>';
     }).join('');
 }
 
 function renderCards(cards, deckId) {
+    // Legacy fallback — now handled by inline rendering
     var el = document.getElementById('flashcardCards');
     if (!el) return;
-
-    if (!cards || cards.length === 0) {
-        el.innerHTML = '<p class="empty-state">Nenhum card neste baralho.</p>';
-        return;
-    }
-
-    el.innerHTML = '<h4 style="margin-bottom:12px;color:var(--text-bright)">' + cards.length + ' cards</h4>'
-        + cards.map(function (c) {
-            return '<div class="fc-card-item">'
-                + '<div class="fc-card-front">' + escapeHtml(c.front) + '</div>'
-                + '<div class="fc-card-back">' + escapeHtml(c.back) + '</div>'
-                + '<button class="btn-delete" onclick="deleteCard(' + c.id + ',' + deckId + ')" title="Remover card">&#10005;</button>'
-                + '</div>';
-        }).join('');
+    el.innerHTML = '';
 }
 
 function renderReviewUI() {
@@ -368,6 +401,110 @@ function populateDeckSelectors(decks) {
                 return '<option value="' + d.id + '">' + escapeHtml(d.name) + '</option>';
             }).join('');
         if (current) sel.value = current;
+    });
+
+    // Populate review deck checkboxes
+    var checkboxContainer = document.getElementById('reviewDeckCheckboxes');
+    if (checkboxContainer && decks && decks.length > 0) {
+        var allLabel = '<label style="color:var(--text-dim);font-size:13px;cursor:pointer"><input type="checkbox" checked class="review-deck-all" onchange="toggleAllReviewDecks(this)"> <strong>Todos</strong></label>';
+        var deckLabels = decks.map(function (d) {
+            var dueInfo = d.due_count > 0 ? ' (' + d.due_count + ')' : '';
+            return '<label style="color:var(--text-dim);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px">'
+                + '<input type="checkbox" checked class="review-deck-cb" value="' + d.id + '" onchange="updateAllCheckbox()"> '
+                + '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + (d.color || 'var(--synapse-cyan)') + '"></span> '
+                + escapeHtml(d.name) + dueInfo
+                + '</label>';
+        }).join('');
+        checkboxContainer.innerHTML = allLabel + deckLabels;
+    }
+}
+
+function toggleAllReviewDecks(allCb) {
+    var cbs = document.querySelectorAll('.review-deck-cb');
+    cbs.forEach(function (cb) { cb.checked = allCb.checked; });
+}
+
+function updateAllCheckbox() {
+    var cbs = document.querySelectorAll('.review-deck-cb');
+    var allCb = document.querySelector('.review-deck-all');
+    if (!allCb) return;
+    var allChecked = true;
+    cbs.forEach(function (cb) { if (!cb.checked) allChecked = false; });
+    allCb.checked = allChecked;
+}
+
+async function startFilteredReview() {
+    var cbs = document.querySelectorAll('.review-deck-cb:checked');
+    var selectedIds = [];
+    cbs.forEach(function (cb) { selectedIds.push(parseInt(cb.value)); });
+
+    if (selectedIds.length === 0) {
+        alert('Selecione pelo menos um baralho para revisão.');
+        return;
+    }
+
+    var container = document.getElementById('flashcardReview');
+    if (!container) return;
+
+    container.innerHTML = '<p style="text-align:center;color:var(--synapse-cyan)">Carregando cards para revisão...</p>';
+    container.style.display = 'block';
+
+    try {
+        var res = await fetch('/api/flashcards/review/due');
+        if (!res.ok) throw new Error('Failed to load due cards');
+        var allCards = await res.json();
+
+        // Filter by selected decks
+        var allSelected = document.querySelector('.review-deck-all');
+        var cards = (allSelected && allSelected.checked) ? allCards : allCards.filter(function (c) {
+            return selectedIds.indexOf(c.deck_id) !== -1;
+        });
+
+        if (!cards || cards.length === 0) {
+            container.innerHTML = '<div class="review-empty"><span style="font-size:48px">🎉</span><h3>Nenhum card pendente!</h3><p>Todos os cards dos baralhos selecionados estão em dia.</p></div>';
+            return;
+        }
+
+        _reviewCards = cards;
+        _reviewIndex = 0;
+        _reviewXP = 0;
+        _reviewCorrect = 0;
+        _reviewTotal = cards.length;
+        _isFlipped = false;
+
+        renderReviewUI();
+        showCurrentCard();
+    } catch (err) {
+        console.error('startFilteredReview:', err);
+        container.innerHTML = '<p class="empty-state">Erro ao iniciar revisão</p>';
+    }
+}
+
+// ─── COPY PROMPT ───
+
+function copyFCPrompt() {
+    var text = document.getElementById('fcPromptText');
+    if (!text) return;
+    var content = text.textContent || text.innerText;
+    navigator.clipboard.writeText(content).then(function () {
+        var btn = document.getElementById('fcCopyBtn');
+        if (btn) {
+            btn.textContent = '✅ Copiado!';
+            setTimeout(function () { btn.textContent = '📋 Copiar Prompt'; }, 2000);
+        }
+    }).catch(function () {
+        // Fallback
+        var range = document.createRange();
+        range.selectNode(text);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+        var btn = document.getElementById('fcCopyBtn');
+        if (btn) {
+            btn.textContent = '✅ Copiado!';
+            setTimeout(function () { btn.textContent = '📋 Copiar Prompt'; }, 2000);
+        }
     });
 }
 

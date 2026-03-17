@@ -1,3 +1,9 @@
+/**
+ * NeuroForge — Forje sinapses. Domine o conhecimento.
+ * Copyright (c) 2026 Jackson Erasmo Fuck. All rights reserved.
+ * INPI Registration: 512026001683-5
+ * Licensed under proprietary license. See LICENSE file.
+ */
 const express = require('express');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
@@ -75,11 +81,11 @@ router.get('/google', passport.authenticate('google', {
 }));
 
 router.get('/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login.html' }),
+    passport.authenticate('google', { failureRedirect: '/login' }),
     async (req, res) => {
         // Automatically activate Google users and set LGPD if not set
         await pool.query('UPDATE users SET is_active = TRUE WHERE id = $1', [req.user.id]);
-        res.redirect('/');
+        res.redirect('/app');
     }
 );
 
