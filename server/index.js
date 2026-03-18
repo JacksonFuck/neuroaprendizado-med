@@ -20,10 +20,23 @@ const rateLimit = require('express-rate-limit');
 const app = express();
 const PORT = process.env.PORT || 3005;
 
-// Security: require strong SESSION_SECRET in production
+// Security: validate required env vars in production
 if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET === 'dev-secret-change-me') {
     console.error('FATAL: SESSION_SECRET must be set to a strong random value');
     if (process.env.NODE_ENV === 'production') process.exit(1);
+}
+if (process.env.NODE_ENV === 'production') {
+    const required = ['DATABASE_URL', 'SESSION_SECRET'];
+    const missing = required.filter(k => !process.env[k]);
+    if (missing.length) {
+        console.error(`FATAL: Missing required env vars: ${missing.join(', ')}`);
+        process.exit(1);
+    }
+    const recommended = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'SMTP_HOST'];
+    const missingRec = recommended.filter(k => !process.env[k]);
+    if (missingRec.length) {
+        console.warn(`WARN: Missing recommended env vars: ${missingRec.join(', ')}`);
+    }
 }
 
 // Trust nginx proxy for secure cookies
@@ -70,6 +83,12 @@ app.use('/auth/login', authLimiter);
 app.use('/auth/forgot-password', authLimiter);
 app.use('/auth/register', registerLimiter);
 app.use('/api/register-free', registerLimiter);
+const adminLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 50,
+    message: { error: 'Limite de requisicoes admin atingido.' }
+});
+app.use('/api/admin/', adminLimiter);
 app.use('/api/', apiLimiter);
 
 // Stripe webhook needs raw body — must come before express.json()

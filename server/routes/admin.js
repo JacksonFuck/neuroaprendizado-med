@@ -9,6 +9,18 @@ const router = express.Router();
 const pool = require('../config/db');
 const { getUserLevel } = require('../lib/xp-engine');
 
+// Persistent audit logging
+async function auditLog(adminId, action, targetUserId, details) {
+    try {
+        await pool.query(
+            'INSERT INTO admin_audit_log (admin_id, action, target_user_id, details) VALUES ($1, $2, $3, $4)',
+            [adminId, action, targetUserId, details ? JSON.stringify(details) : null]
+        );
+    } catch (err) {
+        console.error('[AUDIT] Failed to write audit log:', err.message);
+    }
+}
+
 // Middleware to check admin role
 const requireAdmin = (req, res, next) => {
     if (!req.isAuthenticated || !req.isAuthenticated()) {
@@ -129,7 +141,10 @@ router.put('/users/:id', requireAdmin, async (req, res) => {
         const values = [];
         let idx = 1;
 
-        if (role !== undefined) { updates.push(`role = $${idx++}`); values.push(role); }
+        if (role !== undefined) {
+            if (!['user', 'admin'].includes(role)) return res.status(400).json({ error: 'Role inválida. Use "user" ou "admin".' });
+            updates.push(`role = $${idx++}`); values.push(role);
+        }
         if (is_active !== undefined) { updates.push(`is_active = $${idx++}`); values.push(is_active); }
         if (plan !== undefined) {
             if (!['free', 'pro'].includes(plan)) return res.status(400).json({ error: 'Plano inválido. Use "free" ou "pro".' });
@@ -146,9 +161,12 @@ router.put('/users/:id', requireAdmin, async (req, res) => {
 
         values.push(id);
         await pool.query(`UPDATE users SET ${updates.join(', ')} WHERE id = $${idx}`, values);
-        if (plan !== undefined) {
-            console.log(`[ADMIN PLAN] User #${id} → ${plan}${plan_expires_at ? ' until ' + plan_expires_at : ' (no expiry)'} by admin #${req.user.id}`);
-        }
+        const changes = {};
+        if (role !== undefined) changes.role = role;
+        if (is_active !== undefined) changes.is_active = is_active;
+        if (plan !== undefined) changes.plan = plan;
+        if (plan_expires_at !== undefined) changes.plan_expires_at = plan_expires_at;
+        await auditLog(req.user.id, 'update_user', parseInt(id), changes);
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: 'Erro ao atualizar usuário.' });
@@ -175,7 +193,7 @@ router.post('/users/:id/reset-password', requireAdmin, async (req, res) => {
         // Since we can't easily access it here, we'll return the link for admin to share
         console.log(`[ADMIN RESET] Link para ${email}: ${resetLink}`);
 
-        // Return the link for admin use
+        await auditLog(req.user.id, 'reset_password', parseInt(id), { email });
         res.json({ success: true, email, reset_link: resetLink, token });
     } catch (err) {
         res.status(500).json({ error: 'Erro ao gerar link de reset.' });
@@ -192,7 +210,9 @@ router.delete('/users/:id', requireAdmin, async (req, res) => {
     }
 
     try {
+        const { rows } = await pool.query('SELECT email FROM users WHERE id = $1', [id]);
         await pool.query('DELETE FROM users WHERE id = $1', [id]);
+        await auditLog(req.user.id, 'delete_user', parseInt(id), { email: rows[0]?.email });
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: 'Erro ao excluir usuário.' });

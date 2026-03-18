@@ -375,7 +375,23 @@ async function confirmPlanUpgrade() {
 function filterUsers(query) {
     const rows = document.querySelectorAll('#users-table tr');
     const q = query.toLowerCase();
+    const planFilter = document.getElementById('plan-filter')?.value || 'all';
     rows.forEach(row => {
-        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+        const matchesText = !q || row.textContent.toLowerCase().includes(q);
+        const matchesPlan = planFilter === 'all' || checkPlanMatch(row, planFilter);
+        row.style.display = (matchesText && matchesPlan) ? '' : 'none';
     });
+}
+
+function filterByPlan(planValue) {
+    const searchInput = document.querySelector('.user-search');
+    filterUsers(searchInput?.value || '');
+}
+
+function checkPlanMatch(row, filter) {
+    const text = row.textContent;
+    if (filter === 'free') return text.includes('FREE');
+    if (filter === 'pro') return text.includes('PRO') && !text.includes('EXPIRADO');
+    if (filter === 'expired') return text.includes('EXPIRADO');
+    return true;
 }

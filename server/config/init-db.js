@@ -262,6 +262,19 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS plan_expires_at TIMESTAMP;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_customer_id VARCHAR(255);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_subscription_id VARCHAR(255);
 
+-- Admin audit log (persistent action tracking)
+CREATE TABLE IF NOT EXISTS admin_audit_log (
+  id SERIAL PRIMARY KEY,
+  admin_id INT NOT NULL REFERENCES users(id) ON DELETE SET NULL,
+  action VARCHAR(50) NOT NULL,
+  target_user_id INT REFERENCES users(id) ON DELETE SET NULL,
+  details JSONB,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_audit_admin ON admin_audit_log(admin_id);
+CREATE INDEX IF NOT EXISTS idx_audit_target ON admin_audit_log(target_user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_action ON admin_audit_log(action);
+
 -- Phone & personalized coaching consent (LGPD Art. 8 — granular consent)
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_consent BOOLEAN DEFAULT FALSE;
