@@ -64,9 +64,9 @@ DB_NAME=neuro_db
 # Hostinger E-mail (smtp.hostinger.com, port=465, secure=true)
 SMTP_HOST=smtp.hostinger.com
 SMTP_PORT=465
-SMTP_USER=jackson@jacksonuti.cloud
-SMTP_PASS=Ritmosinusal120/80
-SMTP_FROM_NAME=Neuroaprendizado Med
+SMTP_USER=contato@neuroforgeapp.com.br
+SMTP_PASS=SUA_SENHA_SMTP_AQUI
+SMTP_FROM_NAME=NeuroForge
 ```
 
 > **Importante:** Se SMTP não for configurado, o link de ativação aparecerá nos logs do PM2 (`pm2 logs neuroaprendizado-api`). Você pode copiar e enviar o link manualmente ao usuário.
