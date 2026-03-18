@@ -8,6 +8,9 @@ const FILES_TO_DEPLOY = [
     { local: 'public/index.html', remote: '/var/www/neuroaprendizado/public/index.html' },
     { local: 'public/app.css', remote: '/var/www/neuroaprendizado/public/app.css' },
     { local: 'public/sw.js', remote: '/var/www/neuroaprendizado/public/sw.js' },
+    // Frontend — Legal pages
+    { local: 'public/privacy-policy.html', remote: '/var/www/neuroaprendizado/public/privacy-policy.html' },
+    { local: 'public/terms-of-use.html', remote: '/var/www/neuroaprendizado/public/terms-of-use.html' },
     // Frontend — Admin panel (plan selector)
     { local: 'public/admin.html', remote: '/var/www/neuroaprendizado/public/admin.html' },
     { local: 'public/admin.js', remote: '/var/www/neuroaprendizado/public/admin.js' },
