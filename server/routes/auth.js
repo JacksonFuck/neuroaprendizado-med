@@ -12,8 +12,7 @@ const nodemailer = require('nodemailer');
 const pool = require('../config/db');
 const router = express.Router();
 
-// In-memory store for password reset tokens (for simplicity; in production use DB table)
-const resetTokens = new Map();
+// Reset tokens stored in password_reset_tokens table (persistent)
 
 // ==========================================
 // Email Transporter (SMTP via nodemailer)
@@ -38,9 +37,7 @@ const sendActivationEmail = async (email, activationToken) => {
 
     if (!transporter) {
         // SMTP não configurado — log de fallback para que admin possa ativar manualmente
-        console.warn('\n⚠️  [EMAIL] SMTP não configurado. Link de ativação (use para ativar manualmente):');
-        console.warn(`📧  Para: ${email}`);
-        console.warn(`🔗  Link: ${activationLink}\n`);
+        console.warn('[EMAIL] SMTP não configurado. Ativação pendente para: ' + email);
         return;
     }
 
@@ -258,12 +255,16 @@ router.post('/forgot-password', async (req, res) => {
         }
         const token = crypto.randomBytes(32).toString('hex');
         const expires = Date.now() + 1000 * 60 * 60; // 1 hour
-        resetTokens.set(token, { email, expires });
+        // Store token in database (persistent across restarts)
+        await pool.query(
+            'INSERT INTO password_reset_tokens (email, token, expires_at) VALUES ($1, $2, $3)',
+            [email, token, new Date(expires)]
+        );
 
         const baseUrl = process.env.BASE_URL || `http://localhost:${process.env.PORT || 3005}`;
         const resetLink = `${baseUrl}/reset-password.html?token=${token}`;
 
-        console.log(`[RESET PASSWORD] Link para ${email}: ${resetLink}`);
+        console.log('[RESET] Token generated for ' + email);
 
         const transporter = createTransporter();
         if (transporter) {
@@ -314,16 +315,19 @@ router.post('/reset-password', async (req, res) => {
     if (!token || !password) return res.status(400).json({ error: 'Token e nova senha são obrigatórios.' });
     if (password.length < 8) return res.status(400).json({ error: 'A senha deve ter no minimo 8 caracteres.' });
 
-    const record = resetTokens.get(token);
-    if (!record || Date.now() > record.expires) {
-        resetTokens.delete(token);
-        return res.status(400).json({ error: 'Link expirado ou inválido. Solicite um novo link.' });
-    }
-
     try {
+        const { rows } = await pool.query(
+            'SELECT * FROM password_reset_tokens WHERE token = $1 AND used = FALSE AND expires_at > NOW()',
+            [token]
+        );
+        if (rows.length === 0) {
+            return res.status(400).json({ error: 'Token inválido ou expirado.' });
+        }
+        const tokenData = rows[0];
+
         const password_hash = await bcrypt.hash(password, 10);
-        await pool.query('UPDATE users SET password_hash = $1, is_active = TRUE WHERE email = $2', [password_hash, record.email]);
-        resetTokens.delete(token);
+        await pool.query('UPDATE users SET password_hash = $1, is_active = TRUE WHERE email = $2', [password_hash, tokenData.email]);
+        await pool.query('UPDATE password_reset_tokens SET used = TRUE WHERE token = $1', [token]);
         res.json({ success: true, message: 'Senha redefinida com sucesso! Você já pode fazer login.' });
     } catch (err) {
         console.error('Reset password error:', err);
@@ -341,11 +345,14 @@ router.post('/admin-reset-link', async (req, res) => {
 
     const token = crypto.randomBytes(32).toString('hex');
     const expires = Date.now() + 1000 * 60 * 60 * 24; // 24 hours for admin-generated links
-    resetTokens.set(token, { email, expires });
+    await pool.query(
+        'INSERT INTO password_reset_tokens (email, token, expires_at) VALUES ($1, $2, $3)',
+        [email, token, new Date(expires)]
+    );
 
     const baseUrl = process.env.BASE_URL || `https://neuroaprendizado.unipar.jacksonuti.cloud`;
     const resetLink = `${baseUrl}/reset-password.html?token=${token}`;
-    console.log(`[ADMIN RESET] Link para ${email}: ${resetLink}`);
+    console.log('[RESET] Token generated for ' + email);
 
     res.json({ success: true, reset_link: resetLink });
 });

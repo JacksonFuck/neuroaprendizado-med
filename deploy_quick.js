@@ -12,6 +12,7 @@ const FILES_TO_DEPLOY = [
     { local: 'public/admin.html', remote: '/var/www/neuroaprendizado/public/admin.html' },
     { local: 'public/admin.js', remote: '/var/www/neuroaprendizado/public/admin.js' },
     // Backend — Routes
+    { local: 'server/routes/auth.js', remote: '/var/www/neuroaprendizado/server/routes/auth.js' },
     { local: 'server/routes/plan.js', remote: '/var/www/neuroaprendizado/server/routes/plan.js' },
     { local: 'server/routes/stripe.js', remote: '/var/www/neuroaprendizado/server/routes/stripe.js' },
     { local: 'server/routes/admin.js', remote: '/var/www/neuroaprendizado/server/routes/admin.js' },

@@ -87,6 +87,7 @@ CREATE INDEX IF NOT EXISTS idx_spaced_user ON spaced_topics(user_id);
 CREATE INDEX IF NOT EXISTS idx_spaced_review ON spaced_topics(user_id, next_review);
 CREATE INDEX IF NOT EXISTS idx_pomodoro_user ON pomodoro_sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_content_tab ON content_sections(tab_key);
+CREATE INDEX IF NOT EXISTS idx_suggestions_user ON suggestions(user_id);
 
 -- Session store table required by connect-pg-simple
 CREATE TABLE IF NOT EXISTS "session" (
@@ -274,6 +275,18 @@ CREATE TABLE IF NOT EXISTS admin_audit_log (
 CREATE INDEX IF NOT EXISTS idx_audit_admin ON admin_audit_log(admin_id);
 CREATE INDEX IF NOT EXISTS idx_audit_target ON admin_audit_log(target_user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_action ON admin_audit_log(action);
+
+-- Password reset tokens (persistent, replaces in-memory Map)
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) NOT NULL,
+  token VARCHAR(255) UNIQUE NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  used BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_reset_tokens_token ON password_reset_tokens(token);
+CREATE INDEX IF NOT EXISTS idx_reset_tokens_email ON password_reset_tokens(email);
 
 -- Phone & personalized coaching consent (LGPD Art. 8 — granular consent)
 ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20);

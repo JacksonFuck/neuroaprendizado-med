@@ -81,6 +81,7 @@ const apiLimiter = rateLimit({
 
 app.use('/auth/login', authLimiter);
 app.use('/auth/forgot-password', authLimiter);
+app.use('/auth/reset-password', authLimiter);
 app.use('/auth/register', registerLimiter);
 app.use('/api/register-free', registerLimiter);
 const adminLimiter = rateLimit({
