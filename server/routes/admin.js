@@ -33,7 +33,7 @@ router.get('/metrics', requireAdmin, async (req, res) => {
                 pool.query(`
                 SELECT u.id, u.name, u.email, u.role, u.is_active,
                        u.created_at, u.last_login, u.accepted_lgpd_at,
-                       u.avatar_url,
+                       u.avatar_url, u.plan, u.plan_expires_at,
                        COUNT(DISTINCT d.id) as diary_entries,
                        COUNT(DISTINCT p.id) as pomodoro_sessions,
                        COUNT(DISTINCT s.id) as spaced_topics,
@@ -122,7 +122,7 @@ router.put('/suggestions/:id', requireAdmin, async (req, res) => {
 // PUT /api/admin/users/:id — Update user role or active state
 router.put('/users/:id', requireAdmin, async (req, res) => {
     const { id } = req.params;
-    const { role, is_active } = req.body;
+    const { role, is_active, plan, plan_expires_at } = req.body;
 
     try {
         const updates = [];
@@ -131,11 +131,24 @@ router.put('/users/:id', requireAdmin, async (req, res) => {
 
         if (role !== undefined) { updates.push(`role = $${idx++}`); values.push(role); }
         if (is_active !== undefined) { updates.push(`is_active = $${idx++}`); values.push(is_active); }
+        if (plan !== undefined) {
+            if (!['free', 'pro'].includes(plan)) return res.status(400).json({ error: 'Plano inválido. Use "free" ou "pro".' });
+            updates.push(`plan = $${idx++}`); values.push(plan);
+            if (plan === 'free') {
+                updates.push(`plan_expires_at = NULL`);
+            }
+        }
+        if (plan_expires_at !== undefined && plan !== 'free') {
+            updates.push(`plan_expires_at = $${idx++}`); values.push(plan_expires_at);
+        }
 
         if (updates.length === 0) return res.status(400).json({ error: 'Nenhum campo para atualizar.' });
 
         values.push(id);
         await pool.query(`UPDATE users SET ${updates.join(', ')} WHERE id = $${idx}`, values);
+        if (plan !== undefined) {
+            console.log(`[ADMIN PLAN] User #${id} → ${plan}${plan_expires_at ? ' until ' + plan_expires_at : ' (no expiry)'} by admin #${req.user.id}`);
+        }
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: 'Erro ao atualizar usuário.' });

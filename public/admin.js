@@ -120,6 +120,7 @@ function renderUsersTable(users) {
             </td>
             <td><span class="role-badge role-${u.role}">${u.role}</span></td>
             <td><span class="status-badge ${activeClass}">${activeLabel}</span></td>
+            <td>${getPlanBadge(u)}</td>
             <td style="text-align:center;">
                 <div style="font-size:12px;">📔 ${u.diary_entries || 0}</div>
                 <div style="font-size:12px;">⏱ ${u.pomodoro_sessions || 0} sess.</div>
@@ -133,6 +134,7 @@ function renderUsersTable(users) {
                     <button class="btn-action btn-warn" onclick="adminResetPassword(${u.id}, '${u.email}')">🔑 Reset Senha</button>
                     <button class="btn-action btn-ok" onclick="toggleUserActive(${u.id}, ${u.is_active})">${u.is_active ? '🔒 Desativar' : '✅ Ativar'}</button>
                     <button class="btn-action btn-ok" onclick="toggleUserRole(${u.id}, '${u.role}')">${u.role === 'admin' ? '👤 → User' : '👑 → Admin'}</button>
+                    <button class="btn-action ${u.plan === 'pro' ? 'btn-danger' : 'btn-warn'}" onclick="toggleUserPlan(${u.id}, '${u.plan || 'free'}', '${u.email}')">${u.plan === 'pro' ? '↓ → Free' : '⭐ → Pro'}</button>
                     <button class="btn-action btn-danger" onclick="deleteUser(${u.id}, '${u.email}')">🗑 Excluir</button>
                 </div>
             </td>
@@ -288,6 +290,85 @@ async function deleteToken(tokenId) {
         if (res.ok) fetchMetrics();
         else alert('Erro ao excluir token.');
     } catch { alert('Erro de conexão.'); }
+}
+
+// =========================================
+// Plan Management
+// =========================================
+function getPlanBadge(user) {
+    const plan = user.plan || 'free';
+    if (plan === 'pro') {
+        const expires = user.plan_expires_at;
+        if (expires && new Date(expires) < new Date()) {
+            return '<span class="status-badge plan-badge-expired" title="Expirado">⚠️ EXPIRADO</span>';
+        }
+        const expiryText = expires ? new Date(expires).toLocaleDateString('pt-BR') : 'Sem expiracao';
+        return `<span class="status-badge plan-badge-pro" title="Expira: ${expiryText}">⭐ PRO</span>
+                <div style="font-size:10px;color:#6c7a9c;margin-top:2px;">${expiryText}</div>`;
+    }
+    return '<span class="status-badge plan-badge-free">🆓 FREE</span>';
+}
+
+function toggleUserPlan(userId, currentPlan, email) {
+    if (currentPlan === 'pro') {
+        if (!confirm(`Rebaixar "${email}" para o plano Free?`)) return;
+        fetch(`/api/admin/users/${userId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ plan: 'free' })
+        }).then(r => { if (r.ok) fetchMetrics(); else alert('Erro ao rebaixar plano.'); })
+          .catch(() => alert('Erro de conexao.'));
+    } else {
+        document.getElementById('plan-modal-user-id').value = userId;
+        document.getElementById('plan-modal-email').textContent = email;
+        document.getElementById('plan-modal-date').value = '';
+        document.getElementById('plan-modal').style.display = 'flex';
+    }
+}
+
+function setPlanShortcut(days) {
+    const dateInput = document.getElementById('plan-modal-date');
+    if (days === 0) {
+        dateInput.value = '';
+        dateInput.dataset.noExpiry = 'true';
+    } else {
+        const d = new Date();
+        d.setDate(d.getDate() + days);
+        dateInput.value = d.toISOString().split('T')[0];
+        dateInput.dataset.noExpiry = '';
+    }
+}
+
+function closePlanModal() {
+    document.getElementById('plan-modal').style.display = 'none';
+}
+
+async function confirmPlanUpgrade() {
+    const userId = document.getElementById('plan-modal-user-id').value;
+    const dateInput = document.getElementById('plan-modal-date');
+    const expiresAt = dateInput.dataset.noExpiry === 'true' ? null : (dateInput.value || null);
+
+    if (!expiresAt && dateInput.dataset.noExpiry !== 'true') {
+        alert('Selecione uma data ou clique em "Sem expiracao".');
+        return;
+    }
+
+    try {
+        const body = { plan: 'pro' };
+        if (expiresAt) body.plan_expires_at = expiresAt;
+        const res = await fetch(`/api/admin/users/${userId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        if (res.ok) {
+            closePlanModal();
+            fetchMetrics();
+        } else {
+            const d = await res.json();
+            alert('Erro: ' + (d.error || 'Falha ao atualizar plano.'));
+        }
+    } catch { alert('Erro de conexao.'); }
 }
 
 // User search filter
