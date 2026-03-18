@@ -26,7 +26,7 @@ if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET === 'dev-secret-ch
     if (process.env.NODE_ENV === 'production') process.exit(1);
 }
 if (process.env.NODE_ENV === 'production') {
-    const required = ['DATABASE_URL', 'SESSION_SECRET'];
+    const required = ['DB_PASSWORD', 'SESSION_SECRET'];
     const missing = required.filter(k => !process.env[k]);
     if (missing.length) {
         console.error(`FATAL: Missing required env vars: ${missing.join(', ')}`);
